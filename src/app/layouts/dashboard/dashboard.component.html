@@ -1,0 +1,19 @@
+<div id="main-wrapper">
+    <app-navbar></app-navbar>
+    <section class="p-0">
+        <div class="dashboard-container">
+            <div class="dashboard-wrapper">
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <app-sidebar></app-sidebar>
+                </div>
+
+                <!-- Contenido principal -->
+                <div class="main-content">
+                    <app-global-loader></app-global-loader>
+                    <router-outlet></router-outlet>                 
+                </div>
+            </div>
+        </div>
+    </section>    
+</div>

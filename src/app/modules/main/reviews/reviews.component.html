@@ -1,0 +1,88 @@
+<div class="user-dashboard-box bg-light">
+								
+	<!-- Dashboard Title -->
+	<div class="dashHeader p-xl-5 p-4 pb-xl-0 pb-0">
+		<h2 class="mb-0">Mis Reseñas</h2>
+	</div>
+	
+	<!-- Dashboard Details -->
+	<div class="dashCaption p-xl-5 p-4">
+		
+		<!-- Row Start -->
+		<div class="row align-items-start g-4 mb-lg-5 mb-4">
+			<div class="col-xl-12 col-lg-12 col-md-12">
+				<div class="card rounded-3 shadow-sm">
+					<div class="card-header px-4 py-3">
+						<h4 class="fs-5 fw-medium"><i class="bi bi-chat-quote text-primary me-2"></i>{{ nombreComercio }}</h4>
+					</div>
+					<div class="card-body p-0">
+						<div *ngIf="(comentarios?.length || 0) > 0">
+							<!-- Listado de comentarios -->
+							<ul class="dashboardListgroup hovereffect">							
+								<li *ngFor="let c of comentarios">
+									<div class="singleReviewswrap">
+										<div class="singlereviews">
+											<div class="reviewerAvatar">
+												<figure class="m-0">
+													<img [src]="c.usuario.avatar_url || 'assets/img/usuario.png'" width="50" class="rounded-circle" />
+												</figure>
+											</div>
+											
+											<div class="reviewsInfo">
+												<div class="reviewssupper d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+													<div class="reviewsExtopper">
+														<div class="reviewrHeadline d-flex align-items-center justify-content-start gap-2">
+															<h6 class="messageuserTitle">{{ c.usuario.nombre }} {{ c.usuario.apellido }}</h6> en <a href="#" class="fw-medium text-primary">{{ nombreComercio }}</a>
+														</div>
+														<div class="postedDate"><span class="text-md">{{ c.fecha_comentario  | date:'medium' }}</span></div>
+													</div>
+													<div class="flxLast">
+														<div class="reviewsStar d-flex align-items-center">
+															<img *ngFor="let t of generateThumbs(c.calificacion)" [src]="t" width="16" class="me-1" />
+														</div>
+													</div>
+												</div>
+												<div class="reviewsBody">
+													<div class="reviewDescription d-block mb-3">
+														<p class="m-0">{{ c.comentario }}</p>
+													</div>
+													
+												</div>
+											</div>
+										</div>
+									</div>
+								</li>														
+							</ul>
+
+							<!-- Paginación -->
+							<nav *ngIf="totalPaginas > 1" class="my-5 pb-3 d-flex justify-content-center">
+								<ul class="pagination">
+									<li class="page-item" [class.disabled]="paginaActual === 1">
+									<a class="page-link" (click)="cambiarPagina(paginaActual - 1)">Anterior</a>
+									</li>
+									<li
+									class="page-item"
+									*ngFor="let page of [].constructor(totalPaginas); let i = index"
+									[class.active]="paginaActual === (i + 1)">
+									<a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
+									</li>
+									<li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+									<a class="page-link" (click)="cambiarPagina(paginaActual + 1)">Siguiente</a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+						<div class="p-4 text-center text-muted" *ngIf="comentarios?.length === 0">
+							Este local aún no tiene comentarios por parte de los usuarios.
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		<!-- Row End -->
+											
+	</div>
+	
+</div>
+						

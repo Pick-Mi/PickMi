@@ -1,0 +1,241 @@
+<div class="user-dashboard-box bg-light">
+    <div class="dashHeader p-xl-5 p-4 pb-xl-0 pb-0 d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">
+            Datos Generales
+        </h2>
+    </div>
+
+    <div class="dashCaption p-xl-5 p-4">
+
+        <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-resumen" data-bs-toggle="tab" data-bs-target="#panel-resumen" type="button" role="tab">
+                    Resumen
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link"
+                        data-bs-toggle="tab"
+                        data-bs-target="#panel-graficos"
+                        (click)="onTabChanged('graficos')">
+                    Gráficos
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#panel-filtros">
+                    Filtros
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content" id="dashboardTabContent">
+            <!-- Panel: RESUMEN -->
+            <div class="tab-pane fade show active" id="panel-resumen" role="tabpanel">
+                <!-- Row Start -->
+
+                <div class="row align-items-start g-4 mb-lg-5 mb-4">
+                    
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
+                        <div class="card rounded-3 position-relative p-4">
+                            <div class="position-absolute w-30 h-100 bg-light-danger start-0 top-0 rounded-end-pill"><div class="position-absolute top-50 start-50 translate-middle"><i class="bi bi-suit-heart text-danger fs-2"></i></div></div>
+                            <div class="d-flex flex-column align-items-end justify-content-end ht-80">
+                                <h2 class="mb-0"><span class="ctr">{{totalFavoritos}}</span></h2>
+                                <p class="text-muted-2 fw-medium mb-0">Total Favoritos</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
+                        <div class="card rounded-3 position-relative p-4">
+                            <div class="position-absolute w-30 h-100 bg-light-purple start-0 top-0 rounded-end-pill"><div class="position-absolute top-50 start-50 translate-middle"><i class="bi bi-eye text-purple fs-2"></i></div></div>
+                            <div class="d-flex flex-column align-items-end justify-content-end ht-80">
+                                <h2 class="mb-0"><span class="ctr">{{totalVistas}}</span></h2>
+                                <p class="text-muted-2 fw-medium mb-0">Total Vistas</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
+                        <div class="card rounded-3 position-relative p-4">
+                            <div class="position-absolute w-30 h-100 bg-light-warning start-0 top-0 rounded-end-pill"><div class="position-absolute top-50 start-50 translate-middle"><i class="bi bi-hand-thumbs-up text-warning fs-2"></i></div></div>
+                            <div class="d-flex flex-column align-items-end justify-content-end ht-80">
+                                <h2 class="mb-0"><span class="ctr">{{promedioGlobal}}</span></h2>
+                                <p class="text-muted-2 fw-medium mb-0">Calificación</p>
+                            </div>
+                        </div>
+                    </div>            
+                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
+                        <div class="card rounded-3 position-relative p-4">
+                            <div class="position-absolute w-30 h-100 bg-light-info start-0 top-0 rounded-end-pill"><div class="position-absolute top-50 start-50 translate-middle"><i class="bi bi-pencil text-info fs-2"></i></div></div>
+                            <div class="d-flex flex-column align-items-end justify-content-end ht-80">
+                                <h2 class="mb-0"><span class="ctr">{{totalComentariosGlobal}}</span></h2>
+                                <p class="text-muted-2 fw-medium mb-0">Total Reseñas</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="my-5">
+
+                <div class="row align-items-start g-4 mb-lg-5 mb-4">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                        <div class="card rounded-3 shadow-sm mb-4">
+                            <div class="card-header py-3 px-4">
+                                <h4 class="fs-5 fw-medium">
+                                    <i class="bi bi-clipboard-check text-primary me-2"></i><span>Tu plan actual: </span> <b>{{tipoPlanActual}}</b>
+                                </h4>
+                            </div>
+                            <div class="card-body d-flex justify-content-center">
+                                <apx-chart
+                                *ngIf="radialChartOptions && radialChartOptions.series[0] !== 0"
+                                [series]="radialChartOptions.series"
+                                [chart]="radialChartOptions.chart"
+                                [plotOptions]="radialChartOptions.plotOptions"
+                                [fill]="radialChartOptions.fill"
+                                [labels]="radialChartOptions.labels">
+                                </apx-chart>                                
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                        <div class="card rounded-3 shadow-sm">
+                            <div class="card-header py-3 px-4">
+                                <h4 class="fs-5 fw-medium">
+                                    <i class="bi bi-clock-history text-primary me-2"></i>Actividad Reciente
+                                </h4>
+                            </div>
+                            <div class="card-body p-0">
+                                    <ul *ngIf="actividadReciente.length > 0" class="dashboardListgroup">
+                                        <li *ngFor="let act of actividadReciente" class="list-group-item">
+                                            <span class="icons actividad-icon" [ngClass]="{
+                                            'bg-light-danger text-danger': act.tipo === 'favorito',
+                                            'bg-light-warning text-warning': act.tipo === 'comentario',
+                                            'bg-light-success text-success': act.tipo === 'calificacion'
+                                            }">
+                                                <i class="bi" [ngClass]="{
+                                                    'bi-heart': act.tipo === 'favorito',
+                                                    'bi-chat-left-text': act.tipo === 'comentario',
+                                                    'bi-hand-thumbs-up': act.tipo === 'calificacion'
+                                                }"></i>
+                                            </span>
+                                            <div class="listCaps" style="font-size: 12px;">
+                                                <span class="fw-semibold">{{ act.usuarioNombre }} </span>
+                                                <span *ngIf="act.tipo === 'favorito'"> guardó como favorito </span>
+                                                <span *ngIf="act.tipo === 'comentario'"> comentó en </span>
+                                                <span *ngIf="act.tipo === 'calificacion'"> calificó con </span>
+                                                <strong>{{ act.comercioNombre }}</strong>
+                                                <span *ngIf="act.tipo === 'calificacion'">con {{ act.calificacion }} 👍</span>
+                                                <span *ngIf="act.comentario"> – "{{ recortar(act.comentario, 120) }}"</span>
+                                                <br />
+                                                <small class="text-muted">{{ act.fecha | date:'medium' }}</small>
+                                            </div>
+                                        </li>
+                                    </ul>
+
+                                    <!-- Si NO hay actividad -->
+                                    <div *ngIf="actividadReciente.length === 0" class="p-4 text-center text-muted">
+                                        No hay actividad reciente por parte de los usuarios.
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row End -->
+
+            </div>
+            <!-- Panel: GRÁFICOS -->
+            <div class="tab-pane fade" id="panel-graficos" role="tabpanel">
+                <div class="row align-items-start g-4 mb-lg-5 mb-4">
+                    <div class="col-xl-6 col-lg-6 col-md-6">                
+                        <div class="card rounded-3 shadow-sm mb-lg-5 mb-3">
+                            <div class="card-header py-3 px-4">
+                                <h4 class="m-0">Calificaciones</h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row">
+                                    <div class="col-12" *ngIf="chartOptions">
+                                        <apx-chart 
+                                            [series]="chartOptions.series"
+                                            [chart]="chartOptions.chart"
+                                            [xaxis]="chartOptions.xaxis"
+                                            [dataLabels]="chartOptions.dataLabels"
+                                            [plotOptions]="chartOptions.plotOptions"
+                                            [tooltip]="chartOptions.tooltip">
+                                        </apx-chart>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-xl-6 col-lg-6 col-md-6">
+
+                        <div class="card rounded-3 shadow-sm mb-lg-5 mb-4">
+                            <div class="card-header py-3 px-4">
+                                <h4 class="m-0">Cantidad de Vistas</h4>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row">
+                                    <div class="col-12 mb-5">
+
+                                        <div class="mb-3">
+                                            <label for="periodo">Periodo:</label>
+                                            <select [(ngModel)]="periodo" (change)="cargarTendencia()" class="form-select">
+                                                <option value="diario">Diario</option>
+                                                <option value="semanal">Semanal</option>
+                                                <option value="mensual">Mensual</option>
+                                            </select>
+                                        </div>
+
+                                        <apx-chart
+                                            *ngIf="lineChartOptions.series[0]?.data?.length"
+                                            [series]="lineChartOptions.series"
+                                            [chart]="lineChartOptions.chart"
+                                            [xaxis]="lineChartOptions.xaxis"
+                                            [tooltip]="lineChartOptions.tooltip">
+                                        </apx-chart>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- Panel: FILTROS -->
+             <div class="tab-pane fade" id="panel-filtros" role="tabpanel">
+                <div class="row align-items-start g-4 mb-lg-5 mb-4">
+                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-6">
+                        <div class="card rounded-3 shadow-sm">
+                            <div class="card-header py-3 px-4">
+                                <h4 class="fs-5 fw-medium">
+                                    <i class="bi bi-sliders text-primary me-2"></i>Filtros
+                                </h4>
+                            </div>
+                            <div class="card-body p-5">
+                                <div class="row">                
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="filtroLocal" class="form-label fw-medium">Filtrar por local</label>
+                                            <select [(ngModel)]="comercioSeleccionado" (change)="cargarDashboard()" class="form-select">
+                                                <option value="">Todos mis locales</option>
+                                                <option *ngFor="let c of comercios" [value]="c.id">{{ c.nombre }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </div>
+        </div>
+        
+    </div>
+</div>
+
+
+

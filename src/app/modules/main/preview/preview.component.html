@@ -1,0 +1,464 @@
+				
+			<!-- ============================ Property Detail Start ================================== -->
+			<section *ngIf="this.comercio &&  this.imagenes" class="position-relative ht-500 py-0 banner-slider">
+				<button class="back-button" (click)="regresar()" aria-label="Regresar">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+						<path d="M15 18L9 12L15 6" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+
+				<div class="slide" 
+					*ngFor="let banner of imagenes; let i = index" 
+					[class.active]="i === activeIndex"
+					[ngStyle]="{
+					'background-image': 'url(' + banner.url_imagen + ')'
+					}"
+					data-overlay="4">
+				</div>
+				<div class="container h-100">
+					<!-- Gallery Pert -->
+					<div class="row align-items-start">
+						<div class="col-xl-12 col-lg-12 col-md-12 col-12">
+							<div class="mainlistingInfo">
+								<div class="d-flex align-items-end justify-content-between flex-wrap gap-3">
+									<div class="firstColumn">
+										<div class="listingFirstinfo d-flex align-items-center justify-content-start gap-3 flex-wrap">
+											<div class="listingAvatar">
+												<a href="#" class="d-block"><img [src]="this.comercio.logo_url" class="img-fluid rounded-3" width="95" alt="Avatar"></a>
+											</div>
+											<div class="listingCaptioninfo">
+												<div class="propertyTitlename d-flex align-items-center gap-2 mb-1"><h2 class="fw-semibold text-light mb-0">{{ this.comercio.nombre }}</h2></div>
+												<div class="listingsbasicInfo">
+													<div class="d-flex align-items-center justify-content-start flex-wrap gap-2">
+														<div *ngIf="comercio.posee_local" class="flexItem me-2"><span class="text-md fw-medium text-light"><i class="fa-solid fa-location-dot me-2"></i>{{ this.comercio.pick_municipios.nombre }}, {{ this.comercio.pick_municipios.pick_departamentos.nombre }}</span></div>
+														<div class="flexItem me-2"><span class="text-md fw-medium text-light"><i class="bi bi-briefcase me-2"></i>{{ this.comercio.pick_tipo_comercio.nombre }}</span></div>
+														<div class="flexItem">
+															<div class="d-flex align-items-center justify-content-start gap-2">
+																<div class="d-flex align-items-center justify-content-start gap-1">
+																	<i class="bi bi-hand-thumbs-up-fill text-warning text-sm"></i><i class="bi bi-hand-thumbs-up-fill text-warning text-sm"></i><i class="bi bi-hand-thumbs-up-fill text-warning text-sm"></i><i class="bi bi-hand-thumbs-up-fill text-warning text-sm"></i><i class="bi bi-hand-thumbs-up text-warning text-sm"></i>
+																</div>
+																<span class="text-md fw-medium text-light">(425 Opiniones)</span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- <div class="lastColumn">	
+										<div class="d-flex align-items-center justify-content-md-end flex-wrap gap-3">
+											<div class="flexStart Priceinfo d-flex flex-column">
+												<span class="fw-medium text-light">Rango de precios</span>
+												<span class="fw-bold fs-6 text-light">$25 - $50</span>
+											</div>
+										</div>	
+									</div> -->
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</section>
+			<!-- ============================ Property Detail End ================================== -->
+			
+			<!-- ================================ Scrollphy Nav Start ================================= -->
+			<section *ngIf="this.comercio" class="py-3 bg-white sticky-xxl-top sticky-xl-top sticky-lg-top d-none d-lg-block d-xl-block d-xxl-block">
+				<nav id="scrollphyNav" class="featuresScrollphy">
+				  <ul class="nav nav-pills px-4 d-flex align-items-center justify-content-between">
+					<li class="nav-item">
+					  <a class="nav-link" (click)="scrollTo('descriptions')"><i class="bi bi-text-paragraph me-2"></i>Descripción</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" (click)="scrollTo('pricingss')"><i class="bi bi-basket2 me-2"></i>Productos</a>
+					</li>
+					<li class="nav-item" *ngIf="productosDestacados.length > 0">
+						<a class="nav-link" (click)="scrollTo('productss')"><i class="bi bi-star me-2"></i>Destacados</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" (click)="scrollTo('Galleries')"><i class="bi bi-images me-2"></i>Galería</a>
+					</li>
+					<li class="nav-item" *ngIf="comercio.posee_local">
+					  <a class="nav-link" (click)="scrollTo('ubications')"><i class="bi bi-map me-2"></i>Mapa</a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" (click)="scrollTo('reviews')"><i class="bi bi-hand-thumbs-up me-2"></i>Reseñas</a>
+					</li>
+				  </ul>
+				</nav>
+			</section>
+			<!-- ================================= Scrollphy Nav End ===================================-->
+			
+			
+			<!-- ================================= All Section Content ================================ -->
+			<section *ngIf="this.comercio && this.imagenes && this.productos" class="gray-simple pt-4 pt-xl-5">
+				<div data-bs-spy="scroll" data-bs-target="#scrollphyNav" data-bs-smooth-scroll="true" class="scrollspy-example" tabindex="0">
+					<div class="container">
+						<div class="row align-items-start gx-xl-5 g-4">
+								
+							<!-- Detail Row -->
+							<div class="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+								
+								<!-- Description -->
+								<div class="listingSingleblock mb-4" id="descriptions">
+									<div class="SingleblockHeader">
+										<a data-bs-toggle="collapse" data-parent="#description" data-bs-target="#description" aria-controls="description" href="#" aria-expanded="false" class="collapsed"><h4 class="listingcollapseTitle"><b>Descripción del lugar</b></h4></a>
+									</div>
+									
+									<div id="description" class="panel-collapse collapse show">
+										<div class="card-body p-4 pt-2">
+											<p class="descripcion-texto">{{this.comercio.descripcion}}</p>
+										</div>
+									</div>
+								</div>
+
+								<!-- Menu Pricing -->
+								<div class="listingSingleblock mb-4" id="pricingss">
+									<div class="SingleblockHeader">
+										<a data-bs-toggle="collapse" data-parent="#pricing" data-bs-target="#pricing" aria-controls="pricing" href="#" aria-expanded="false" class="collapsed"><h4 class="listingcollapseTitle"><b>Productos</b></h4></a>
+									</div>
+									
+									<div id="pricing" class="panel-collapse collapse show">
+										<div class="card-body p-4 pt-2">
+											<ul class="deatil_features row align-items-start g-3 p-0">
+
+												<li class="col-xl-4 col-lg-6 col-md-6" *ngFor="let item of this.productosPaginados">
+													<div class="pricingMenu d-block">
+														<div class="d-flex align-items-center justify-content-between gap-2 border br-dashed rounded-pill p-2">
+															<div class="pricingMain d-flex align-items-center justify-content-start gap-2">
+																<div class="pricingMenuthumb"><figure class="m-0"><img [src]="item.url_imagen" class="img-fluid avatar-lg circle" alt=""></figure></div>
+																
+																<div class="prcCaptions">
+																	<h6 class="fw-medium mb-0">{{item.nombre}}</h6>
+																</div>
+															</div>
+															<div class="pricingCharges">
+																<div *ngIf="item.en_promocion; else sinPromo">
+																	<div class="d-flex flex-column align-items-end">
+																		<span class="text-muted text-decoration-line-through small">
+																		{{ item.precio | currency:'USD':'symbol':'1.2-2' }}
+																		</span>
+																		<span class="fw-bold text-warn">
+																		{{ calcularPrecioConDescuento(item) | currency:'USD':'symbol':'1.2-2' }}
+																		</span>
+																		<!-- <span class="badge bg-success mt-1">
+																		{{ obtenerTextoPromocion(item) }}
+																		</span> -->
+																	</div>
+																</div>
+																<ng-template #sinPromo>
+																	<h6 class="text-primary m-0">{{ item.precio | currency:'USD':'symbol':'1.2-2' }}</h6>
+																</ng-template>
+															</div>
+														</div>
+													</div>
+												</li>
+												
+											</ul>
+
+											<!-- Controles de paginación -->
+											<nav class="d-flex justify-content-center mt-5 mb-3">
+												<ul class="pagination">
+													<li class="page-item" [class.disabled]="page === 1">
+													<a class="page-link" (click)="page > 1 && cambiarPagina(page - 1)">Anterior</a>
+													</li>
+
+													<li 
+													class="page-item" 
+													*ngFor="let p of [].constructor(totalPages); let i = index" 
+													[class.active]="page === (i + 1)">
+													<a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
+													</li>
+
+													<li class="page-item" [class.disabled]="page === totalPages">
+													<a class="page-link" (click)="page < totalPages && cambiarPagina(page + 1)">Siguiente</a>
+													</li>
+												</ul>
+											</nav>
+										</div>
+									</div>
+								</div>
+								
+								<!-- Main Products -->
+								<div *ngIf="productosDestacados.length > 0" class="listingSingleblock mb-4" id="productss">
+									<div class="SingleblockHeader">
+										<a data-bs-toggle="collapse" data-parent="#products" data-bs-target="#products" aria-controls="products" href="#" aria-expanded="false" class="collapsed"><h4 class="listingcollapseTitle"><b>Destacados</b></h4></a>
+									</div>
+									
+									<div id="products" class="panel-collapse collapse show">
+										<div class="card-body p-4 pt-2">
+											<owl-carousel-o [options]="catalogs_owloptions">
+												<ng-container *ngFor="let producto of productosDestacados">
+													<ng-template carouselSlide>
+													<div class="singleItem">
+														<div class="catalogCard">
+															<img
+																[src]="producto.url_imagen"
+																alt="Producto"
+																class="catalog-img"
+															/>
+															<div class="catalogInfo">
+																<h6 class="lh-base m-0">{{ producto.nombre }}</h6>
+
+																<div *ngIf="producto.en_promocion; else sinPromo">
+																	<div class="d-flex align-items-center justify-content-center gap-2">
+																		<span class="text-muted text-decoration-line-through small">
+																			{{ producto.precio | currency: 'USD':'symbol':'1.2-2' }}
+																		</span>
+																		<span class="fw-bold text-warn">
+																			{{ calcularPrecioConDescuento(producto) | currency: 'USD':'symbol':'1.2-2' }}
+																		</span>
+																	</div>
+																	<!-- <span class="badge bg-success mt-1">
+																	{{ obtenerTextoPromocion(producto) }}
+																	</span> -->
+																</div>
+
+																<ng-template #sinPromo>
+																	<p class="text-md m-0">
+																	<span>{{ producto.precio | currency: 'USD':'symbol':'1.2-2' }}</span>
+																	</p>
+																</ng-template>
+															</div>
+
+														</div>
+													</div>
+													</ng-template>
+												</ng-container>
+											</owl-carousel-o>
+											
+										</div>
+									</div>
+								</div>
+								
+							
+								<!-- Gallery -->
+								<div class="listingSingleblock mb-4" id="Galleries">
+									<div class="SingleblockHeader">
+										<a data-bs-toggle="collapse" data-parent="#gallery" data-bs-target="#gallery" aria-controls="gallery" href="#" aria-expanded="false" class="collapsed"><h4 class="listingcollapseTitle"><b>Galería</b></h4></a>
+									</div>
+									
+									<div id="gallery" class="panel-collapse collapse show">
+										<div class="card-body p-4 pt-2">
+											<ul class="row align-items-center justify-content-center g-3 p-0">
+												<li class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-6" *ngFor="let image of this.imagenes">
+													<a [href]="image.url_imagen" class="mfp-gallery d-block"><img [src]="image.url_imagen" class="img-fluid rounded" alt="Gallery Img"></a>
+												</li>												
+											</ul>
+										</div>
+									</div>
+								</div>
+								
+																																
+								<!-- Maps -->
+								<div class="listingSingleblock mb-4" id="ubications" *ngIf="this.comercio.posee_local">
+									<div class="SingleblockHeader">
+										<a data-bs-toggle="collapse" data-parent="#ubication" data-bs-target="#ubication" aria-controls="ubication" href="#" aria-expanded="false" class="collapsed"><h4 class="listingcollapseTitle"><b>Mapa</b></h4></a>
+									</div>
+									
+									<div id="ubication" class="panel-collapse collapse show">
+										<div class="card-body p-4 pt-2">
+											<div #mapContainer id="map" style="height: 500px; border-radius: 8px;"></div>
+										</div>
+									</div>
+								</div>
+																
+								<!-- Reviews -->
+								<div class="listingSingleblock mb-4" id="reviews">
+									<div class="SingleblockHeader">
+										<a data-bs-toggle="collapse" data-parent="#review" data-bs-target="#review" aria-controls="review" href="#" aria-expanded="false" class="collapsed"><h4 class="listingcollapseTitle"><b>Reseñas</b></h4></a>
+									</div>
+									
+									<div id="review" class="panel-collapse collapse show">
+										<div class="card-body p-4 pt-2">
+											<div class="allreviewsWrapper">
+												<div class="reviewsTitle d-flex flex-column mb-3"><h5>03 Reseñas</h5></div>
+												<div class="allreviewsLists mb-4">
+													
+													<!-- Single Reviews -->
+													<div class="singlereviews">
+														<div class="d-flex align-items-start justify-content-between flex-sm-wrap flex-wrap gap-3">
+															<div class="reviewerThumb">
+																<div class="square--60 circle overflow-hidden"><img src="https://placehold.co/500x500" class="img-fluid circle" alt="Reviewer Thumb"></div>
+															</div>
+															<div class="reviewerMessage">
+																<div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+																	<div class="reviewerInfo">
+																		<h6 class="mb-0">Claire H. Jeter</h6>
+																		<p class="text-md mb-0">Posted on 26 Fab 2024</p>
+																	</div>
+																	<div class="reviewsFlexlast">
+																		<div class="d-flex align-items-center justify-content-start gap-1">
+																			<span><i class="fa-solid fa-star text-sm text-warning active"></i></span>
+																			<span><i class="fa-solid fa-star text-sm text-warning active"></i></span>
+																			<span><i class="fa-solid fa-star text-sm text-warning active"></i></span>
+																			<span><i class="fa-solid fa-star text-sm text-warning active"></i></span>
+																			<span><i class="fa-solid fa-star text-sm text-warning active"></i></span>
+																		</div>
+																	</div>
+																</div>
+																<div class="messageDescription">
+																	<p>Usually, we prefer the real thing, wine without sulfur based preservatives, real butter, not margarine, and so we'd like our layouts and designs to be.</p>
+																</div>
+															</div>
+														</div>
+														<div class="replyReviews">
+															<div class="d-flex align-items-start justify-content-between flex-sm-wrap flex-wrap gap-3">
+																<div class="reviewerThumb">
+																	<div class="square--60 circle overflow-hidden"><img src="https://placehold.co/500x500" class="img-fluid circle" alt="Reviewer Thumb"></div>
+																</div>
+																<div class="reviewerMessage">
+																	<div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+																		<div class="reviewerInfo">
+																			<h6 class="mb-0">Jack M Kerry</h6>
+																			<p class="text-md mb-0">Posted on 26 Fab 2024</p>
+																		</div>
+																	</div>
+																	<div class="messageDescription">
+																		<p>Usually, we prefer the real thing, wine without sulfur based preservatives, real butter, not margarine, and so we'd like our layouts and designs to be.</p>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													
+													<!-- Single Reviews -->
+													<div class="singlereviews d-flex align-items-start justify-content-between flex-sm-wrap flex-wrap gap-3">
+														<div class="reviewerThumb">
+															<div class="square--60 circle overflow-hidden"><img src="https://placehold.co/500x500" class="img-fluid circle" alt="Reviewer Thumb"></div>
+														</div>
+														<div class="reviewerMessage">
+															<div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+																<div class="reviewerInfo">
+																	<h6 class="mb-0">Carl M. Gibson</h6>
+																	<p class="text-md mb-0">Posted on 28 Fab 2024</p>
+																</div>
+																<div class="reviewsFlexlast">
+																	<div class="d-flex align-items-center justify-content-start gap-1">
+																		<span><i class="fa-solid fa-star text-sm text-warning active"></i></span>
+																		<span><i class="fa-solid fa-star text-sm text-warning active"></i></span>
+																		<span><i class="fa-solid fa-star text-sm text-warning active"></i></span>
+																		<span><i class="fa-solid fa-star text-sm text-warning active"></i></span>
+																		<span><i class="fa-solid fa-star text-sm text-muted disabled"></i></span>
+																	</div>
+																</div>
+															</div>
+															<div class="messageDescription">
+																<p>Usually, we prefer the real thing, wine without sulfur based preservatives, real butter, not margarine, and so we'd like our layouts.</p>														
+															</div>
+														</div>
+													</div>
+												
+												</div>
+																								
+											</div>
+										</div>
+									</div>
+								</div>
+								
+							</div>
+							
+							<!-- Sidebar Detail -->
+							<div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+								<div class="sidebarGroups d-flex flex-column gap-4">									
+									<!-- Author -->
+									<div class="card">
+										<div class="card-header" style="height: 300px; background:url(assets/img/contacto.jpg)no-repeat; background-size: cover; background-position: center;"></div>
+										<div class="card-body mt-n3 p-0">
+											<div class="avatarBox position-relative mb-4">
+												<div class="square--100 circle bg-transparents mx-auto p-2 z-2"><img [src]="this.comercio.logo_url" class="img-fluid circle" alt="Avatar"></div>
+												<div class="listingInfo text-center">
+													<h6 class="mb-0">Contáctos</h6>
+												</div>
+											</div>
+											<div class="avatarInfo mb-2">
+												<div class="py-3 px-3 border-top" *ngIf="this.comercio.email != ''">
+													<div class="infoFlexio d-flex align-items-center justify-content-start gap-2">
+														<div class="square--40 rounded bg-light-primary"><i class="bi bi-envelope text-primary"></i></div>
+														<div class="infoDetails">
+															<p class="text-muted lh-base mb-0">Email</p>
+															<p class="text-dark lh-base fw-medium fs-6 mb-0">{{this.comercio.email}}</p>
+														</div>
+													</div>
+												</div>
+												<div class="py-3 px-3 border-top" *ngIf="this.comercio.telefono != ''">
+													<div class="infoFlexio d-flex align-items-center justify-content-start gap-2">
+														<div class="square--40 rounded bg-light-primary"><i class="bi bi-phone text-primary"></i></div>
+														<div class="infoDetails">
+															<p class="text-muted lh-base mb-0">Número de teléfono</p>
+															<p class="text-dark lh-base fw-medium fs-6 mb-0">{{this.comercio.telefono  | telefonoFormat}}</p>
+														</div>
+													</div>
+												</div>
+												<div class="py-3 px-3 border-top" *ngIf="this.comercio.website != ''">
+													<div class="infoFlexio d-flex align-items-center justify-content-start gap-2">
+														<div class="square--40 rounded bg-light-primary"><i class="bi bi-browser-chrome text-primary"></i></div>
+														<div class="infoDetails">
+															<p class="text-muted lh-base mb-0">Website</p>
+															<p class="text-dark lh-base fw-medium fs-6 mb-0">{{this.comercio.website}}</p>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="card-footer bg-white border-top">
+											<div class="d-flex align-items-center justify-content-center gap-3">
+												<div class="flexSocial" *ngIf="this.comercio.url_facebook != ''"><a [href]="this.comercio.url_facebook" class="square--40 circle border"><i class="bi bi-facebook color--facebook"></i></a></div>
+												<div class="flexSocial" *ngIf="this.comercio.url_twitter != ''"><a [href]="this.comercio.url_twitter" class="square--40 circle border"><i class="bi bi-twitter color--twitter"></i></a></div>
+												<div class="flexSocial" *ngIf="this.comercio.url_instagram != ''"><a [href]="this.comercio.url_instagram" class="square--40 circle border"><i class="bi bi-instagram color--instagram"></i></a></div>
+												<div class="flexSocial" *ngIf="this.comercio.url_tiktok != ''"><a [href]="this.comercio.url_tiktok" class="square--40 circle border"><i class="bi bi-tiktok color--tiktok"></i></a></div>
+												<div class="flexSocial" *ngIf="this.comercio.url_youtube != ''"><a [href]="this.comercio.url_youtube" class="square--40 circle border"><i class="bi bi-youtube color--pinterest"></i></a></div>
+												<div class="flexSocial" *ngIf="this.comercio.url_whatsapp != ''"><a [href]="this.comercio.url_whatsapp" class="square--40 circle border"><i class="bi bi-whatsapp color--whatsapp"></i></a></div>
+											</div>
+										</div>
+									</div>
+									
+																		
+									<!-- Openings -->
+									<div class="card" *ngIf="this.horarios.length > 0">
+										<div class="card-header py-3">
+											<div class="headerFirst"><h6>Horarios</h6></div>
+											<div class="headerLast">
+												<span
+													class="badge badge-xs rounded-pill"
+													[ngClass]="isOpenNow ? 'badge-success' : 'badge-primary'">
+													{{ isOpenNow ? 'Abierto ahora' : 'Cerrado ahora' }}
+												</span>
+											</div>
+										</div>
+										<div class="card-body p-0">
+											<div class="openingsInfo border-top">
+												<div
+												class="py-3 px-3 border-top"
+												*ngFor="let horario of getHorariosOrdenados()">
+												<div class="infoFlexio d-flex align-items-center justify-content-between">
+													<p class="text-dark text-md fw-medium lh-base mb-0">
+													{{ diasSemana[horario.dia_semana] }}
+													</p>
+													<p class="text-dark text-sm fw-medium lh-base mb-0">
+														{{ formatHorarioDia(horario.hora_apertura, horario.hora_cierre) }}
+													</p>
+
+												</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+									<!-- ADS Google -->
+									<!-- <div class="card">
+										
+										<div class="card-body">
+										</div>
+									</div> -->
+								
+								</div>
+							</div>
+						
+						</div>
+					
+					</div>
+				</div>
+			</section>
+			<!-- ================================= All Section Content ================================ -->
+	

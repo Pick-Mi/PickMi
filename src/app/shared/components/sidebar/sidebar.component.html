@@ -1,0 +1,26 @@
+<!-- Dashboard Sidebar Start -->
+    <div class="user-dashboard-inner h-100 border-end border-2 py-5 p-3 d-lg-block d-none">
+        <div class="dashboard_users mb-4">
+            <div class="square--80 circle mx-auto mb-1">
+                <img [src]="avatar" class="img-fluid circle" alt="Avatar del usuario">
+            </div>
+            <div class="user-nameTitle text-center">
+                  <h4 class="lh-base fw-semibold text-light mb-0">Bienvenido</h4>
+                  <h6 class="text-light fw-medium opacity-75 mb-0">
+                      {{ usuario?.nombre || 'Usuario' }} {{ usuario?.apellido || '' }}
+                  </h6>
+              </div>
+          </div>
+        <div class="dashboard_Menu">
+            <ul>
+                <li><a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" routerLink="/"><i class="bi bi-speedometer me-2"></i>Dashboard</a></li>
+                <li><a routerLinkActive="active" routerLink="/profile"><i class="bi bi-person-lines-fill me-2"></i>Mi Perfil</a></li>
+                <li><a [ngClass]="{ 'active': isStoresActive() }" routerLink="/stores-list"><i class="bi bi-cart-check me-2"></i>Mis Locales</a></li>
+                <li><a [ngClass]="{ 'active': isMenusActive() }" routerLink="/menus-list"><i class="bi bi-journal-check me-2"></i>Mis Productos</a></li>
+                <li><a [ngClass]="{ 'active': isScheduleActive() }" routerLink="/schedule-list"><i class="bi bi-clock me-2"></i>Horarios de Locales</a></li>
+                <li><a [ngClass]="{ 'active': isGalleryActive() }" routerLink="/gallery-list"><i class="bi bi-camera me-2"></i>Mi Galería</a></li>
+                <li><a [ngClass]="{ 'active': isReviewsActive() }" routerLink="/reviews-list"><i class="bi bi-chat-text me-2"></i>Mis Reseñas</a></li>
+            </ul>
+        </div>
+    </div>
+<!-- Dashboard Sidebar End -->

@@ -1,0 +1,87 @@
+.banner-slider {
+  position: relative;
+  width: 100vw;
+  height: 500px;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover; 
+  background-position: center;
+  transition: opacity 1s ease-in-out;
+  opacity: 0;
+  z-index: 0;
+}
+
+.slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: rgba(255, 255, 255, 0.4);
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 12px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.descripcion-texto {
+  white-space: pre-line;
+}
+
+.singleItem {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.catalogCard {
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  padding: 0;
+}
+
+.catalog-img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-grow: 1;
+  display: block;
+}
+
+.catalogInfo {
+  background: rgb(247, 247, 247);
+  padding: 0.5rem;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
