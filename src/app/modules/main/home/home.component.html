@@ -92,31 +92,12 @@
                 <hr class="my-5">
 
                 <div class="row align-items-start g-4 mb-lg-5 mb-4">
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                        <div class="card rounded-3 shadow-sm mb-4">
-                            <div class="card-header py-3 px-4">
-                                <h4 class="fs-5 fw-medium">
-                                    <i class="bi bi-clipboard-check text-primary me-2"></i><span>Tu plan actual: </span> <b>{{tipoPlanActual}}</b>
-                                </h4>
-                            </div>
-                            <div class="card-body d-flex justify-content-center">
-                                <apx-chart
-                                *ngIf="radialChartOptions && radialChartOptions.series[0] !== 0"
-                                [series]="radialChartOptions.series"
-                                [chart]="radialChartOptions.chart"
-                                [plotOptions]="radialChartOptions.plotOptions"
-                                [fill]="radialChartOptions.fill"
-                                [labels]="radialChartOptions.labels">
-                                </apx-chart>                                
-                            </div>
-                        </div>
-
-                    </div>
+                    <!-- Actividad Reciente -->
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                         <div class="card rounded-3 shadow-sm">
                             <div class="card-header py-3 px-4">
                                 <h4 class="fs-5 fw-medium">
-                                    <i class="bi bi-clock-history text-primary me-2"></i>Actividad Reciente
+                                    <i class="bi bi-clock-history text-purple me-2"></i>Actividad Reciente
                                 </h4>
                             </div>
                             <div class="card-body p-0">
@@ -154,6 +135,43 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Mensajes Recientes -->
+                     <div class="col-xl-6 col-lg-6 col-md-12">
+                        <div class="card rounded-3 shadow-sm">
+                            <div class="card-header py-3 px-4">
+                                <h4 class="fs-5 fw-medium">
+                                    <i class="bi bi-mailbox-flag text-purple me-2"></i>Últimos Mensajes
+                                </h4>
+                                <a href="#" class="text-muted-2 text-md fw-medium">Ver Todos</a>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="messagesWrapers d-flex flex-column gap-4">
+                                    
+                                    <!-- Single Line -->
+                                    <div class="singleMessagesline" *ngFor="let mensaje of mensajes">
+                                        <a class="d-flex align-items-center justify-content-start gap-2">
+                                            <div class="msgLinethumb"><div class="square--50 circle"><img [src]="mensaje.avatar_url" class="img-fluid circle" alt=""></div></div>
+                                            <div class="msgLinecaption flex-fill">
+                                                <div class="msglineTitle d-flex align-items-center justify-content-between gap-3">
+                                                    <h6 class="fw-semibold m-0 text-md">{{ mensaje.nombre }}</h6>
+                                                    <span class="text-sm fw-medium text-muted"> {{ mensaje.fecha | date:'short' }}</span>
+                                                </div>
+                                                <div class="msglineParag d-flex align-items-center justify-content-between gap-3">
+                                                    <p class="text-sm m-0"> {{mensaje.asunto}}</p>
+                                                </div>
+                                                <div class="msglineParag d-flex align-items-center justify-content-between gap-3">
+                                                    <p class="text-sm m-0 text-muted"> {{recortar(mensaje.mensaje, 150)}}</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Row End -->

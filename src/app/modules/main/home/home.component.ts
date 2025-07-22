@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { baseHorizontalBarChart, baseLineChartOptions, baseRadialProgressChart, ChartOptions, LineChartOptions, RadialBarChartOptions } from '../../../data/utils/chart.options';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { FormsModule } from '@angular/forms';
+import { MensajeSolicitud } from '../../../data/interfaces/mensajes';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +19,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
+
+  mensajes: MensajeSolicitud[] = [];
 
   usuario!: PickUsuario | null;
   totalVistas: number = 0;
@@ -98,7 +101,7 @@ export class HomeComponent implements OnInit {
     this.calificacionesPorComercio = resumen.calificacionesPorComercio;
     this.vistasPorComercio = resumen.vistasPorComercio;
     this.favoritosPorComercio = resumen.favoritosPorComercio;
-
+    this.cargarMensajes();
     await this.actualizarGraficos();
     await this.cargarTendencia();
     this.loaderService.hide();
@@ -183,6 +186,10 @@ export class HomeComponent implements OnInit {
 
   recortar(texto: string, max: number): string {
       return texto.length > max ? texto.substring(0, max) + '...' : texto;
+  }
+
+  async cargarMensajes(): Promise<void> {
+    this.mensajes = await this.dashboardService.obtenerMensajesSolicitudes();
   }
 
 }

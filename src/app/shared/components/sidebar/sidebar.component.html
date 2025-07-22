@@ -13,13 +13,13 @@
           </div>
         <div class="dashboard_Menu">
             <ul>
-                <li><a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" routerLink="/"><i class="bi bi-speedometer me-2"></i>Dashboard</a></li>
-                <li><a routerLinkActive="active" routerLink="/profile"><i class="bi bi-person-lines-fill me-2"></i>Mi Perfil</a></li>
-                <li><a [ngClass]="{ 'active': isStoresActive() }" routerLink="/stores-list"><i class="bi bi-cart-check me-2"></i>Mis Locales</a></li>
-                <li><a [ngClass]="{ 'active': isMenusActive() }" routerLink="/menus-list"><i class="bi bi-journal-check me-2"></i>Mis Productos</a></li>
-                <li><a [ngClass]="{ 'active': isScheduleActive() }" routerLink="/schedule-list"><i class="bi bi-clock me-2"></i>Horarios de Locales</a></li>
-                <li><a [ngClass]="{ 'active': isGalleryActive() }" routerLink="/gallery-list"><i class="bi bi-camera me-2"></i>Mi Galería</a></li>
-                <li><a [ngClass]="{ 'active': isReviewsActive() }" routerLink="/reviews-list"><i class="bi bi-chat-text me-2"></i>Mis Reseñas</a></li>
+                <li><a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" routerLink="/"><i class="bi bi-kanban me-2"></i>Dashboard</a></li>
+                <li><a [ngClass]="{ 'active': isScheduleActive() }" routerLink="/schedule-list"><i class="bi bi-gear me-2"></i>Configuraciones</a></li>
+                <li><a [ngClass]="{ 'active': isGalleryActive() }" routerLink="/gallery-list"><i class="bi bi-file-earmark-medical me-2"></i>Reportes</a></li>
+                <li><a [ngClass]="{ 'active': isMenusActive() }" routerLink="/menus-list"><i class="bi bi-people me-2"></i>Usuarios</a></li>                
+                <li><a routerLinkActive="active" routerLink="/profile"><i class="bi bi-person-check me-2"></i>Propietarios</a></li>
+                <li><a [ngClass]="{ 'active': isStoresActive() }" routerLink="/stores-list"><i class="bi bi-shop me-2"></i>Comercios</a></li>
+                <li><a [ngClass]="{ 'active': isReviewsActive() }" routerLink="/reviews-list"><i class="bi bi-chat-left-text me-2"></i>Reseñas</a></li>
             </ul>
         </div>
     </div>

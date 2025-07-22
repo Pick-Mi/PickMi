@@ -5697,17 +5697,17 @@ span.noti-status {
   top: 50% !important;
 }
 .dashboard_Menu ul li .active {
-  background-color: var(--bs-primary);
+  background-color: var(--bs-primary-bg-dark);
   color: var(--bs-white);
   opacity: 1;
 }
 .dashboard_Menu ul li .active:hover {
-  background-color: var(--bs-primary);
+  background-color: var(--bs-primary-bg-dark);
   color: var(--bs-white);
   opacity: 1;
 }
 .dashboard_Menu ul li .active:focus {
-  background-color: var(--bs-primary);
+  background-color: var(--bs-primary-bg-dark);
   color: var(--bs-white);
   opacity: 1;
 }

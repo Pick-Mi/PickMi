@@ -3,6 +3,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
 import { ActividadUsuario, PickUsuario } from '../../data/interfaces/usuarios';
 import { DashboardResumen } from '../../data/interfaces/dashboard';
+import { MensajeSolicitud } from '../../data/interfaces/mensajes';
 
 @Injectable({
   providedIn: 'root',
@@ -365,6 +366,19 @@ export class DashboardService {
         };
     }
 
+    async obtenerMensajesSolicitudes(limit = 5): Promise<MensajeSolicitud[]> {
+        const { data, error } = await this.supabase
+        .from('pick_mensajes_solicitudes')
+        .select('*')
+        .order('fecha', { ascending: false })
+        .limit(limit);
 
+        if (error) {
+            console.error('Error al obtener mensajes y solicitudes:', error);
+            return [];
+        }
+
+        return data || [];
+    }
 
 }
