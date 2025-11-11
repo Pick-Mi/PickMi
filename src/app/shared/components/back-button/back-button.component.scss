@@ -1,0 +1,42 @@
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: none;
+  background: none;
+  color: #7e7cb9;
+  font-weight: 600;
+  cursor: pointer;
+  padding-left: 10px;
+  padding-top: 20px;
+  font-size: 18px;
+  transition: color 0.2s ease;
+
+  .icon-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(126, 124, 185, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(126, 124, 185, 0.12);
+    transition: background 0.2s ease, border-color 0.2s ease;
+
+    i {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+  }
+
+  &:hover,
+  &:focus {
+    color: #5a58a5;
+    text-decoration: none;
+
+    .icon-circle {
+      border-color: rgba(90, 88, 165, 0.5);
+      background: rgba(90, 88, 165, 0.15);
+    }
+  }
+}

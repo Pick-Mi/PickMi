@@ -11,10 +11,12 @@ import { StoresComponent } from './stores/stores.component';
 import { AuthGuard } from '../../core/guards/auth.guard';
 import { StoresListComponent } from './stores-list/stores-list.component';
 import { ScheduleListComponent } from './schedule-list/schedule-list.component';
-import { ReviewsListComponent } from './reviews-list/reviews-list.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { GalleryListComponent } from './gallery-list/gallery-list.component';
 import { MenusListComponent } from './menus-list/menus-list.component';
+import { ConfigurationsComponent } from './configurations/configurations.component';
+import { MaintenanceComponent } from './maintenance/maintenance.component';
+import { SlidesMaintenanceComponent } from './slides-maintenance/slides-maintenance.component';
 
 export const mainRoutes: Routes = [
   { path: '', 
@@ -29,10 +31,12 @@ export const mainRoutes: Routes = [
       { path: 'menus-list', component: MenusListComponent },
       { path: 'schedule/:id', component: ScheduleComponent },
       { path: 'schedule-list', component: ScheduleListComponent },
-      { path: 'reviews/:id', component: ReviewsComponent },
-      { path: 'reviews-list', component: ReviewsListComponent },
+      { path: 'reviews', component: ReviewsComponent },
       { path: 'gallery/:id', component: GalleryComponent },
       { path: 'gallery-list', component: GalleryListComponent },
+      { path: 'configurations', component: ConfigurationsComponent },
+      { path: 'configurations/maintenance', component: MaintenanceComponent },
+      { path: 'configurations/slides/:target', component: SlidesMaintenanceComponent }
     ] 
   },
   {

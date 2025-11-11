@@ -14,6 +14,7 @@ import * as sweetAlert from '../../../data/utils/alerts';
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -34,6 +35,10 @@ export class LoginComponent implements OnInit {
 
   get password() {
     return this.loginForm.get('password')!;
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
   async onLogin() {

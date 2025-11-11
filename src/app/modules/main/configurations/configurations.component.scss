@@ -1,0 +1,85 @@
+@use 'sass:color';
+
+$primary: #7e7cb9;
+$secondary: #e05053;
+$warn: #f09c1f;
+
+@function soft-gradient($tone) {
+  $start: color.mix(#ffffff, $tone, 35%);
+  $end: color.mix(#ffffff, $tone, 10%);
+  @return linear-gradient(140deg, $start, $end);
+}
+
+.configurations {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.config-card {
+  border: none;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: left;
+  color: #fff;
+  background: soft-gradient($primary);
+  box-shadow: 0 15px 25px color.change($primary, $alpha: 0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &:nth-child(3n + 2) {
+    background: soft-gradient($secondary);
+    box-shadow: 0 15px 25px color.change($secondary, $alpha: 0.25);
+  }
+
+  &:nth-child(3n) {
+    background: soft-gradient($warn);
+    box-shadow: 0 15px 25px color.change($warn, $alpha: 0.25);
+  }
+
+  &:hover,
+  &:focus {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+    outline: none;
+  }
+}
+
+.config-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background-color: rgba(255, 255, 255, 0.2);
+  font-size: 1.5rem;
+}
+
+.config-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.config-description {
+  font-size: 0.9rem;
+  color: color.scale(#ffffff, $alpha: -30%);
+  margin: 0;
+}

@@ -21,13 +21,6 @@
                     Gráficos
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#panel-filtros">
-                    Filtros
-                </button>
-            </li>
         </ul>
         <div class="tab-content" id="dashboardTabContent">
             <!-- Panel: RESUMEN -->
@@ -237,33 +230,6 @@
                 </div>
                 
             </div>
-            <!-- Panel: FILTROS -->
-             <div class="tab-pane fade" id="panel-filtros" role="tabpanel">
-                <div class="row align-items-start g-4 mb-lg-5 mb-4">
-                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-6">
-                        <div class="card rounded-3 shadow-sm">
-                            <div class="card-header py-3 px-4">
-                                <h4 class="fs-5 fw-medium">
-                                    <i class="bi bi-sliders text-primary me-2"></i>Filtros
-                                </h4>
-                            </div>
-                            <div class="card-body p-5">
-                                <div class="row">                
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="filtroLocal" class="form-label fw-medium">Filtrar por local</label>
-                                            <select [(ngModel)]="comercioSeleccionado" (change)="cargarDashboard()" class="form-select">
-                                                <option value="">Todos mis locales</option>
-                                                <option *ngFor="let c of comercios" [value]="c.id">{{ c.nombre }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-             </div>
         </div>
         
     </div>

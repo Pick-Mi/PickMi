@@ -1,0 +1,20 @@
+<section class="configurations">
+  <div class="text-center p-4 mb-4">
+    <h1 class="fs-2 fw-semibold mb-2">Configuraciones</h1>
+    <p class="text-muted mb-0">Gestiona los elementos clave del sitio desde un solo lugar.</p>
+  </div>
+
+  <div class="config-grid">
+    <button
+      type="button"
+      class="config-card"
+      *ngFor="let option of options"
+      (click)="goTo(option.link)">
+      <div class="config-icon">
+        <i class="bi" [ngClass]="option.icon"></i>
+      </div>
+      <div class="config-label">{{ option.label }}</div>
+      <div class="config-description">{{ option.description }}</div>
+    </button>
+  </div>
+</section>

@@ -1,0 +1,29 @@
+<div class="maintenance-wrapper">
+  <app-back-button [link]="'/configurations'" label="Regresar a configuraciones"></app-back-button>
+
+  <section class="maintenance-card mt-4" *ngIf="!loading; else loadingTpl">
+    <div class="card-head mt-2">
+      <div>
+        <h2 class="mb-1">Modo mantenimiento</h2>
+        <p class="text-muted mb-0">{{ mantenimientoConfig?.descripcion || 'Sin descripción registrada.' }}</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox"
+               [disabled]="saving || !mantenimientoConfig"
+               [checked]="mantenimientoConfig?.activo"
+               (change)="toggleMantenimiento()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="status-chip" [class.active]="mantenimientoConfig?.activo">
+      {{ mantenimientoConfig?.activo ? 'Sitio en mantenimiento' : 'Sitio disponible' }}
+    </div>
+  </section>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="maintenance-card loading">
+    <div class="placeholder"></div>
+  </div>
+</ng-template>

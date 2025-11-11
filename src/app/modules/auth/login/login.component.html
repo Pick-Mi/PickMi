@@ -33,7 +33,14 @@
                       <div class="form-group position-relative mb-4">
                         <label>Password</label>
                         <div class="position-relative">
-                          <input type="password" class="form-control" formControlName="password" placeholder="Password">
+                          <input [type]="showPassword ? 'text' : 'password'" class="form-control pe-5" formControlName="password" placeholder="Password">
+                          <button
+                            type="button"
+                            class="btn btn-link password-toggle-btn text-decoration-none position-absolute top-50 end-0 translate-middle-y pe-3"
+                            (click)="togglePasswordVisibility()"
+                            aria-label="Mostrar u ocultar contraseña">
+                            <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'"></i>
+                          </button>
                         </div>
                         <div *ngIf="password.invalid && (password.dirty || password.touched)" class="text-danger">
                           Contraseña requerida.
@@ -51,13 +58,7 @@
                 </div>
               </div>
             </div>
-  
-            <div class="authfooter">
-              <div class="text-center">
-                <p class="text-dark mb-0">¿Eres nuevo? <a routerLink="/auth/register" class="fw-medium text-primary">Crea una cuenta</a></p>
-              </div>
-            </div>
-  
+    
           </div>
         </div>
       </div>

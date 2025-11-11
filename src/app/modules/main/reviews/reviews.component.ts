@@ -1,74 +1,113 @@
 import { Component, OnInit } from '@angular/core';
-import { ReviewsService } from '../../../core/services/reviews.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { LoaderService } from '../../../core/services/loader.service';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ReviewsService } from '../../../core/services/reviews.service';
+import { PickReview } from '../../../data/interfaces/reviews';
+import * as sweetAlert from '../../../data/utils/alerts';
 
 @Component({
   selector: 'app-reviews',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './reviews.component.html',
-  styleUrl: './reviews.component.scss'
+  styleUrls: ['./reviews.component.scss']
 })
 export class ReviewsComponent implements OnInit {
-  comercioId!: string;
-  nombreComercio = '';
-  comentarios: {
-    comentario: string;
-    calificacion: number;
-    fecha_comentario: string;
-    usuario: { nombre: string; apellido: string; avatar_url: string };
-  }[] = [];
+  reviews: PickReview[] = [];
+  loading = false;
 
   paginaActual = 1;
-  comentariosPorPagina = 5;
-  totalComentarios = 0;
+  registrosPorPagina = 10;
+  totalRegistros = 0;
   totalPaginas = 1;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private reviewsService: ReviewsService,
-    private loaderService: LoaderService
-  ) {}
+  busqueda = '';
+  estatusFiltro: 'todos' | 'activo' | 'inactivo' = 'todos';
 
-  async ngOnInit() {
-    this.loaderService.show();
-    this.comercioId = this.route.snapshot.paramMap.get('id')!;
-    this.nombreComercio = await this.reviewsService.obtenerNombreComercio(this.comercioId);
-    await this.cargarComentarios();
-    this.loaderService.hide();
+  ngOnInit(): void {
+    this.cargarReviews();
   }
 
-  async cargarComentarios() {
-    const { data, total } = await this.reviewsService.getComentariosPorComercioPaginado(
-      this.comercioId,
-      this.paginaActual,
-      this.comentariosPorPagina
-    );
+  constructor(private reviewsService: ReviewsService) {}
 
-    this.comentarios = data.map((item: any) => ({
-      comentario: item.comentario,
-      calificacion: item.calificacion,
-      fecha_comentario: item.fecha,
-      usuario: {
-        nombre: item.usuarioNombre,
-        apellido: '', // As 'usuarioApellido' is not provided, set as empty or adjust as needed
-        avatar_url: item.usuarioAvatar
-      }
-    }));
-    this.totalComentarios = total;
-    this.totalPaginas = Math.ceil(total / this.comentariosPorPagina);
+  async cargarReviews(): Promise<void> {
+    this.loading = true;
+    try {
+      const { data, total } = await this.reviewsService.obtenerReviewsGlobales({
+        pagina: this.paginaActual,
+        limite: this.registrosPorPagina,
+        estatus: this.estatusFiltro === 'todos' ? undefined : this.estatusFiltro,
+        busqueda: this.busqueda.trim() || undefined
+      });
+
+      this.reviews = data;
+      this.totalRegistros = total;
+      this.totalPaginas = Math.max(1, Math.ceil(total / this.registrosPorPagina));
+    } catch (error) {
+      console.error(error);
+      sweetAlert.alertError('No se pudieron cargar los reviews.');
+    } finally {
+      this.loading = false;
+    }
   }
 
-  cambiarPagina(nuevaPagina: number) {
-    if (nuevaPagina < 1 || nuevaPagina > this.totalPaginas) return;
+  aplicarFiltros(): void {
+    this.paginaActual = 1;
+    this.cargarReviews();
+  }
+
+  limpiarFiltros(): void {
+    this.busqueda = '';
+    this.estatusFiltro = 'todos';
+    this.aplicarFiltros();
+  }
+
+  cambiarPagina(nuevaPagina: number): void {
+    if (nuevaPagina < 1 || nuevaPagina > this.totalPaginas) {
+      return;
+    }
     this.paginaActual = nuevaPagina;
-    this.cargarComentarios();
+    this.cargarReviews();
   }
 
-  onCancel() {
-    this.router.navigate(['/schedule-list']);
+  cambiarRegistrosPorPagina(valor: number): void {
+    this.registrosPorPagina = valor;
+    this.paginaActual = 1;
+    this.cargarReviews();
+  }
+
+  async alternarEstatus(review: PickReview): Promise<void> {
+    const nuevoEstatus = review.estatus === 'activo' ? 'inactivo' : 'activo';
+    try {
+      await this.reviewsService.actualizarEstatusReview(review.id, nuevoEstatus);
+      review.estatus = nuevoEstatus;
+      sweetAlert.alertSuccess(`Reseña ${nuevoEstatus === 'activo' ? 'activada' : 'ocultada'} correctamente.`);
+    } catch (error) {
+      console.error(error);
+      sweetAlert.alertError('No se pudo actualizar el estatus de la reseña.');
+    }
+  }
+
+  async eliminarReview(review: PickReview): Promise<void> {
+    const confirmDelete = confirm('¿Estás seguro de eliminar esta reseña? Esta acción no se puede deshacer.');
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      await this.reviewsService.eliminarReview(review.id);
+      this.reviews = this.reviews.filter(r => r.id !== review.id);
+      this.totalRegistros = Math.max(0, this.totalRegistros - 1);
+      this.totalPaginas = Math.max(1, Math.ceil(this.totalRegistros / this.registrosPorPagina));
+      sweetAlert.alertSuccess('Reseña eliminada correctamente.');
+      if (!this.reviews.length && this.paginaActual > 1) {
+        this.paginaActual -= 1;
+        await this.cargarReviews();
+      }
+    } catch (error) {
+      console.error(error);
+      sweetAlert.alertError('No se pudo eliminar la reseña.');
+    }
   }
 
   generateThumbs(rating: number): string[] {
@@ -83,4 +122,3 @@ export class ReviewsComponent implements OnInit {
     return thumbs;
   }
 }
-

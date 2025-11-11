@@ -1,0 +1,97 @@
+<div class="business-type">
+  <h1 class="page-title">Tipos de negocio</h1>
+
+  <div class="card form-card">
+    <h2 class="fs-5 mb-3">{{ editingId ? 'Editar tipo' : 'Nuevo tipo' }}</h2>
+    <form [formGroup]="typeForm" (ngSubmit)="guardarTipo()">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control" formControlName="nombre" placeholder="Ej. Restaurante">
+
+          <div class="text-danger small mt-1" *ngIf="typeForm.get('nombre')?.invalid && typeForm.get('nombre')?.touched">
+            El nombre es obligatorio (máx. 100 caracteres).
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Icono</label>
+          <select class="form-select" formControlName="icono">
+            <option *ngFor="let icon of iconOptions" [value]="icon">{{ icon }}</option>
+          </select>
+          <div class="icon-preview mt-2">
+            <i class="fa-solid" [ngClass]="typeForm.get('icono')?.value"></i>
+            <span>Vista previa</span>
+          </div>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" formControlName="estado" id="estadoSwitch">
+            <label class="form-check-label" for="estadoSwitch">Activo</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary" [disabled]="saving">
+          {{ saving ? 'Guardando...' : (editingId ? 'Actualizar' : 'Crear') }}
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="cancelarEdicion()" *ngIf="editingId">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card list-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="fs-5 mb-0">Listado</h2>
+      <span class="text-muted small">{{ types.length }} tipos</span>
+    </div>
+
+    <div *ngIf="loading" class="state-message">Cargando tipos de negocio...</div>
+
+    <div *ngIf="!loading && types.length > 0" class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Icono</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tipo of types">
+            <td>{{ tipo.id }}</td>
+            <td>{{ tipo.nombre }}</td>
+            <td>
+              <i class="fa-solid me-2" [ngClass]="tipo.icono"></i>
+              {{ tipo.icono }}
+            </td>
+            <td>
+              <span class="badge" [class.active]="tipo.estado">
+                {{ tipo.estado ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-primary" (click)="editarTipo(tipo)">Editar</button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="alternarEstado(tipo)">
+                  {{ tipo.estado ? 'Desactivar' : 'Activar' }}
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="eliminarTipo(tipo)">Eliminar</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!loading && !types.length" class="state-message">
+      Aún no hay tipos registrados.
+    </div>
+  </div>
+</div>
