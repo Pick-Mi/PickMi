@@ -30,3 +30,9 @@ export interface ActividadUsuario {
   comentario?: string;
   fecha: string;
 }
+
+export interface UsuariosFiltro {
+  estatus?: string;
+  tipo_usuario?: string;
+  search?: string;
+}

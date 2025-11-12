@@ -1,89 +1,57 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { StoresService } from '../../../core/services/stores.service';
-import { Router, RouterModule } from '@angular/router';
-import { PickComercio } from '../../../data/interfaces/comercios';
-import { AuthService } from '../../../core/services/auth.service';
-import { ResponsiveService } from '../../../core/services/responsive.service';
-import { PickUsuario } from '../../../data/interfaces/usuarios';
-import Swal from 'sweetalert2';
 import { LoaderService } from '../../../core/services/loader.service';
+import { PickComercio } from '../../../data/interfaces/comercios';
 
 @Component({
   selector: 'app-stores-list',
   standalone: true,
-  imports: [CommonModule, NgxDatatableModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './stores-list.component.html',
+  styleUrl: './stores-list.component.scss'
 })
 export class StoresListComponent implements OnInit {
-  rows: PickComercio[] = [];
-  usuario!: PickUsuario | null;
-  loading = true;
-  isMobile = false;
+  negocios: PickComercio[] = [];
+  loading = false;
+  error: string | null = null;
 
-  constructor(private storesService: StoresService, 
-              private authService: AuthService, 
-              private router: Router, 
-              private loaderService: LoaderService,
-              private responsiveService: ResponsiveService) {}
+  constructor(private storesService: StoresService, private loaderService: LoaderService) {}
 
   async ngOnInit(): Promise<void> {
+    await this.cargarNegocios();
+  }
 
-    this.responsiveService.isMobile$.subscribe(value => {
-      this.isMobile = value;
-    });
+  get negociosActivos(): number {
+    return this.negocios.filter(n => n.estatus === 'activo').length;
+  }
 
-    this.usuario = this.authService.currentUsuario;
-
-    if (!this.usuario) {
-      return;
-    }
-
+  async cargarNegocios(): Promise<void> {
+    this.loading = true;
+    this.error = null;
     this.loaderService.show();
-    await this.getComercios(this.usuario.id!);
-    this.loading = false;
-    this.loaderService.hide();
-  }
 
-  async getComercios(id: string) {
-    const { comercios, error } = await this.storesService.obtenerComerciosPorUsuario(id);
-    if (!error && comercios) {
-      this.rows = comercios;
-    }    
-  }
+    try {
+      const { comercios, error } = await this.storesService.listarComercios();
 
-  onCreate() {
-    this.router.navigate(['/stores/0']);
-  }
+      if (error) {
+        this.error = 'No se pudieron cargar los negocios. Intenta nuevamente.';
+        this.negocios = [];
+        return;
+      }
 
-  onEdit(store: PickComercio) {
-    this.router.navigate(['/stores/', store.id]);
-  }
-
-  onPreview(store: PickComercio) {
-    this.router.navigate(['/preview/stores/', store.id]);
-  }
-
-  onDelete(store: PickComercio) {
-    if (store.id === undefined) {
-      return;
+      this.negocios = comercios;
+    } catch (err) {
+      console.error('Error al cargar negocios', err);
+      this.error = 'Ocurrio un error inesperado. Intenta nuevamente.';
+      this.negocios = [];
+    } finally {
+      this.loading = false;
+      this.loaderService.hide();
     }
-    Swal.fire('Seguro que desea eliminar este comercio?')
-      .then(async (result) => {
-        if (result.isConfirmed) {
-          const { error } = await this.storesService.eliminarComercio(store.id!);
-          if (error) {
-            Swal.fire('Error al eliminar el registro');
-          } else {
-            Swal.fire('Registro eliminado correctamente');
-            if (!this.usuario) {
-              return;
-            }
-            this.getComercios(this.usuario.id!);
-          }
-        }
-      });
   }
-     
+
+  trackByNegocio(index: number, negocio: PickComercio): string {
+    return negocio.id ?? `${negocio.nombre}-${index}`;
+  }
 }

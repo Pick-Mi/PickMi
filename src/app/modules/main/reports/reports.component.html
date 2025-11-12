@@ -1,0 +1,36 @@
+<section class="reports">
+  <div class="reports__header-card">
+    <p class="reports__eyebrow">Reportes</p>
+    <div class="reports__header-content">
+      <div>
+        <h3>Generacion de Reportes</h3>
+        <p class="reports__subtitle">
+          Genera informes para entender el crecimiento, la reputación y el impacto de los negocios suscritos.
+        </p>
+      </div>
+      <button class="reports__cta" disabled>Exportar todo</button>
+    </div>
+  </div>
+
+  <div class="reports__grid">
+    <article
+      class="report-card"
+      *ngFor="let reporte of reportes"
+      (click)="ejecutarReporte(reporte)">
+      <div class="report-card__icon">
+        <i [ngClass]="reporte.iconClass"></i>
+      </div>
+      <div class="report-card__body">
+        <div class="report-card__title">
+          <h2>{{ reporte.title }}</h2>
+          <span *ngIf="reporte.chip" class="chip">{{ reporte.chip }}</span>
+        </div>
+        <p>{{ reporte.description }}</p>
+      </div>
+      <div class="report-card__footer">
+        <span>Generar reporte</span>
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </div>
+    </article>
+  </div>
+</section>

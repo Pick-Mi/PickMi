@@ -1,1 +1,81 @@
-<p>users-list works!</p>
+<section class="users-list">
+  <div class="users-list__card users-list__hero">
+    <header class="users-list__header">
+      <div>
+        <p class="users-list__eyebrow">Clientes</p>
+        <h3>Listado de clientes</h3>
+        <p class="users-list__subtitle">
+          Usuarios con rol cliente dentro de la plataforma. Actualiza la lista para ver los cambios mas recientes.
+        </p>
+      </div>
+      <button class="users-list__refresh" (click)="cargarClientes()" [disabled]="loading">
+        {{ loading ? 'Actualizando...' : 'Actualizar' }}
+      </button>
+    </header>
+    <div class="users-list__stats">
+      <div class="users-list__stat">
+        <p class="stat-label">Clientes totales</p>
+        <p class="stat-value">{{ clientes.length }}</p>
+      </div>
+      <div class="users-list__stat">
+        <p class="stat-label">Ultima actualizacion</p>
+        <p class="stat-value">{{ loading ? 'En progreso' : (clientes.length ? 'Hace un momento' : 'Sin datos') }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="users-list__card users-list__content">
+    <div class="users-list__list-header">
+      <p>{{ clientes.length }} resultados</p>
+    </div>
+
+    <div *ngIf="error" class="users-list__state users-list__state--error">
+      {{ error }}
+    </div>
+
+    <div *ngIf="loading && !error" class="users-list__state">
+      Cargando clientes...
+    </div>
+
+    <div *ngIf="!loading && !error && !clientes.length" class="users-list__state">
+      No hay clientes registrados por el momento.
+    </div>
+
+    <div *ngIf="!loading && clientes.length" class="users-list__table-wrapper">
+      <table class="users-list__table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Telefono</th>
+            <th>Estatus</th>
+            <th>Registrado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of clientes; trackBy: trackByUsuario">
+            <td>
+              <div class="users-list__user">
+                <div class="users-list__avatar">
+                  {{ (cliente.nombre || '?').charAt(0) }}{{ (cliente.apellido || '').charAt(0) }}
+                </div>
+                <div>
+                  <p class="users-list__name">{{ cliente.nombre }} {{ cliente.apellido }}</p>
+                  <p class="users-list__role">{{ cliente.tipo_usuario }}</p>
+                </div>
+              </div>
+            </td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.telefono || 'Sin registro' }}</td>
+            <td>
+              <span class="badge" [class.badge--success]="cliente.estatus === 'activo'">
+                {{ cliente.estatus }}
+              </span>
+            </td>
+            <td>{{ cliente.fecha_creacion | date:'mediumDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

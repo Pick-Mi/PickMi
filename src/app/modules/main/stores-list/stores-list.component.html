@@ -1,63 +1,84 @@
-<div class="user-dashboard-box bg-light">
-  <div class="dashHeader p-xl-5 p-4 pb-xl-0 pb-0 d-flex justify-content-between align-items-center">
-    <!-- Título -->
-    <h2 class="mb-0">Mis Locales</h2>
-    <!-- Botón -->
-    <button class="btn btn-sm btn-mustard" (click)="onCreate()"><i class="bi bi-plus-circle fs-6 me-2"></i>Crear Local</button>
-  </div>
-
-  <div class="dashCaption p-xl-5 p-4">
-
-    <div class="card rounded-3 shadow-sm mb-lg-5 mb-4">
-      <div class="card-header py-3 px-4">
-        <h4 class="fs-5 fw-medium"><i class="bi bi-shop text-primary me-2"></i>Locales registrados</h4>
+<section class="stores-list">
+  <div class="stores-list__card stores-list__hero">
+    <header class="stores-list__header">
+      <div>
+        <p class="stores-list__eyebrow">Negocios</p>
+        <h3>Negocios registrados</h3>
+        <p class="stores-list__subtitle">
+          Revisa los comercios dados de alta en la plataforma. Refresca la lista para mantenerte al dia.
+        </p>
       </div>
-       <div class="card-body shadow-sm rounded-3 p-4">
-
-          <!-- Mostrar mensaje si está vacío -->
-          <div *ngIf="!rows?.length && !loading" class="text-center text-muted py-4">
-            Aún no tienes locales registrados. Haz clic en "Crear Local" para comenzar.
-          </div>
-
-          <!-- Mostrar datatable si hay registros -->
-          <ngx-datatable
-            *ngIf="rows?.length"
-              class="bootstrap"
-              [rows]="rows"
-              [columns]="[]"
-              [columnMode]="'force'"
-              [headerHeight]="50"
-              [footerHeight]="50"
-              [rowHeight]="'auto'"
-              [loadingIndicator]="loading">
-              
-              <ngx-datatable-column name="Nombre" prop="nombre"></ngx-datatable-column>
-              <ngx-datatable-column name="Ubicacion" prop="direccion" [width]="250"></ngx-datatable-column>
-              <ngx-datatable-column name="Teléfono" prop="telefono" [width]="50" *ngIf="!isMobile"></ngx-datatable-column>
-              <ngx-datatable-column name="Email" prop="email" *ngIf="!isMobile"></ngx-datatable-column>
-              <ngx-datatable-column name="Acciones" [width]="160">
-                <ng-template let-row="row" ngx-datatable-cell-template>
-                    <div class="botones-acciones">
-                      <button class="btn btn-sm btn-expand btn-secondary me-2" (click)="onPreview(row)">
-                        <i class="bi bi-search"></i>
-                        <span class="btn-label">Vista Previa</span>
-                      </button>
-                      <button class="btn btn-sm btn-expand btn-purple me-2" (click)="onEdit(row)">
-                        <i class="bi bi-pencil-square"></i>
-                        <span class="btn-label">Editar</span>
-                      </button>
-                      <button class="btn btn-sm btn-expand btn-primary" (click)="onDelete(row)">
-                        <i class="bi bi-trash-fill"></i>
-                        <span class="btn-label">Eliminar</span>
-                      </button>
-                    </div>
-                </ng-template>
-              </ngx-datatable-column>
-
-          </ngx-datatable>
+      <button class="stores-list__refresh" (click)="cargarNegocios()" [disabled]="loading">
+        {{ loading ? 'Actualizando...' : 'Actualizar' }}
+      </button>
+    </header>
+    <div class="stores-list__stats">
+      <div class="stores-list__stat">
+        <p class="stat-label">Negocios totales</p>
+        <p class="stat-value">{{ negocios.length }}</p>
+      </div>
+      <div class="stores-list__stat">
+        <p class="stat-label">Activos</p>
+        <p class="stat-value">{{ negociosActivos }}</p>
       </div>
     </div>
-
-    
   </div>
-</div>
+
+  <div class="stores-list__card stores-list__content">
+    <div class="stores-list__list-header">
+      <p>{{ negocios.length }} resultados</p>
+    </div>
+
+    <div *ngIf="error" class="stores-list__state stores-list__state--error">
+      {{ error }}
+    </div>
+
+    <div *ngIf="loading && !error" class="stores-list__state">
+      Cargando negocios...
+    </div>
+
+    <div *ngIf="!loading && !error && !negocios.length" class="stores-list__state">
+      No hay negocios registrados por el momento.
+    </div>
+
+    <div *ngIf="!loading && negocios.length" class="stores-list__table-wrapper">
+      <table class="stores-list__table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Contacto</th>
+            <th>Telefono</th>
+            <th>Estatus</th>
+            <th>Registrado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let negocio of negocios; trackBy: trackByNegocio">
+            <td>
+              <div class="stores-list__store">
+                <div class="stores-list__logo">
+                  <img *ngIf="negocio.logo_url; else initials" [src]="negocio.logo_url" alt="{{ negocio.nombre }}">
+                  <ng-template #initials>
+                    <span>{{ (negocio.nombre || '?').slice(0, 2).toUpperCase() }}</span>
+                  </ng-template>
+                </div>
+                <div>
+                  <p class="stores-list__name">{{ negocio.nombre }}</p>
+                  <!--p class="stores-list__location">{{ negocio.municipio || 'Sin ubicacion' }}</p-->
+                </div>
+              </div>
+            </td>
+            <td>{{ negocio.email || 'Sin correo' }}</td>
+            <td>{{ negocio.telefono || 'Sin registro' }}</td>
+            <td>
+              <span class="badge" [class.badge--success]="negocio.estatus === 'activo'">
+                {{ negocio.estatus || 'sin estatus' }}
+              </span>
+            </td>
+            <td>{{ negocio.fecha_creacion | date:'mediumDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

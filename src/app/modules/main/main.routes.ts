@@ -19,6 +19,9 @@ import { MaintenanceComponent } from './maintenance/maintenance.component';
 import { SlidesMaintenanceComponent } from './slides-maintenance/slides-maintenance.component';
 import { BusinessTypeComponent } from './business-type/business-type.component';
 import { CategoryComponent } from './category/category.component';
+import { UsersListComponent } from './users-list/users-list.component';
+import { OwnersListComponent } from './owners-list/owners-list.component';
+import { ReportsComponent } from './reports/reports.component';
 
 export const mainRoutes: Routes = [
   { path: '', 
@@ -30,7 +33,9 @@ export const mainRoutes: Routes = [
       { path: 'stores/:id', component: StoresComponent },
       { path: 'stores-list', component: StoresListComponent },
       { path: 'menus/:id', component: MenusComponent },
-      { path: 'menus-list', component: MenusListComponent },
+      { path: 'users-list', component: UsersListComponent },
+      { path: 'reports', component: ReportsComponent },
+      { path: 'owners-list', component: OwnersListComponent },
       { path: 'schedule/:id', component: ScheduleComponent },
       { path: 'schedule-list', component: ScheduleListComponent },
       { path: 'reviews', component: ReviewsComponent },

@@ -24,6 +24,15 @@ export class StoresService {
     return { comercios: data || [], error: error?.message || null };
   }
 
+  async listarComercios(): Promise<{ comercios: PickComercio[]; error: string | null }> {
+    const { data, error } = await this.supabase
+      .from('pick_comercios')
+      .select('*')
+      .order('fecha_creacion', { ascending: false });
+
+    return { comercios: data || [], error: error?.message || null };
+  }
+
   async obtenerComerciosPorUsuario(usuarioId: string | undefined): Promise<{ comercios: PickComercio[]; error: string | null }> {
     const { data, error } = await this.supabase
       .from('pick_comercios')

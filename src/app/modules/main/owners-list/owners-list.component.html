@@ -1,1 +1,81 @@
-<p>owners-list works!</p>
+<section class="owners-list">
+  <div class="owners-list__card owners-list__hero">
+    <header class="owners-list__header">
+      <div>
+        <p class="owners-list__eyebrow">Propietarios</p>
+        <h3>Listado de propietarios</h3>
+        <p class="owners-list__subtitle">
+          Clientes propietarios registrados en la plataforma. Mantente al día refrescando la lista.
+        </p>
+      </div>
+      <button class="owners-list__refresh" (click)="cargarPropietarios()" [disabled]="loading">
+        {{ loading ? 'Actualizando...' : 'Actualizar' }}
+      </button>
+    </header>
+    <div class="owners-list__stats">
+      <div class="owners-list__stat">
+        <p class="stat-label">Propietarios totales</p>
+        <p class="stat-value">{{ propietarios.length }}</p>
+      </div>
+      <div class="owners-list__stat">
+        <p class="stat-label">Ultima actualizacion</p>
+        <p class="stat-value">{{ loading ? 'En progreso' : (propietarios.length ? 'Hace un momento' : 'Sin datos') }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="owners-list__card owners-list__content">
+    <div class="owners-list__list-header">
+      <p>{{ propietarios.length }} resultados</p>
+    </div>
+
+    <div *ngIf="error" class="owners-list__state owners-list__state--error">
+      {{ error }}
+    </div>
+
+    <div *ngIf="loading && !error" class="owners-list__state">
+      Cargando propietarios...
+    </div>
+
+    <div *ngIf="!loading && !error && !propietarios.length" class="owners-list__state">
+      No hay propietarios registrados por el momento.
+    </div>
+
+    <div *ngIf="!loading && propietarios.length" class="owners-list__table-wrapper">
+      <table class="owners-list__table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Telefono</th>
+            <th>Estatus</th>
+            <th>Registrado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let propietario of propietarios; trackBy: trackByPropietario">
+            <td>
+              <div class="owners-list__user">
+                <div class="owners-list__avatar">
+                  {{ (propietario.nombre || '?').charAt(0) }}{{ (propietario.apellido || '').charAt(0) }}
+                </div>
+                <div>
+                  <p class="owners-list__name">{{ propietario.nombre }} {{ propietario.apellido }}</p>
+                  <p class="owners-list__role">{{ propietario.tipo_usuario }}</p>
+                </div>
+              </div>
+            </td>
+            <td>{{ propietario.email }}</td>
+            <td>{{ propietario.telefono || 'Sin registro' }}</td>
+            <td>
+              <span class="badge" [class.badge--success]="propietario.estatus === 'activo'">
+                {{ propietario.estatus }}
+              </span>
+            </td>
+            <td>{{ propietario.fecha_creacion | date:'mediumDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
