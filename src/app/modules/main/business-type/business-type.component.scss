@@ -7,6 +7,13 @@
   gap: 1.5rem;
 }
 
+.heading {
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+  }
+}
+
 .card {
   border: none;
   border-radius: 1rem;
@@ -15,14 +22,45 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
-.icon-preview {
+.form-control {
+  min-height: 48px;
+}
+
+.icon-select-wrapper {
   display: flex;
+  gap: 0.75rem;
+
+  .icon-select {
+    flex: 1;
+    min-height: 48px;
+    font-size: 0.9rem;
+  }
+
+  .selected-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.8rem;
+    background: rgba(126, 124, 185, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #7e7cb9;
+  }
+}
+
+.align-switch {
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #7e7cb9;
+  margin-top: 0.75rem;
 
-  i {
-    font-size: 1.5rem;
+  .form-check-input {
+    margin: 0;
+  }
+
+  .form-check-label {
+    margin: 0;
   }
 }
 

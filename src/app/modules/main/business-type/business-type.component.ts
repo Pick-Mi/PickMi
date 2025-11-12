@@ -4,11 +4,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { BusinessTypeService } from '../../../core/services/business-type.service';
 import { BusinessType } from '../../../data/interfaces/business-type';
 import * as sweetAlert from '../../../data/utils/alerts';
+import { BackButtonComponent } from '../../../shared/components/back-button/back-button.component';
 
 @Component({
   selector: 'app-business-type',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, BackButtonComponent],
   templateUrl: './business-type.component.html',
   styleUrls: ['./business-type.component.scss']
 })
@@ -18,7 +19,11 @@ export class BusinessTypeComponent implements OnInit {
   saving = false;
   editingId: number | null = null;
 
-  iconOptions = ['fa-utensils', 'fa-store', 'fa-wand-magic-sparkles'];
+  iconOptions = [
+    { name: 'fa-utensils', label: '\uf2e7  fa-utensils' },
+    { name: 'fa-store', label: '\uf54e  fa-store' },
+    { name: 'fa-wand-magic-sparkles', label: '\uf72b  fa-wand-magic-sparkles' }
+  ];
 
   typeForm!: FormGroup;
 
@@ -32,7 +37,7 @@ export class BusinessTypeComponent implements OnInit {
   private buildForm(): void {
     this.typeForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.maxLength(100)]],
-      icono: [this.iconOptions[0], Validators.required],
+    icono: [this.iconOptions[0].name, Validators.required],
       estado: [true]
     });
   }
@@ -56,7 +61,7 @@ export class BusinessTypeComponent implements OnInit {
     this.editingId = tipo.id ?? null;
     this.typeForm.setValue({
       nombre: tipo.nombre,
-      icono: tipo.icono || this.iconOptions[0],
+      icono: tipo.icono || this.iconOptions[0].name,
       estado: tipo.estado ?? true
     });
   }
@@ -65,7 +70,7 @@ export class BusinessTypeComponent implements OnInit {
     this.editingId = null;
     this.typeForm.reset({
       nombre: '',
-      icono: this.iconOptions[0],
+      icono: this.iconOptions[0].name,
       estado: true
     });
   }

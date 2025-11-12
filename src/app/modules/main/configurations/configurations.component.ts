@@ -34,20 +34,14 @@ export class ConfigurationsComponent {
     {
       label: 'Tipo negocio',
       icon: 'bi-diagram-3',
-      description: 'Administra los tipos disponibles',
-      link: '/configuraciones/tipos-negocio'
+      description: 'Administra los tipos de negocios disponibles',
+      link: '/configurations/business-type'
     },
     {
       label: 'Categorías',
       icon: 'bi-tags',
-      description: 'Edita las categorías principales',
-      link: '/configuraciones/categorias'
-    },
-    {
-      label: 'Subcategorías',
-      icon: 'bi-grid',
-      description: 'Personaliza las subcategorías',
-      link: '/configuraciones/subcategorias'
+      description: 'Edita las categorías principales y subcategorías',
+      link: '/configurations/category'
     },
   ];
 

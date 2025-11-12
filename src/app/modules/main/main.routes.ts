@@ -17,6 +17,8 @@ import { MenusListComponent } from './menus-list/menus-list.component';
 import { ConfigurationsComponent } from './configurations/configurations.component';
 import { MaintenanceComponent } from './maintenance/maintenance.component';
 import { SlidesMaintenanceComponent } from './slides-maintenance/slides-maintenance.component';
+import { BusinessTypeComponent } from './business-type/business-type.component';
+import { CategoryComponent } from './category/category.component';
 
 export const mainRoutes: Routes = [
   { path: '', 
@@ -36,7 +38,9 @@ export const mainRoutes: Routes = [
       { path: 'gallery-list', component: GalleryListComponent },
       { path: 'configurations', component: ConfigurationsComponent },
       { path: 'configurations/maintenance', component: MaintenanceComponent },
-      { path: 'configurations/slides/:target', component: SlidesMaintenanceComponent }
+      { path: 'configurations/slides/:target', component: SlidesMaintenanceComponent },
+      { path: 'configurations/business-type', component: BusinessTypeComponent },
+      { path: 'configurations/category', component: CategoryComponent },
     ] 
   },
   {

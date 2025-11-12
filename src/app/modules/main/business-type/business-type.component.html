@@ -1,5 +1,9 @@
 <div class="business-type">
-  <h1 class="page-title">Tipos de negocio</h1>
+  <app-back-button [link]="'/configurations'" label="Regresar a configuraciones"></app-back-button>
+  <div class="heading">
+    <h2 class="mb-2">Tipos de negocio</h2>
+    <p class="text-muted mb-0">Administra los tipos disponibles para clasificar los comercios.</p>
+  </div>
 
   <div class="card form-card">
     <h2 class="fs-5 mb-3">{{ editingId ? 'Editar tipo' : 'Nuevo tipo' }}</h2>
@@ -16,17 +20,18 @@
 
         <div class="col-md-4">
           <label class="form-label">Icono</label>
-          <select class="form-select" formControlName="icono">
-            <option *ngFor="let icon of iconOptions" [value]="icon">{{ icon }}</option>
-          </select>
-          <div class="icon-preview mt-2">
-            <i class="fa-solid" [ngClass]="typeForm.get('icono')?.value"></i>
-            <span>Vista previa</span>
+          <div class="icon-select-wrapper">
+            <select class="form-select icon-select" formControlName="icono">
+              <option *ngFor="let icon of iconOptions" [value]="icon.name">{{ icon.name }}</option>
+            </select>
+            <div class="selected-icon">
+              <i class="fa-solid" [ngClass]="typeForm.get('icono')?.value"></i>
+            </div>
           </div>
         </div>
 
-        <div class="col-md-2 d-flex align-items-end">
-          <div class="form-check form-switch">
+        <div class="col-md-6">
+          <div class="form-check form-switch align-switch">
             <input class="form-check-input" type="checkbox" formControlName="estado" id="estadoSwitch">
             <label class="form-check-label" for="estadoSwitch">Activo</label>
           </div>
@@ -95,3 +100,4 @@
     </div>
   </div>
 </div>
+
