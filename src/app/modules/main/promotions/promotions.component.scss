@@ -1,0 +1,164 @@
+.promotion-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.heading {
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.heading h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.card {
+  border: none;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+.promo-form-card .form-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.upload-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(126, 124, 185, 0.4);
+  border-radius: 1rem;
+  min-height: 240px;
+  background: rgba(126, 124, 185, 0.05);
+  color: #7e7cb9;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+
+  input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 1rem;
+  }
+}
+
+.cropper {
+  border: 1px dashed #dcdcdc;
+  border-radius: 1rem;
+  padding: 0.75rem;
+  background: #fafafa;
+}
+
+.cropper__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 14px;
+  color: #1f1f1f;
+}
+
+label input,
+label select,
+label textarea {
+  padding: 0.55rem 0.65rem;
+  min-height: 56px;
+  border: 1px solid #d7d7d7;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+label textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #6b66ff, #4bb8ff);
+  color: #fff;
+}
+
+.btn.ghost {
+  background: transparent;
+  border: 1px solid #d8d8d8;
+  color: #333;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #7a7a7a;
+  margin: 0;
+}

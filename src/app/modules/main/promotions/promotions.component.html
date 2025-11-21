@@ -1,0 +1,104 @@
+<div class="promotion-wrapper">
+  <app-back-button [link]="'/configurations/promotions/list'" label="Regresar a Promociones"></app-back-button>
+  <div class="heading">
+    <h2 class="mb-2">{{ editingId ? 'Editar promoción' : 'Nueva promoción' }}</h2>
+    <p class="text-muted mb-0">
+      Carga y recorta la imagen, define vigencia y montos.
+    </p>
+  </div>
+
+  <form class="card promo-form-card" [formGroup]="form" (ngSubmit)="submit()">
+    <h2 class="mb-3 fs-5">Datos de la promoción</h2>
+    <div class="form-grid">
+      <div class="upload-box">
+        <label class="upload-area">
+          <input type="file" accept="image/*" (change)="onFileChange($event)">
+          <ng-container *ngIf="croppedPreview; else emptyPreview">
+            <img [src]="croppedPreview" alt="Vista previa de la promoción">
+          </ng-container>
+          <ng-template #emptyPreview>
+            <span>Selecciona una imagen</span>
+          </ng-template>
+        </label>
+
+        <div class="cropper" *ngIf="cropperVisible">
+          <image-cropper
+            [imageChangedEvent]="imageChangedEvent"
+            [maintainAspectRatio]="false"
+            format="png"
+            [resizeToWidth]="900"
+            (imageCropped)="imageCropped($event)">
+          </image-cropper>
+          <div class="cropper__actions">
+            <button class="btn btn-primary flex-fill d-flex align-items-center justify-content-center gap-2" (click)="cropperVisible = false">
+              Listo
+            </button>
+            <button class="btn btn-outline-secondary flex-fill" type="button" (click)="cancelCropper()">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="fields" >
+        <div class="grid">
+          <label>
+            <span>Comercio *</span>
+            <select formControlName="comercio_id">
+              <option value="">Selecciona un comercio</option>
+              <option *ngFor="let c of comercios" [value]="c.id">{{ c.nombre }}</option>
+            </select>
+          </label>
+          <label>
+            <span>Título *</span>
+            <input type="text" formControlName="titulo" maxlength="200" placeholder="Ej. 2x1 en café" />
+          </label>
+          <label>
+            <span>Código</span>
+            <input type="text" formControlName="codigo_promocion" placeholder="Opcional" />
+          </label>
+          <label>
+            <span>Estatus</span>
+            <select formControlName="estatus">
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+              <option value="borrado">Borrado</option>
+            </select>
+          </label>
+          <label>
+            <span>Fecha inicio *</span>
+            <input type="datetime-local" formControlName="fecha_inicio" />
+          </label>
+          <label>
+            <span>Fecha fin *</span>
+            <input type="datetime-local" formControlName="fecha_fin" />
+          </label>
+          <label>
+            <span>Precio original *</span>
+            <input type="number" step="0.01" min="0" formControlName="precio_original" />
+          </label>
+          <label>
+            <span>Precio promoción *</span>
+            <input type="number" step="0.01" min="0" formControlName="precio_promocion" />
+          </label>
+          <label>
+            <span>% Descuento</span>
+            <input type="number" step="0.01" min="0" max="100" formControlName="porcentaje_descuento" />
+          </label>
+        </div>
+
+        <label class="w-100">
+          <span>Descripción</span>
+          <textarea rows="3" formControlName="descripcion" placeholder="Detalles adicionales..."></textarea>
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary" [disabled]="saving || form.invalid">
+            {{ saving ? 'Guardando…' : (editingId ? 'Actualizar promoción' : 'Crear promoción') }}
+          </button>
+          <button type="button" class="btn ghost" (click)="resetForm()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

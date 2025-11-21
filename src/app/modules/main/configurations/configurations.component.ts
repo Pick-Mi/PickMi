@@ -38,10 +38,16 @@ export class ConfigurationsComponent {
       link: '/configurations/business-type'
     },
     {
-      label: 'Categorías',
+      label: 'Categorias',
       icon: 'bi-tags',
-      description: 'Edita las categorías principales y subcategorías',
+      description: 'Edita las categorias principales y subcategorias',
       link: '/configurations/category'
+    },
+    {
+      label: 'Promociones',
+      icon: 'bi-ticket-perforated',
+      description: 'Administra promociones y descuentos',
+      link: '/configurations/promotions/list'
     },
   ];
 

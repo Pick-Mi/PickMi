@@ -1,0 +1,110 @@
+<section class="promotions-list">
+  <app-back-button [link]="'/configurations'" label="Regresar a configuraciones"></app-back-button>
+
+  <div class="promotions-list__card promotions-list__hero">
+    <header class="promotions-list__header">
+      <div>
+        <p class="promotions-list__eyebrow">Promociones</p>
+        <h3>Gestión de promociones</h3>
+        <p class="promotions-list__subtitle">
+          Revisa y administra las promociones registradas. Refresca para sincronizar los cambios.
+        </p>
+      </div>
+      <a class="btn btn-primary" [routerLink]="['/configurations/promotions']">
+        Crear nuevo
+      </a>
+    </header>
+
+    <div class="filters-grid">
+      <div>
+        <label class="form-label">Buscar</label>
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Título, código o comercio"
+            [(ngModel)]="busqueda"
+            (keydown.enter)="aplicarFiltros()">
+          <button class="btn btn-secondary" type="button" (click)="aplicarFiltros()">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Estatus</label>
+        <select class="form-select" [(ngModel)]="estatusFiltro" (change)="aplicarFiltros()">
+          <option value="todos">Todos</option>
+          <option value="activo">Activo</option>
+          <option value="inactivo">Inactivo</option>
+        </select>
+      </div>
+      <div class="d-flex align-items-end justify-content-start gap-2">
+        <button class="btn btn-secondary" type="button" (click)="limpiarFiltros()">Limpiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="promotions-list__card promotions-list__content">
+    <div class="promotions-list__list-header">
+      <p>{{ filtered.length }} resultados</p>
+    </div>
+
+    <div *ngIf="error" class="promotions-list__state promotions-list__state--error">
+      {{ error }}
+    </div>
+
+    <div *ngIf="loading && !error" class="promotions-list__state">
+      Cargando promociones...
+    </div>
+
+    <div *ngIf="!loading && !error && !filtered.length" class="promotions-list__state">
+      No hay promociones registradas.
+    </div>
+
+    <div *ngIf="!loading && !error && filtered.length" class="promotions-list__table-wrapper">
+      <table class="promotions-list__table">
+        <thead>
+          <tr>
+            <th>Comercio</th>
+            <th>Título</th>
+            <th>Vigencia</th>
+            <th>Precio promo</th>
+            <th>Estatus</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let promo of filtered">
+            <td class="text-muted">{{ comercioNombre(promo.comercio_id) }}</td>
+            <td>
+              <div class="fw-semibold">{{ promo.titulo }}</div>
+              <small class="text-muted">{{ promo.codigo_promocion || 'Sin código' }}</small>
+            </td>
+            <td>
+              <div>{{ promo.fecha_inicio | date:'short' }}</div>
+              <div class="text-muted">{{ promo.fecha_fin | date:'short' }}</div>
+            </td>
+            <td>
+              <div class="fw-semibold text-success">\${{ promo.precio_promocion | number:'1.2-2' }}</div>
+              <div class="text-muted">Antes \${{ promo.precio_original | number:'1.2-2' }}</div>
+            </td>
+            <td>
+              <span class="badge" [class.badge--success]="promo.estatus === 'activo'">
+                {{ promo.estatus || 'sin estatus' }}
+              </span>
+            </td>
+            <td class="text-end">
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" type="button" (click)="edit(promo)">Editar</button>
+                <button class="btn btn-sm btn-outline-secondary" type="button" [disabled]="processingId===promo.id" (click)="toggleStatus(promo)">
+                  {{ promo.estatus === 'inactivo' ? 'Activar' : 'Desactivar' }}
+                </button>
+                <button class="btn btn-sm btn-outline-danger" type="button" [disabled]="processingId===promo.id" (click)="delete(promo)">Eliminar</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
