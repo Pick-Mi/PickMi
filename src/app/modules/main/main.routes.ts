@@ -19,6 +19,7 @@ import { ReportsComponent } from './reports/reports.component';
 import { PromotionsComponent } from './promotions/promotions.component';
 import { PromotionsListComponent } from './promotions-list/promotions-list.component';
 import { OwnersDetailsComponent } from './owners-details/owners-details.component';
+import { PlansComponent } from './plans/plans.component';
 
 export const mainRoutes: Routes = [
   { path: '', 
@@ -38,6 +39,7 @@ export const mainRoutes: Routes = [
       { path: 'configurations/maintenance', component: MaintenanceComponent },
       { path: 'configurations/slides/:target', component: SlidesMaintenanceComponent },
       { path: 'configurations/business-type', component: BusinessTypeComponent },
+      { path: 'configurations/plans', component: PlansComponent },
       { path: 'configurations/category', component: CategoryComponent },
       { path: 'configurations/promotions', component: PromotionsComponent },
       { path: 'configurations/promotions/list', component: PromotionsListComponent },

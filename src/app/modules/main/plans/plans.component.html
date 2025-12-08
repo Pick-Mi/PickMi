@@ -1,0 +1,160 @@
+<section class="plans">
+  <app-back-button></app-back-button>
+
+  <div class="header">
+    <div>
+      <h1 class="title">Planes</h1>
+      <p class="subtitle">Configura precios, limites y features disponibles.</p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card form-card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ editingId ? 'Editar plan' : 'Nuevo plan' }}</h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="planForm" (ngSubmit)="guardarPlan()">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" formControlName="nombre" (blur)="onNombreBlur()">
+              <small *ngIf="planForm.get('nombre')?.invalid && planForm.get('nombre')?.touched" class="text-danger">Requerido.</small>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Slug</label>
+              <input type="text" class="form-control" formControlName="slug">
+              <small class="text-muted">Usado como identificador unico.</small>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Descripcion</label>
+              <textarea rows="2" class="form-control" formControlName="descripcion"></textarea>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Precio mensual</label>
+              <input type="number" min="0" step="0.01" class="form-control" formControlName="precio_mensual">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Moneda</label>
+              <select class="form-select" formControlName="moneda">
+                <option *ngFor="let m of monedas" [value]="m">{{ m }}</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Dias de prueba</label>
+              <input type="number" min="0" class="form-control" formControlName="trial_dias">
+            </div>
+            <div class="col-12 d-flex gap-3 flex-wrap">
+              <label class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="es_activo">
+                <span class="form-check-label">Activo</span>
+              </label>
+              <label class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="es_default">
+                <span class="form-check-label">Default</span>
+              </label>
+              <label class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="es_trial_default">
+                <span class="form-check-label">Trial default</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="mb-0">Limites</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="agregarLimite()">Agregar</button>
+            </div>
+            <div *ngIf="!limitEntries.length" class="text-muted small">Sin limites definidos.</div>
+            <div class="row g-2 align-items-center" *ngFor="let limite of limitEntries; let i = index">
+              <div class="col-md-5">
+                <input type="text" class="form-control" placeholder="Clave (ej. menus)" [(ngModel)]="limite.key" name="limite-key-{{i}}">
+              </div>
+              <div class="col-md-5">
+                <input type="number" min="0" class="form-control" placeholder="Valor" [(ngModel)]="limite.value" name="limite-value-{{i}}">
+              </div>
+              <div class="col-md-2 text-end">
+                <button type="button" class="btn btn-link text-danger" (click)="eliminarLimite(i)">Eliminar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="mb-0">Features</h6>
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="agregarFeature()">Agregar</button>
+            </div>
+            <div *ngIf="!featureEntries.length" class="text-muted small">Sin features definidos.</div>
+            <div class="row g-2 align-items-center" *ngFor="let feature of featureEntries; let i = index">
+              <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Clave (ej. soporte_premium)" [(ngModel)]="feature.key" name="feature-key-{{i}}">
+              </div>
+              <div class="col-md-4">
+                <select class="form-select" [(ngModel)]="feature.value" name="feature-value-{{i}}">
+                  <option [ngValue]="true">Activo</option>
+                  <option [ngValue]="false">Inactivo</option>
+                </select>
+              </div>
+              <div class="col-md-2 text-end">
+                <button type="button" class="btn btn-link text-danger" (click)="eliminarFeature(i)">Eliminar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-primary" type="submit" [disabled]="saving">
+              {{ saving ? 'Guardando...' : (editingId ? 'Actualizar plan' : 'Crear plan') }}
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="cancelarEdicion()" [disabled]="saving">Limpiar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card list-card">
+      <div class="card-header">
+        <h5 class="mb-0">Planes</h5>
+      </div>
+      <div class="card-body">
+        <div *ngIf="loading">Cargando planes...</div>
+        <div *ngIf="!loading && !plans.length" class="text-muted">Aun no hay planes.</div>
+
+        <div class="plan-item" *ngFor="let plan of plans">
+          <div class="plan-header">
+            <div>
+              <h6 class="mb-1">{{ plan.nombre }} <span class="text-muted">({{ plan.slug }})</span></h6>
+              <div class="plan-tags">
+                <span class="badge bg-success" *ngIf="plan.es_activo">Activo</span>
+                <span class="badge bg-primary" *ngIf="plan.es_default">Default</span>
+                <span class="badge bg-warning text-dark" *ngIf="plan.es_trial_default">Trial default</span>
+              </div>
+            </div>
+            <div class="text-end">
+              <div class="fw-semibold">{{ plan.moneda }} {{ plan.precio_mensual | number:'1.2-2' }}</div>
+              <div class="text-muted small">Trial: {{ plan.trial_dias }} dias</div>
+            </div>
+          </div>
+
+          <p class="text-muted mb-2" *ngIf="plan.descripcion">{{ plan.descripcion }}</p>
+
+          <div class="chips" *ngIf="plan.limites && (toLimitEntries(plan.limites).length > 0)">
+            <span class="chip" *ngFor="let lim of toLimitEntries(plan.limites)">
+              {{ lim.key }}: {{ lim.value }}
+            </span>
+          </div>
+
+          <div class="chips" *ngIf="plan.features && (toFeatureEntries(plan.features).length > 0)">
+            <span class="chip" *ngFor="let feat of toFeatureEntries(plan.features)">
+              {{ feat.key }}: {{ feat.value ? 'si' : 'no' }}
+            </span>
+          </div>
+
+          <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" (click)="editarPlan(plan)">Editar</button>
+            <button class="btn btn-sm btn-outline-danger" (click)="eliminarPlan(plan)">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

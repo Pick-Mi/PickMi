@@ -38,6 +38,12 @@ export class ConfigurationsComponent {
       link: '/configurations/business-type'
     },
     {
+      label: 'Planes',
+      icon: 'bi-card-checklist',
+      description: 'Gestiona precios, limites y features de planes',
+      link: '/configurations/plans'
+    },
+    {
       label: 'Categorias',
       icon: 'bi-tags',
       description: 'Edita las categorias principales y subcategorias',

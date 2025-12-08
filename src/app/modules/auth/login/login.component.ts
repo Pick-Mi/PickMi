@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TipoUsuario } from '../../../data/interfaces/usuarios';
 import * as sweetAlert from '../../../data/utils/alerts';
 
 @Component({
@@ -48,7 +49,7 @@ export class LoginComponent implements OnInit {
     const { error } = await this.authService.login(email, password);
 
     if (error) {
-      sweetAlert.alertError(error || 'Error al iniciar sesión');
+      sweetAlert.alertError(error || 'Error al iniciar sesion');
       return;
     }
 
@@ -56,7 +57,13 @@ export class LoginComponent implements OnInit {
     const usuario = this.authService.currentUsuario;
 
     if (!usuario) {
-      sweetAlert.alertError('No se pudo cargar la información del usuario');
+      sweetAlert.alertError('No se pudo cargar la informacion del usuario');
+      return;
+    }
+
+    if (usuario.tipo_usuario !== TipoUsuario.ADMIN) {
+      await this.authService.logout();
+      sweetAlert.alertError('Acceso restringido a administradores');
       return;
     }
 
@@ -66,5 +73,4 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/dashboard']);
     }
   }
-
 }
