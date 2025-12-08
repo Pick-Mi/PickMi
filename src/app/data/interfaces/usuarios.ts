@@ -16,6 +16,34 @@ export interface PickUsuario {
     en_periodo_prueba?: boolean;
 }
 
+export interface PropietarioListado extends PickUsuario {
+    propietario_id: string;
+    onboarding_status?: string | null;
+    plan_solicitado_id?: string | null;
+    plan_solicitado_at?: string | null;
+    plan_id?: string | null;
+}
+
+export interface PlanResumen {
+    id: string;
+    nombre: string;
+    slug: string;
+    descripcion?: string | null;
+}
+
+export interface ComercioResumen {
+    id: string;
+    nombre: string;
+    estatus?: string | null;
+    tipo_entrega?: string | null;
+}
+
+export interface PropietarioDetalle extends PropietarioListado {
+    plan?: PlanResumen | null;
+    plan_solicitado?: PlanResumen | null;
+    comercios?: ComercioResumen[];
+}
+
 export enum TipoUsuario {
     CLIENTE = 'cliente',
     PROPIETARIO = 'propietario',

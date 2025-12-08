@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProfileService } from '../../../core/services/profile.service';
 import { LoaderService } from '../../../core/services/loader.service';
-import { PickUsuario, TipoUsuario } from '../../../data/interfaces/usuarios';
+import { PropietarioListado, TipoUsuario } from '../../../data/interfaces/usuarios';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-owners-list',
@@ -12,11 +13,16 @@ import { PickUsuario, TipoUsuario } from '../../../data/interfaces/usuarios';
   styleUrl: './owners-list.component.scss'
 })
 export class OwnersListComponent implements OnInit {
-  propietarios: PickUsuario[] = [];
+  propietarios: PropietarioListado[] = [];
   loading = false;
   error: string | null = null;
+  accionandoId: string | null = null;
 
-  constructor(private profileService: ProfileService, private loaderService: LoaderService) {}
+  constructor(
+    private profileService: ProfileService,
+    private loaderService: LoaderService,
+    private router: Router
+  ) {}
 
   async ngOnInit(): Promise<void> {
     await this.cargarPropietarios();
@@ -28,9 +34,7 @@ export class OwnersListComponent implements OnInit {
     this.loaderService.show();
 
     try {
-      const { data, error } = await this.profileService.listarUsuarios({
-        tipo_usuario: TipoUsuario.PROPIETARIO
-      });
+      const { data, error } = await this.profileService.listarPropietariosConPlan();
 
       if (error) {
         this.error = 'No se pudieron cargar los propietarios. Intenta nuevamente.';
@@ -38,7 +42,7 @@ export class OwnersListComponent implements OnInit {
         return;
       }
 
-      this.propietarios = data;
+      this.propietarios = data.filter(p => p.tipo_usuario === TipoUsuario.PROPIETARIO);
     } catch (err) {
       console.error('Error al cargar propietarios', err);
       this.error = 'Ocurrio un error inesperado. Intenta nuevamente.';
@@ -49,7 +53,63 @@ export class OwnersListComponent implements OnInit {
     }
   }
 
-  trackByPropietario(index: number, propietario: PickUsuario): string {
+  trackByPropietario(index: number, propietario: PropietarioListado): string {
     return propietario.id ?? `${propietario.email ?? 'sin-email'}-${index}`;
+  }
+
+  tieneSolicitudPlan(propietario: PropietarioListado): boolean {
+    return Boolean(propietario.plan_solicitado_id || propietario.onboarding_status === 'pendiente_aprobacion');
+  }
+
+  puedeTomarAccion(propietario: PropietarioListado): boolean {
+    return propietario.onboarding_status === 'pendiente_aprobacion' && !!propietario.propietario_id;
+  }
+
+  async aprobarSolicitud(propietario: PropietarioListado): Promise<void> {
+    if (!this.puedeTomarAccion(propietario)) return;
+    this.accionandoId = propietario.propietario_id;
+    this.loaderService.show();
+    try {
+      const { error } = await this.profileService.aprobarPlanPropietario(
+        propietario.propietario_id,
+        propietario.plan_solicitado_id ?? null
+      );
+      if (error) {
+        this.error = 'No se pudo aprobar la solicitud. Intenta nuevamente.';
+        return;
+      }
+      await this.cargarPropietarios();
+    } catch (err) {
+      console.error('Error al aprobar solicitud de plan', err);
+      this.error = 'Ocurrió un error al aprobar la solicitud.';
+    } finally {
+      this.accionandoId = null;
+      this.loaderService.hide();
+    }
+  }
+
+  async rechazarSolicitud(propietario: PropietarioListado): Promise<void> {
+    if (!this.puedeTomarAccion(propietario)) return;
+    this.accionandoId = propietario.propietario_id;
+    this.loaderService.show();
+    try {
+      const { error } = await this.profileService.rechazarSolicitudPlan(propietario.propietario_id);
+      if (error) {
+        this.error = 'No se pudo rechazar la solicitud. Intenta nuevamente.';
+        return;
+      }
+      await this.cargarPropietarios();
+    } catch (err) {
+      console.error('Error al rechazar solicitud de plan', err);
+      this.error = 'Ocurrió un error al rechazar la solicitud.';
+    } finally {
+      this.accionandoId = null;
+      this.loaderService.hide();
+    }
+  }
+
+  verDetalle(propietario: PropietarioListado): void {
+    if (!propietario.propietario_id) return;
+    this.router.navigate(['/owners', propietario.propietario_id]);
   }
 }

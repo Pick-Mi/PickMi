@@ -18,6 +18,7 @@ import { OwnersListComponent } from './owners-list/owners-list.component';
 import { ReportsComponent } from './reports/reports.component';
 import { PromotionsComponent } from './promotions/promotions.component';
 import { PromotionsListComponent } from './promotions-list/promotions-list.component';
+import { OwnersDetailsComponent } from './owners-details/owners-details.component';
 
 export const mainRoutes: Routes = [
   { path: '', 
@@ -31,6 +32,7 @@ export const mainRoutes: Routes = [
       { path: 'users-list', component: UsersListComponent },
       { path: 'reports', component: ReportsComponent },
       { path: 'owners-list', component: OwnersListComponent },
+      { path: 'owners/:id', component: OwnersDetailsComponent },
       { path: 'reviews', component: ReviewsComponent },
       { path: 'configurations', component: ConfigurationsComponent },
       { path: 'configurations/maintenance', component: MaintenanceComponent },

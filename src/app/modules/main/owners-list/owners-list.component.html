@@ -49,6 +49,8 @@
             <th>Email</th>
             <th>Telefono</th>
             <th>Estatus</th>
+            <th>Plan / onboarding</th>
+            <th>Acciones</th>
             <th>Registrado</th>
           </tr>
         </thead>
@@ -71,6 +73,53 @@
               <span class="badge" [class.badge--success]="propietario.estatus === 'activo'">
                 {{ propietario.estatus }}
               </span>
+            </td>
+            <td>
+              <div class="owners-list__plan">
+                <ng-container *ngIf="tieneSolicitudPlan(propietario); else estadoOnboarding">
+                  <span class="badge badge--warning">
+                    Solicitud de plan
+                  </span>
+                  <div *ngIf="propietario.plan_solicitado_at" class="owners-list__hint">
+                    Solicitado el {{ propietario.plan_solicitado_at | date:'mediumDate' }}
+                  </div>
+                </ng-container>
+                <ng-template #estadoOnboarding>
+                  <span
+                    class="badge"
+                    [class.badge--info]="propietario.onboarding_status === 'trial'"
+                    [class.badge--danger]="propietario.onboarding_status === 'rechazado'"
+                  >
+                    {{ propietario.onboarding_status || 'sin dato' }}
+                  </span>
+                </ng-template>
+              </div>
+            </td>
+            <td>
+              <div class="owners-list__actions" *ngIf="puedeTomarAccion(propietario); else sinAccion">
+                <button class="btn btn--ghost" (click)="verDetalle(propietario)">
+                  Ver info
+                </button>
+                <button
+                  class="btn btn--success"
+                  [disabled]="accionandoId === propietario.propietario_id"
+                  (click)="aprobarSolicitud(propietario)"
+                >
+                  Aprobar
+                </button>
+                <button
+                  class="btn btn--danger"
+                  [disabled]="accionandoId === propietario.propietario_id"
+                  (click)="rechazarSolicitud(propietario)"
+                >
+                  Rechazar
+                </button>
+              </div>
+              <ng-template #sinAccion>
+                <button class="btn btn--ghost" (click)="verDetalle(propietario)">
+                  Ver info
+                </button>
+              </ng-template>
             </td>
             <td>{{ propietario.fecha_creacion | date:'mediumDate' }}</td>
           </tr>

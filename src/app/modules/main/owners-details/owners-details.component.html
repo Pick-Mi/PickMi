@@ -1,1 +1,49 @@
-<p>owners-details works!</p>
+<section class="owner-details">
+  <div class="owner-details__header">
+    <div>
+      <p class="owner-details__eyebrow">Propietario</p>
+      <h2>{{ propietario?.nombre }} {{ propietario?.apellido }}</h2>
+      <p class="owner-details__subtitle" *ngIf="propietario">
+        {{ propietario.email }} · {{ propietario.telefono || 'Sin teléfono' }}
+      </p>
+    </div>
+    <button class="btn btn--ghost" (click)="regresar()">Volver al listado</button>
+  </div>
+
+  <div *ngIf="loading" class="owner-details__state">Cargando información...</div>
+  <div *ngIf="error && !loading" class="owner-details__state owner-details__state--error">{{ error }}</div>
+
+  <div *ngIf="!loading && propietario" class="owner-details__grid">
+    <div class="card">
+      <h3>Estado y plan</h3>
+      <div class="chip">Estatus usuario: {{ propietario.estatus }}</div>
+      <div class="chip">Onboarding: {{ propietario.onboarding_status || 'sin dato' }}</div>
+      <div class="card__item">
+        <p class="label">Plan activo</p>
+        <p class="value">{{ propietario.plan?.nombre || 'Sin plan' }}</p>
+      </div>
+      <div class="card__item">
+        <p class="label">Plan solicitado</p>
+        <p class="value">{{ propietario.plan_solicitado?.nombre || 'Sin solicitud' }}</p>
+      </div>
+      <div class="card__item" *ngIf="propietario.plan_solicitado_at">
+        <p class="label">Solicitado el</p>
+        <p class="value">{{ propietario.plan_solicitado_at | date:'medium' }}</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Locales registrados ({{ propietario.comercios?.length || 0 }})</h3>
+      <div *ngIf="!propietario.comercios?.length" class="owner-details__state">No tiene locales registrados.</div>
+      <ul *ngIf="propietario.comercios?.length" class="locales-list">
+        <li *ngFor="let comercio of propietario.comercios">
+          <div class="locales-list__title">{{ comercio.nombre }}</div>
+          <div class="locales-list__meta">
+            <span class="chip">Estatus: {{ comercio.estatus || 'n/d' }}</span>
+            <span class="chip">Entrega: {{ comercio.tipo_entrega || 'n/d' }}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

@@ -176,12 +176,79 @@
   background-color: #e2e8f0;
   color: #0f172a;
   border-radius: 999px;
-  padding: 0.25rem 0.75rem;
+  padding: 0.2rem 0.65rem;
   font-size: 0.85rem;
   text-transform: capitalize;
+  justify-content: center;
+  width: auto;
 }
 
 .badge--success {
   background-color: #dcfce7;
   color: #166534;
+}
+
+.badge--warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge--info {
+  background-color: #e0f2fe;
+  color: #075985;
+}
+
+.badge--danger {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.owners-list__plan {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+  text-align: center;
+}
+
+.owners-list__hint {
+  font-size: 0.8rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.owners-list__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn--ghost {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn--success {
+  background: #16a34a;
+  color: #fff;
+}
+
+.btn--danger {
+  background: #dc2626;
+  color: #fff;
 }
