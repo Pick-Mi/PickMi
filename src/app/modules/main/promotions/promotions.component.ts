@@ -65,6 +65,8 @@ export class PromotionsComponent implements OnInit {
       if (this.pendingStatePromo) {
         this.edit(this.pendingStatePromo);
         this.pendingStatePromo = null;
+      } else {
+        this.setNuevoCodigo();
       }
     } finally {
       this.loading = false;
@@ -258,6 +260,7 @@ export class PromotionsComponent implements OnInit {
     this.imageChangedEvent = null;
     this.croppedFile = undefined;
     this.cropperVisible = false;
+    this.setNuevoCodigo();
   }
 
   comercioNombre(id: string): string {
@@ -270,5 +273,21 @@ export class PromotionsComponent implements OnInit {
     const date = new Date(value);
     const tzOffset = date.getTimezoneOffset() * 60000;
     return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
+  }
+
+  generarCodigoPromocion(): string {
+    const prefix = 'PM';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let codigo = prefix;
+    while (codigo.length < 8) {
+      codigo += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return codigo;
+  }
+
+  private setNuevoCodigo(): void {
+    this.form.patchValue({
+      codigo_promocion: this.generarCodigoPromocion(),
+    });
   }
 }
