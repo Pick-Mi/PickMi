@@ -11,3 +11,24 @@ export interface MensajeSolicitud {
   avatar_url: string;
   tipo_origen: string;
 }
+
+export type MensajeWebTipo = 'usuario' | 'comercio' | 'plan';
+
+export interface MensajeWeb {
+  id: string;
+  nombre: string;
+  email: string;
+  asunto: string;
+  mensaje: string;
+  fecha_envio: string | null;
+  telefono?: string | null;
+  tipo: MensajeWebTipo;
+  leido: boolean;
+  usuario_id?: string | null;
+}
+
+export interface MensajeFiltro {
+  tipo?: MensajeWebTipo | 'todos';
+  leido?: boolean;
+  search?: string;
+}

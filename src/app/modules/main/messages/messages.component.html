@@ -1,1 +1,155 @@
-<p>messages works!</p>
+<section class="messages">
+  <div class="messages__card messages__hero">
+    <div>
+      <p class="messages__eyebrow">Mensajes</p>
+      <h3>Bandeja de entrada del sitio</h3>
+      <p class="messages__subtitle">
+        Gestiona los mensajes que llegan al formulario web. Marca como leidos para llevar control de seguimiento.
+      </p>
+    </div>
+    <div class="messages__hero-actions">
+      <div class="messages__stat">
+        <p class="stat-label">Mensajes</p>
+        <p class="stat-value">{{ mensajes.length }}</p>
+      </div>
+      <div class="messages__stat">
+        <p class="stat-label">No leidos</p>
+        <p class="stat-value" [class.text-warn]="totalNoLeidos">{{ totalNoLeidos }}</p>
+      </div>
+      <div class="messages__hero-buttons">
+        <button class="ghost" (click)="cargarMensajes()" [disabled]="loading">
+          {{ loading ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+        <button class="primary" (click)="marcarTodosComoLeidos()" [disabled]="loading || !totalNoLeidos">
+          Marcar todo como leido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="messages__card messages__filters">
+    <div class="messages__filter-group">
+      <span class="filter-label">Estado</span>
+      <button type="button" class="chip" [class.chip--active]="filtros.leido === undefined" (click)="setFiltroLeido(undefined)">
+        Todos
+      </button>
+      <button type="button" class="chip" [class.chip--active]="filtros.leido === false" (click)="setFiltroLeido(false)">
+        No leidos
+      </button>
+      <button type="button" class="chip" [class.chip--active]="filtros.leido === true" (click)="setFiltroLeido(true)">
+        Leidos
+      </button>
+    </div>
+    <div class="messages__filter-group">
+      <span class="filter-label">Tipo</span>
+      <button type="button" class="chip" [class.chip--active]="filtros.tipo === 'todos'" (click)="setFiltroTipo('todos')">
+        Todos
+      </button>
+      <button type="button" class="chip" [class.chip--active]="filtros.tipo === 'usuario'" (click)="setFiltroTipo('usuario')">
+        Usuario
+      </button>
+      <button type="button" class="chip" [class.chip--active]="filtros.tipo === 'comercio'" (click)="setFiltroTipo('comercio')">
+        Comercio
+      </button>
+      <button type="button" class="chip" [class.chip--active]="filtros.tipo === 'plan'" (click)="setFiltroTipo('plan')">
+        Plan
+      </button>
+    </div>
+    <form class="messages__search" (ngSubmit)="buscar()">
+      <input
+        type="text"
+        name="search"
+        [(ngModel)]="filtros.search"
+        placeholder="Buscar por nombre, email o asunto"
+        (keyup.enter)="buscar()"
+      />
+      <div class="messages__search-actions">
+        <button type="submit" [disabled]="loading">Buscar</button>
+        <button type="button" class="ghost" *ngIf="filtros.search" (click)="limpiarBusqueda()">Limpiar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="messages__card messages__layout">
+    <div class="messages__list">
+      <div *ngIf="error" class="messages__state messages__state--error">
+        {{ error }}
+      </div>
+
+      <div *ngIf="loading && !error" class="messages__state">
+        Cargando mensajes...
+      </div>
+
+      <div *ngIf="!loading && !error && !mensajes.length" class="messages__state">
+        No hay mensajes para mostrar con los filtros seleccionados.
+      </div>
+
+      <div
+        *ngFor="let mensaje of mensajes; trackBy: trackByMensaje"
+        class="message-row"
+        [class.message-row--active]="seleccionado?.id === mensaje.id"
+        [class.message-row--unread]="!mensaje.leido"
+        (click)="seleccionarMensaje(mensaje)"
+      >
+        <div class="message-row__header">
+          <div class="message-row__subject">
+            <span class="pill pill--tipo">{{ getTipoLabel(mensaje.tipo) }}</span>
+            <strong>{{ mensaje.asunto }}</strong>
+          </div>
+          <div class="message-row__meta">
+            <span class="pill" [class.pill--warning]="!mensaje.leido">
+              {{ mensaje.leido ? 'Leido' : 'No leido' }}
+            </span>
+            <span class="message-row__date">{{ mensaje.fecha_envio | date:'medium' }}</span>
+          </div>
+        </div>
+        <p class="message-row__from">{{ mensaje.nombre }} · {{ mensaje.email }}</p>
+        <p class="message-row__preview">{{ recortar(mensaje.mensaje, 140) }}</p>
+        <div class="message-row__actions">
+          <span class="message-row__phone" *ngIf="mensaje.telefono">Tel: {{ mensaje.telefono }}</span>
+          <button
+            type="button"
+            class="link"
+            (click)="cambiarEstadoLectura(mensaje, !mensaje.leido); $event.stopPropagation();"
+          >
+            {{ mensaje.leido ? 'Marcar como no leido' : 'Marcar como leido' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="messages__detail" *ngIf="seleccionado; else emptyState">
+      <div class="messages__detail-header">
+        <div>
+          <p class="messages__detail-eyebrow">
+            {{ getTipoLabel(seleccionado!.tipo) }} · {{ seleccionado!.fecha_envio | date:'medium' }}
+          </p>
+          <h4>{{ seleccionado!.asunto }}</h4>
+          <p class="messages__detail-from">{{ seleccionado!.nombre }} · {{ seleccionado!.email }}</p>
+        </div>
+        <div class="messages__detail-actions">
+          <button (click)="cambiarEstadoLectura(seleccionado!, !seleccionado!.leido, false)" [disabled]="updatingEstado">
+            {{ seleccionado!.leido ? 'Marcar como no leido' : 'Marcar como leido' }}
+          </button>
+          <button class="ghost" type="button" (click)="cargarMensajes()">Refrescar</button>
+        </div>
+      </div>
+      <div class="messages__detail-meta">
+        <span *ngIf="seleccionado?.telefono">Telefono: {{ seleccionado?.telefono }}</span>
+        <span *ngIf="seleccionado?.usuario_id">Usuario ID: {{ seleccionado?.usuario_id }}</span>
+        <span class="messages__detail-status" [class.unread]="!seleccionado?.leido">
+          {{ seleccionado?.leido ? 'Leido' : 'No leido' }}
+        </span>
+      </div>
+      <div class="messages__detail-body">
+        <p>{{ seleccionado!.mensaje }}</p>
+      </div>
+    </div>
+
+    <ng-template #emptyState>
+      <div class="messages__detail empty">
+        <p>Selecciona un mensaje para ver el detalle.</p>
+      </div>
+    </ng-template>
+  </div>
+</section>

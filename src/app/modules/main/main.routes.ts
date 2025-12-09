@@ -20,6 +20,7 @@ import { PromotionsComponent } from './promotions/promotions.component';
 import { PromotionsListComponent } from './promotions-list/promotions-list.component';
 import { OwnersDetailsComponent } from './owners-details/owners-details.component';
 import { PlansComponent } from './plans/plans.component';
+import { MessagesComponent } from './messages/messages.component';
 
 export const mainRoutes: Routes = [
   { path: '', 
@@ -43,6 +44,7 @@ export const mainRoutes: Routes = [
       { path: 'configurations/category', component: CategoryComponent },
       { path: 'configurations/promotions', component: PromotionsComponent },
       { path: 'configurations/promotions/list', component: PromotionsListComponent },
+      { path: 'messages', component: MessagesComponent },
     ] 
   },
   {

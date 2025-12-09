@@ -54,4 +54,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   isGalleryActive(): boolean {
     return this.router.url.startsWith('/gallery');
   }
+
+  isMessagesActive(): boolean {
+    return this.router.url.startsWith('/messages');
+  }
 }

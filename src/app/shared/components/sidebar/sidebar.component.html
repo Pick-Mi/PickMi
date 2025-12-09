@@ -13,13 +13,14 @@
           </div>
         <div class="dashboard_Menu">
             <ul>
-                <li><a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" routerLink="/"><i class="bi bi-kanban me-2"></i>Dashboard</a></li>
-                <li><a [ngClass]="{ 'active': isScheduleActive() }" routerLink="/configurations"><i class="bi bi-gear me-2"></i>Configuraciones</a></li>
-                <li><a [ngClass]="{ 'active': isGalleryActive() }" routerLink="/reports"><i class="bi bi-file-earmark-medical me-2"></i>Reportes</a></li>
-                <li><a [ngClass]="{ 'active': isMenusActive() }" routerLink="/users-list"><i class="bi bi-people me-2"></i>Usuarios</a></li>                
-                <li><a [ngClass]="{ 'active': isMenusActive() }" routerLink="/owners-list"><i class="bi bi-person-check me-2"></i>Propietarios</a></li>
-                <li><a [ngClass]="{ 'active': isStoresActive() }" routerLink="/stores-list"><i class="bi bi-shop me-2"></i>Comercios</a></li>
-                <li><a [ngClass]="{ 'active': isReviewsActive() }" routerLink="/reviews"><i class="bi bi-chat-left-text me-2"></i>Reseñas</a></li>
+                <li><a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" routerLink="/"><i class="fa-solid fa-gauge-high me-2"></i>Dashboard</a></li>
+                <li><a [ngClass]="{ 'active': isScheduleActive() }" routerLink="/configurations"><i class="fa-solid fa-gear me-2"></i>Configuraciones</a></li>
+                <li><a [ngClass]="{ 'active': isGalleryActive() }" routerLink="/reports"><i class="fa-solid fa-chart-line me-2"></i>Reportes</a></li>
+                <li><a [ngClass]="{ 'active': isMessagesActive() }" routerLink="/messages"><i class="fa-solid fa-envelope-open-text me-2"></i>Mensajes</a></li>
+                <li><a [ngClass]="{ 'active': isMenusActive() }" routerLink="/users-list"><i class="fa-solid fa-users me-2"></i>Usuarios</a></li>
+                <li><a [ngClass]="{ 'active': isMenusActive() }" routerLink="/owners-list"><i class="fa-solid fa-user-check me-2"></i>Propietarios</a></li>
+                <li><a [ngClass]="{ 'active': isStoresActive() }" routerLink="/stores-list"><i class="fa-solid fa-store me-2"></i>Comercios</a></li>
+                <li><a [ngClass]="{ 'active': isReviewsActive() }" routerLink="/reviews"><i class="fa-solid fa-comments me-2"></i>Reseñas</a></li>
             </ul>
         </div>
     </div>
