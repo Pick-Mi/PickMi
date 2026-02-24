@@ -47,4 +47,11 @@ export class OwnersDetailsComponent implements OnInit {
   regresar(): void {
     this.router.navigate(['/owners-list']);
   }
+
+  diasRestantes(): number | null {
+    if (!this.propietario?.plan_activo_fin) return null;
+    const fin = new Date(this.propietario.plan_activo_fin).getTime();
+    const diff = Math.floor((fin - Date.now()) / (1000 * 60 * 60 * 24));
+    return isNaN(diff) ? null : diff;
+  }
 }

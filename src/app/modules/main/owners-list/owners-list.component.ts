@@ -58,11 +58,23 @@ export class OwnersListComponent implements OnInit {
   }
 
   tieneSolicitudPlan(propietario: PropietarioListado): boolean {
-    return Boolean(propietario.plan_solicitado_id || propietario.onboarding_status === 'pendiente_aprobacion');
+    return Boolean(
+      propietario.plan_solicitado_id ||
+      propietario.plan_estado === 'pendiente_aprobacion' ||
+      propietario.plan_estado === 'pendiente_pago'
+    );
   }
 
   puedeTomarAccion(propietario: PropietarioListado): boolean {
-    return propietario.onboarding_status === 'pendiente_aprobacion' && !!propietario.propietario_id;
+    return propietario.plan_estado === 'pendiente_aprobacion' && !!propietario.propietario_id;
+  }
+
+  diasRestantes(propietario: PropietarioListado): number | null {
+    if (!propietario.plan_activo_fin) return null;
+    const fin = new Date(propietario.plan_activo_fin).getTime();
+    const ahora = Date.now();
+    const diff = Math.floor((fin - ahora) / (1000 * 60 * 60 * 24));
+    return isNaN(diff) ? null : diff;
   }
 
   async aprobarSolicitud(propietario: PropietarioListado): Promise<void> {

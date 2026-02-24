@@ -77,10 +77,15 @@ export class ProfileService {
       .from('pick_propietarios')
       .select(`
         id,
+        plan_estado,
+        plan_activo_id,
+        plan_activo_inicio,
+        plan_activo_fin,
+        plan_activo_renueva,
+        plan_origen,
         onboarding_status,
         plan_solicitado_id,
         plan_solicitado_at,
-        plan_id,
         usuario:usuario_id (
           id,
           nombre,
@@ -106,7 +111,12 @@ export class ProfileService {
         onboarding_status: item.onboarding_status,
         plan_solicitado_id: item.plan_solicitado_id,
         plan_solicitado_at: item.plan_solicitado_at,
-        plan_id: item.plan_id ?? null,
+        plan_activo_id: item.plan_activo_id ?? null,
+        plan_estado: item.plan_estado ?? null,
+        plan_activo_inicio: item.plan_activo_inicio ?? null,
+        plan_activo_fin: item.plan_activo_fin ?? null,
+        plan_activo_renueva: item.plan_activo_renueva ?? null,
+        plan_origen: item.plan_origen ?? null,
         ...usuario
       } as PropietarioListado;
     });
@@ -122,10 +132,15 @@ export class ProfileService {
       .from('pick_propietarios')
       .select(`
         id,
+        plan_estado,
+        plan_activo_id,
+        plan_activo_inicio,
+        plan_activo_fin,
+        plan_activo_renueva,
+        plan_origen,
         onboarding_status,
         plan_solicitado_id,
         plan_solicitado_at,
-        plan_id,
         usuario:usuario_id (
           id,
           nombre,
@@ -136,7 +151,7 @@ export class ProfileService {
           telefono,
           fecha_creacion
         ),
-        plan:plan_id (id, nombre, slug, descripcion),
+        plan:plan_activo_id (id, nombre, slug, descripcion),
         plan_solicitado:plan_solicitado_id (id, nombre, slug, descripcion)
       `)
       .eq('id', propietarioId)
@@ -161,7 +176,12 @@ export class ProfileService {
       onboarding_status: data.onboarding_status,
       plan_solicitado_id: data.plan_solicitado_id,
       plan_solicitado_at: data.plan_solicitado_at,
-      plan_id: data.plan_id ?? null,
+      plan_activo_id: data.plan_activo_id ?? null,
+      plan_estado: data.plan_estado ?? null,
+      plan_activo_inicio: data.plan_activo_inicio ?? null,
+      plan_activo_fin: data.plan_activo_fin ?? null,
+      plan_activo_renueva: data.plan_activo_renueva ?? null,
+      plan_origen: data.plan_origen ?? null,
       plan: (plan as PlanResumen) ?? null,
       plan_solicitado: (planSolicitado as PlanResumen) ?? null,
       comercios: (comercios as ComercioResumen[]) ?? [],
@@ -188,14 +208,21 @@ export class ProfileService {
    * Aprueba la solicitud de plan de un propietario.
    */
   async aprobarPlanPropietario(propietarioId: string, planSolicitadoId: string | null): Promise<{ error: string | null }> {
+    const ahora = new Date();
+    const fin = new Date(ahora);
+    fin.setDate(ahora.getDate() + 30); // periodo mensual estÃ¡ndar
+
     const updates: Record<string, any> = {
       onboarding_status: 'activo',
+      plan_estado: 'activo',
+      plan_activo_inicio: ahora.toISOString(),
+      plan_activo_fin: fin.toISOString(),
       plan_solicitado_id: null,
       plan_solicitado_at: null
     };
 
     if (planSolicitadoId) {
-      updates['plan_id'] = planSolicitadoId;
+      updates['plan_activo_id'] = planSolicitadoId;
     }
 
     const { error } = await this.supabase
@@ -219,6 +246,7 @@ export class ProfileService {
       .from('pick_propietarios')
       .update({
         onboarding_status: 'rechazado',
+        plan_estado: 'rechazado',
         plan_solicitado_id: null,
         plan_solicitado_at: null
       })

@@ -18,9 +18,27 @@
       <h3>Estado y plan</h3>
       <div class="chip">Estatus usuario: {{ propietario.estatus }}</div>
       <div class="chip">Onboarding: {{ propietario.onboarding_status || 'sin dato' }}</div>
+      <div class="chip">Estado plan: {{ propietario.plan_estado || 'sin dato' }}</div>
       <div class="card__item">
         <p class="label">Plan activo</p>
         <p class="value">{{ propietario.plan?.nombre || 'Sin plan' }}</p>
+      </div>
+      <div class="card__item" *ngIf="propietario.plan_activo_inicio">
+        <p class="label">Inicio de ciclo</p>
+        <p class="value">{{ propietario.plan_activo_inicio | date:'medium' }}</p>
+      </div>
+      <div class="card__item" *ngIf="propietario.plan_activo_fin">
+        <p class="label">Fin de ciclo</p>
+        <p class="value">{{ propietario.plan_activo_fin | date:'medium' }}</p>
+        <small class="hint" *ngIf="diasRestantes() !== null">{{ diasRestantes() }} dÃ­as restantes</small>
+      </div>
+      <div class="card__item" *ngIf="propietario.plan_activo_renueva">
+        <p class="label">RenovaciÃ³n</p>
+        <p class="value">RenovaciÃ³n automÃ¡tica activa</p>
+      </div>
+      <div class="card__item" *ngIf="propietario.plan_origen">
+        <p class="label">Origen del ciclo</p>
+        <p class="value">{{ propietario.plan_origen }}</p>
       </div>
       <div class="card__item">
         <p class="label">Plan solicitado</p>

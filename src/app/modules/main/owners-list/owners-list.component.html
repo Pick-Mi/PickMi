@@ -49,7 +49,7 @@
             <th>Email</th>
             <th>Telefono</th>
             <th>Estatus</th>
-            <th>Plan / onboarding</th>
+            <th>Plan / ciclo</th>
             <th>Acciones</th>
             <th>Registrado</th>
           </tr>
@@ -85,13 +85,23 @@
                   </div>
                 </ng-container>
                 <ng-template #estadoOnboarding>
-                  <span
-                    class="badge"
-                    [class.badge--info]="propietario.onboarding_status === 'trial'"
-                    [class.badge--danger]="propietario.onboarding_status === 'rechazado'"
-                  >
-                    {{ propietario.onboarding_status || 'sin dato' }}
-                  </span>
+                  <div class="owners-list__plan-estado">
+                    <span
+                      class="badge"
+                      [class.badge--success]="propietario.plan_estado === 'activo'"
+                      [class.badge--info]="propietario.plan_estado === 'gratis'"
+                      [class.badge--warning]="propietario.plan_estado === 'pendiente_pago'"
+                      [class.badge--danger]="propietario.plan_estado === 'rechazado' || propietario.plan_estado === 'vencido'"
+                    >
+                      {{ propietario.plan_estado || propietario.onboarding_status || 'sin dato' }}
+                    </span>
+                    <small *ngIf="diasRestantes(propietario) !== null" class="owners-list__hint">
+                      {{ diasRestantes(propietario) }} di­as restantes
+                    </small>
+                    <small *ngIf="!propietario.plan_activo_fin && propietario.plan_estado === 'gratis'" class="owners-list__hint">
+                      Plan gratuito sin vencimiento
+                    </small>
+                  </div>
                 </ng-template>
               </div>
             </td>
