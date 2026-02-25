@@ -1,10 +1,223 @@
+﻿.dashboard-shell {
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+  overflow: visible;
+  padding-bottom: 2rem;
+}
+
+.dashCaption .card {
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(13, 110, 253, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.metric-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 14px 40px rgba(62, 120, 246, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.bg-soft-danger { background: rgba(255, 99, 132, 0.12); }
+.bg-soft-primary { background: rgba(62, 120, 246, 0.12); }
+.bg-soft-warning { background: rgba(255, 193, 7, 0.16); }
+.bg-soft-info { background: rgba(13, 202, 240, 0.14); }
+
+.metric-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.metric-label {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.counter-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px 22px;
+  min-height: 260px;
+  box-shadow: 0 18px 50px rgba(13, 110, 253, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dashCaption .row.g-3 {
+  --bs-gutter-x: 2rem;
+  --bs-gutter-y: 2rem;
+}
+
+.filter-select {
+  height: 46px;
+  padding: 10px 12px;
+  min-width: 160px;
+  border-radius: 10px;
+  border: 1px solid #d0d5dd;
+  font-weight: 600;
+  font-size: 0.95rem;
+  background-color: #fff;
+}
+
+.filter-label {
+  text-transform: uppercase;
+  color: #6c757d;
+  padding-left: 5px;
+  letter-spacing: 0.3px;
+  font-size: 0.82rem;
+}
+
+.nav-tabs .nav-link {
+  min-width: 140px;
+  text-align: center;
+  background: #f2f4f8;
+  color: #555;
+  border: 1px solid #e0e4ea;
+  margin-right: 6px;
+  border-radius: 10px 10px 0 0;
+}
+
+.nav-tabs .nav-link.active {
+  background: #ffffff;
+  color: #111;
+  border-color: #d0d5dd;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+}
+.counter-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 60px rgba(13, 110, 253, 0.14);
+}
+
+.counter-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.counter-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.icon-blue { background: #4d7cff; }
+.icon-purple { background: #8b6cff; }
+.icon-yellow { background: #ffce54; }
+.icon-green { background: #3ac88c; }
+.icon-red { background: #e74c3c; }
+
+.counter-body {
+  text-align: center;
+}
+
+.counter-value {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.counter-label {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.counter-trend {
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.counter-trend.up {
+  color: #3ac88c;
+}
+
+.counter-trend.down {
+  color: #e74c3c;
+}
+
+.plan-card {
+  background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
+  border: 1px solid rgba(62, 120, 246, 0.1);
+}
+
+.radial-holder {
+  min-width: 180px;
+  max-width: 220px;
+}
+
 .actividad-icon {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   flex-shrink: 0;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+}
+
+.tab-card {
+  background: #ffffff;
+  border: 1px solid #d0d5dd;
+  border-radius: 16px;
+  box-shadow: 0 18px 50px rgba(13, 110, 253, 0.08);
+  overflow: hidden;
+}
+
+.tab-card .tab-header {
+  margin-bottom: 0;
+  padding: 0.75rem 1rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f6f8fb;
+  gap: 0.5rem;
+}
+
+.tab-card .tab-header .nav-link {
+  border: 1px solid transparent;
+  border-radius: 12px 12px 0 0;
+  background: transparent;
+  color: #6b7280;
+  min-width: 140px;
+}
+
+.tab-card .tab-header .nav-link.active {
+  background: #ffffff;
+  color: #111;
+  border-color: #d0d5dd #d0d5dd #ffffff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.tab-card .tab-body {
+  background: #ffffff;
+  padding: 1.5rem 1.5rem 1.25rem;
 }

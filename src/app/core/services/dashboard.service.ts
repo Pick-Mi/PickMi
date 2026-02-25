@@ -15,6 +15,37 @@ export class DashboardService {
         this.supabase = this.authService.getSupabaseClient();
     }
 
+    /**
+     * Cuenta filas en una tabla aplicando filtros. Usa head para no traer data.
+     */
+    private async count(table: string, filters: Record<string, any> = {}): Promise<number> {
+        let query = this.supabase.from(table).select('*', { count: 'exact', head: true });
+        Object.entries(filters).forEach(([key, value]) => {
+            query = query.eq(key, value);
+        });
+
+        const { count, error } = await query;
+        if (error) {
+            console.error(`count ${table}`, error);
+            return 0;
+        }
+        return count ?? 0;
+    }
+
+    /**
+     * Totales globales para contadores del admin.
+     */
+    async getAdminCounters(): Promise<{ propietarios: number; locales: number; resenas: number; usuarios: number }> {
+        const [propietarios, locales, resenas, usuarios] = await Promise.all([
+            this.count('pick_usuarios', { tipo_usuario: 'propietario' }),
+            this.count('pick_comercios'),
+            this.count('pick_comentarios', { estatus: 'activo' }),
+            this.count('pick_usuarios', { tipo_usuario: 'cliente' }),
+        ]);
+
+        return { propietarios, locales, resenas, usuarios };
+    }
+
     async getDashboardData(propietarioId: string, comercioId?: string): Promise<DashboardResumen> {
         const [
             totalVistas,

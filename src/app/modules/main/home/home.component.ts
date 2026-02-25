@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { DashboardService } from '../../../core/services/dashboard.service';
 import { ActividadUsuario, PickUsuario } from '../../../data/interfaces/usuarios';
 import { Router } from '@angular/router';
@@ -21,6 +21,9 @@ import { MensajeSolicitud } from '../../../data/interfaces/mensajes';
 export class HomeComponent implements OnInit {
 
   mensajes: MensajeSolicitud[] = [];
+  activeTab: 'resumen' | 'graficos' = 'resumen';
+  showCounters = true;
+  showGraficos = true;
 
   usuario!: PickUsuario | null;
   totalVistas: number = 0;
@@ -38,9 +41,11 @@ export class HomeComponent implements OnInit {
   comercioSeleccionado: string = '';
   periodo: 'diario' | 'semanal' | 'mensual' = 'diario';
   actividadReciente: ActividadUsuario[] = [];
-  diasRestantesPrueba: number = 0;
-  tipoPlanActual: string | null = null;
-  porcentajePrueba: number = 0;
+  
+  totalPropietarios = 0;
+  totalLocales = 0;
+  totalResenas = 0;
+  totalUsuarios = 0;
 
   //graficos  
   calificacionesDistribucion: { calificacion: number; total: number }[] = [];
@@ -69,7 +74,7 @@ export class HomeComponent implements OnInit {
   public radialChartOptions: RadialBarChartOptions = {
     ...baseRadialProgressChart,
     series: [0],
-    labels: ['DÍAS RESTANTES']
+    labels: ['DIAS RESTANTES']
   };
   
   constructor(private dashboardService: DashboardService, 
@@ -91,19 +96,20 @@ export class HomeComponent implements OnInit {
   async cargarDashboard() {
     if (!this.usuario?.id) return;   
     this.loaderService.show(); 
-    const resumen = await this.dashboardService.getDashboardData(this.usuario.id, this.comercioSeleccionado || undefined);
+    const [counters] = await Promise.all([
+      this.dashboardService.getAdminCounters()
+    ]);
     
-    this.totalVistas = resumen.totalVistas;
-    this.totalFavoritos = resumen.totalFavoritos;
-    this.promedioGlobal = resumen.promedioGlobal;
-    this.totalComentariosGlobal = resumen.totalComentariosGlobal;
-    this.calificacionesDistribucion = resumen.calificacionesDistribucion;
-    this.calificacionesPorComercio = resumen.calificacionesPorComercio;
-    this.vistasPorComercio = resumen.vistasPorComercio;
-    this.favoritosPorComercio = resumen.favoritosPorComercio;
+    this.totalPropietarios = counters.propietarios;
+    this.totalLocales = counters.locales;
+    this.totalResenas = counters.resenas;
+    this.totalUsuarios = counters.usuarios;
+
     this.cargarMensajes();
+    
     await this.actualizarGraficos();
     await this.cargarTendencia();
+    
     this.loaderService.hide();
   }
 
@@ -118,28 +124,11 @@ export class HomeComponent implements OnInit {
       }];
 
       this.chartOptions.xaxis = {
-        categories: ordered.map(d => `👍 ${d.calificacion}`),
+        categories: ordered.map(d => `ðŸ‘ ${d.calificacion}`),
       };
       
       this.actividadReciente = await this.dashboardService.getActividadReciente(uid, this.comercioSeleccionado);
-      const suscripcion = await this.dashboardService.getDiasRestantesSuscripcion(uid);
-      this.diasRestantesPrueba = suscripcion.diasRestantes;
       
-      if(suscripcion.tipoPlan == 'prueba') {
-        this.tipoPlanActual = 'Prueba Gratuita';
-      }else{
-        this.tipoPlanActual = 'Plan ' + (suscripcion.tipoPlan || 'Desconocido');
-      }
-      
-      const totalDias = this.getTotalDiasPorPlan(suscripcion.tipoPlan);
-      // Cálculo del porcentaje de progreso
-      this.porcentajePrueba = 100 - Math.round((this.diasRestantesPrueba / totalDias) * 100);
-      // Configurar el gráfico radial
-      this.radialChartOptions.series = [this.porcentajePrueba];
-      this.radialChartOptions.plotOptions?.radialBar?.dataLabels?.value && 
-      (this.radialChartOptions.plotOptions.radialBar.dataLabels.value.formatter = () => {
-        return `${this.diasRestantesPrueba}`;
-      });
   }
 
   async cargarTendencia() {
@@ -176,11 +165,22 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  get showLocalesFilter(): boolean {
+    return !!this.comercios?.length;
+  }
+
+  setTab(tab: 'resumen' | 'graficos') {
+    this.activeTab = tab;
+    if (tab === 'graficos') {
+      this.onTabChanged('graficos');
+    }
+  }
+
   onTabChanged(tab: string) {
     if (tab === 'graficos') {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
-      }, 10); // pequeño delay para asegurarse que se ha hecho visible
+      }, 10); // pequeÃ±o delay para asegurarse que se ha hecho visible
     }
   }
 
@@ -193,3 +193,4 @@ export class HomeComponent implements OnInit {
   }
 
 }
+

@@ -1,239 +1,211 @@
-<div class="user-dashboard-box bg-light">
-    <div class="dashHeader p-xl-5 p-4 pb-xl-0 pb-0 d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">
-            Datos Generales
-        </h2>
+﻿<div class="dashboard-shell bg-light">
+  <div class="dashHeader px-5 pt-5 d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div>
+      <p class="text-uppercase small text-muted mb-1">Panel general</p>
+      <h2 class="mb-1 fw-semibold">Visión de tu negocio</h2>
+    </div>
+    <div class="filters d-flex gap-3 align-items-center">
+      <div *ngIf="showLocalesFilter">
+        <label class="form-label mb-1 fw-medium filter-label">Locales</label>
+        <select [(ngModel)]="comercioSeleccionado" (change)="cargarDashboard()" class="form-select filter-select">
+          <option value="">Todos</option>
+          <option *ngFor="let c of comercios" [value]="c.id">{{ c.nombre }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label mb-1 fw-medium filter-label">Periodo</label>
+        <select [(ngModel)]="periodo" (change)="cargarTendencia()" class="form-select filter-select">
+          <option value="diario">Diario</option>
+          <option value="semanal">Semanal</option>
+          <option value="mensual">Mensual</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashCaption p-xl-5 p-4">
+    <div class="tab-card">
+      <ul class="nav nav-tabs tab-header">
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'resumen'" (click)="setTab('resumen')">Resumen</button>
+        </li>
+        <li class="nav-item" *ngIf="showGraficos">
+          <button class="nav-link" [class.active]="activeTab === 'graficos'" (click)="setTab('graficos')">Gráficos</button>
+        </li>
+      </ul>
+
+      <div class="tab-body">
+        <ng-container *ngIf="activeTab === 'resumen'">
+          <div *ngIf="showCounters" class="mb-4">
+            <div class="d-flex justify-content-between align-items-center pt-3 mb-3">
+              <div>
+                <h4 class="mb-0 fw-semibold">Resumen rápido</h4>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col-xxl-3 col-lg-6 col-md-6">
+                <div class="counter-card">
+                  <div class="counter-top justify-content-center">
+                    <div class="counter-icon icon-red"><i class="fa-solid fa-user-check"></i></div>
+                  </div>
+                  <div class="counter-body text-center">
+                    <div class="counter-value">{{ totalPropietarios | number }}</div>
+                    <div class="counter-label">Total Propietarios</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xxl-3 col-lg-6 col-md-6">
+                <div class="counter-card">
+                  <div class="counter-top justify-content-center">
+                    <div class="counter-icon icon-purple"><i class="fa-solid fa-store"></i></div>
+                  </div>
+                  <div class="counter-body text-center">
+                    <div class="counter-value">{{ totalLocales | number }}</div>
+                    <div class="counter-label">Total Locales</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xxl-3 col-lg-6 col-md-6">
+                <div class="counter-card">
+                  <div class="counter-top justify-content-center">
+                    <div class="counter-icon icon-yellow"><i class="fa-solid fa-thumbs-up"></i></div>
+                  </div>
+                  <div class="counter-body text-center">
+                    <div class="counter-value">{{ totalResenas | number }}</div>
+                    <div class="counter-label">Total Reseñas</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xxl-3 col-lg-6 col-md-6">
+                <div class="counter-card">
+                  <div class="counter-top justify-content-center">
+                    <div class="counter-icon icon-green"><i class="fa-solid fa-users"></i></div>
+                  </div>
+                  <div class="counter-body text-center">
+                    <div class="counter-value">{{ totalUsuarios | number }}</div>
+                    <div class="counter-label">Total Usuarios</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4 mb-1 align-items-start">
+            <div class="col-xl-6">
+              <div class="card rounded-4 shadow-sm h-100">
+                <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+                  <h4 class="fs-5 fw-semibold mb-0">Últimos Mensajes</h4>
+                  <a routerLink="/messages" class="text-muted-2 text-md fw-medium">Ver Todos</a>
+                </div>
+                <div class="card-body p-4">
+                  <div class="messagesWrapers d-flex flex-column gap-4">                                    
+                      <!-- Single Line -->
+                      <div class="singleMessagesline" *ngFor="let mensaje of mensajes">
+                          <a class="d-flex align-items-center justify-content-start gap-2">
+                              <div class="msgLinethumb"><div class="square--50 circle"><img [src]="mensaje.avatar_url" class="img-fluid circle" alt=""></div></div>
+                              <div class="msgLinecaption flex-fill">
+                                  <div class="msglineTitle d-flex align-items-center justify-content-between gap-3">
+                                      <h6 class="fw-semibold m-0 text-md">{{ mensaje.nombre }}</h6>
+                                      <span class="text-sm fw-medium text-muted"> {{ mensaje.fecha | date:'short' }}</span>
+                                  </div>
+                                  <div class="msglineParag d-flex align-items-center justify-content-between gap-3">
+                                      <p class="text-sm m-0"> {{mensaje.asunto}}</p>
+                                  </div>
+                                  <div class="msglineParag d-flex align-items-center justify-content-between gap-3">
+                                      <p class="text-sm m-0 text-muted"> {{recortar(mensaje.mensaje, 150)}}</p>
+                                  </div>
+                              </div>
+                          </a>
+                      </div>                      
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-6">
+              <div class="card rounded-4 shadow-sm h-100">
+                <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+                  <h4 class="fs-5 fw-semibold mb-0">Actividad Reciente</h4>
+                </div>
+                <div class="card-body p-0">
+                  <ul *ngIf="actividadReciente.length > 0" class="dashboardListgroup">
+                    <li *ngFor="let act of actividadReciente" class="list-group-item">
+                      <span class="icons actividad-icon" [ngClass]="{
+                        'bg-light-danger text-danger': act.tipo === 'favorito',
+                        'bg-light-warning text-warning': act.tipo === 'comentario',
+                        'bg-light-success text-success': act.tipo === 'calificacion'
+                        }">
+                        <i class="bi" [ngClass]="{
+                          'bi-heart': act.tipo === 'favorito',
+                          'bi-chat-left-text': act.tipo === 'comentario',
+                          'bi-hand-thumbs-up': act.tipo === 'calificacion'
+                        }"></i>
+                      </span>
+                      <div class="listCaps" style="font-size: 12px;">
+                        <span class="fw-semibold">{{ act.usuarioNombre }} </span>
+                        <span *ngIf="act.tipo === 'favorito'"> guardó como favorito </span>
+                        <span *ngIf="act.tipo === 'comentario'"> comentó en </span>
+                        <span *ngIf="act.tipo === 'calificacion'"> calificó con </span>
+                        <strong>{{ act.comercioNombre }}</strong>
+                        <span *ngIf="act.tipo === 'calificacion'">con {{ act.calificacion }}</span>
+                        <span *ngIf="act.comentario"> – "{{ recortar(act.comentario, 120) }}"</span>
+                        <br />
+                        <small class="text-muted">{{ act.fecha | date:'medium' }}</small>
+                      </div>
+                    </li>
+                  </ul>
+
+                  <div *ngIf="actividadReciente.length === 0" class="p-4 text-center text-muted">
+                    No hay actividad reciente por parte de los usuarios.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="activeTab === 'graficos' && showGraficos">
+          <div class="row g-4">
+            <div class="col-xl-6 col-lg-6">
+              <div class="card rounded-4 shadow-sm h-100">
+                <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+                  <h4 class="m-0">Calificaciones</h4>
+                </div>
+                <div class="card-body p-4">
+                  <div *ngIf="chartOptions">
+                    <apx-chart
+                      [series]="chartOptions.series"
+                      [chart]="chartOptions.chart"
+                      [xaxis]="chartOptions.xaxis"
+                      [dataLabels]="chartOptions.dataLabels"
+                      [plotOptions]="chartOptions.plotOptions"
+                      [tooltip]="chartOptions.tooltip">
+                    </apx-chart>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-6">
+              <div class="card rounded-4 shadow-sm h-100">
+                <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+                  <h4 class="m-0">Cantidad de vistas</h4>
+                </div>
+                <div class="card-body p-4">
+                  <apx-chart
+                    *ngIf="lineChartOptions.series[0]?.data?.length"
+                    [series]="lineChartOptions.series"
+                    [chart]="lineChartOptions.chart"
+                    [xaxis]="lineChartOptions.xaxis"
+                    [tooltip]="lineChartOptions.tooltip">
+                  </apx-chart>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
     </div>
 
-    <div class="dashCaption p-xl-5 p-4">
-
-        <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="tab-resumen" data-bs-toggle="tab" data-bs-target="#panel-resumen" type="button" role="tab">
-                    Resumen
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link"
-                        data-bs-toggle="tab"
-                        data-bs-target="#panel-graficos"
-                        (click)="onTabChanged('graficos')">
-                    Gráficos
-                </button>
-            </li>
-        </ul>
-        <div class="tab-content" id="dashboardTabContent">
-            <!-- Panel: RESUMEN -->
-            <div class="tab-pane fade show active" id="panel-resumen" role="tabpanel">
-                <!-- Row Start -->
-
-                <div class="row align-items-start g-4 mb-lg-5 mb-4">
-                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-                        <div class="card rounded-3 position-relative p-4">
-                            <div class="position-absolute w-30 h-100 bg-light-warning start-0 top-0 rounded-end-pill">
-                                <div class="position-absolute top-50 start-50 translate-middle">
-                                    <i class="bi bi-hand-thumbs-up text-warning fs-2"></i>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-column align-items-end justify-content-end ht-80">
-                                <h2 class="mb-0"><span class="ctr">{{promedioGlobal}}</span></h2>
-                                <p class="text-muted-2 fw-medium mb-0">Total Reseñas</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-                        <div class="card rounded-3 position-relative p-4">
-                            <div class="position-absolute w-30 h-100 bg-light-danger start-0 top-0 rounded-end-pill">
-                                <div class="position-absolute top-50 start-50 translate-middle">
-                                    <i class="bi bi-people text-danger fs-2"></i>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-column align-items-end justify-content-end ht-80">
-                                <h2 class="mb-0"><span class="ctr">{{totalFavoritos}}</span></h2>
-                                <p class="text-muted-2 fw-medium mb-0">Total Usuarios</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-                        <div class="card rounded-3 position-relative p-4">
-                            <div class="position-absolute w-30 h-100 bg-light-purple start-0 top-0 rounded-end-pill">
-                                <div class="position-absolute top-50 start-50 translate-middle">
-                                    <i class="bi bi-shop text-purple fs-2"></i>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-column align-items-end justify-content-end ht-80">
-                                <h2 class="mb-0"><span class="ctr">{{totalVistas}}</span></h2>
-                                <p class="text-muted-2 fw-medium mb-0">Total Locales</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-                        <div class="card rounded-3 position-relative p-4">
-                            <div class="position-absolute w-30 h-100 bg-light-info start-0 top-0 rounded-end-pill">
-                                <div class="position-absolute top-50 start-50 translate-middle">
-                                    <i class="bi bi-person-check text-info fs-2"></i>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-column align-items-end justify-content-end ht-80">
-                                <h2 class="mb-0"><span class="ctr">{{totalComentariosGlobal}}</span></h2>
-                                <p class="text-muted-2 fw-medium mb-0">Total Propietarios</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-5">
-
-                <div class="row align-items-start g-4 mb-lg-5 mb-4">
-                    <!-- Actividad Reciente -->
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                        <div class="card rounded-3 shadow-sm">
-                            <div class="card-header py-3 px-4">
-                                <h4 class="fs-5 fw-medium">
-                                    <i class="bi bi-clock-history text-purple me-2"></i>Actividad Reciente
-                                </h4>
-                            </div>
-                            <div class="card-body p-0">
-                                    <ul *ngIf="actividadReciente.length > 0" class="dashboardListgroup">
-                                        <li *ngFor="let act of actividadReciente" class="list-group-item">
-                                            <span class="icons actividad-icon" [ngClass]="{
-                                            'bg-light-danger text-danger': act.tipo === 'favorito',
-                                            'bg-light-warning text-warning': act.tipo === 'comentario',
-                                            'bg-light-success text-success': act.tipo === 'calificacion'
-                                            }">
-                                                <i class="bi" [ngClass]="{
-                                                    'bi-heart': act.tipo === 'favorito',
-                                                    'bi-chat-left-text': act.tipo === 'comentario',
-                                                    'bi-hand-thumbs-up': act.tipo === 'calificacion'
-                                                }"></i>
-                                            </span>
-                                            <div class="listCaps" style="font-size: 12px;">
-                                                <span class="fw-semibold">{{ act.usuarioNombre }} </span>
-                                                <span *ngIf="act.tipo === 'favorito'"> guardó como favorito </span>
-                                                <span *ngIf="act.tipo === 'comentario'"> comentó en </span>
-                                                <span *ngIf="act.tipo === 'calificacion'"> calificó con </span>
-                                                <strong>{{ act.comercioNombre }}</strong>
-                                                <span *ngIf="act.tipo === 'calificacion'">con {{ act.calificacion }} 👍</span>
-                                                <span *ngIf="act.comentario"> – "{{ recortar(act.comentario, 120) }}"</span>
-                                                <br />
-                                                <small class="text-muted">{{ act.fecha | date:'medium' }}</small>
-                                            </div>
-                                        </li>
-                                    </ul>
-
-                                    <!-- Si NO hay actividad -->
-                                    <div *ngIf="actividadReciente.length === 0" class="p-4 text-center text-muted">
-                                        No hay actividad reciente por parte de los usuarios.
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Mensajes Recientes -->
-                     <div class="col-xl-6 col-lg-6 col-md-12">
-                        <div class="card rounded-3 shadow-sm">
-                            <div class="card-header py-3 px-4">
-                                <h4 class="fs-5 fw-medium">
-                                    <i class="bi bi-mailbox-flag text-purple me-2"></i>Últimos Mensajes
-                                </h4>
-                                <a href="#" class="text-muted-2 text-md fw-medium">Ver Todos</a>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="messagesWrapers d-flex flex-column gap-4">
-                                    
-                                    <!-- Single Line -->
-                                    <div class="singleMessagesline" *ngFor="let mensaje of mensajes">
-                                        <a class="d-flex align-items-center justify-content-start gap-2">
-                                            <div class="msgLinethumb"><div class="square--50 circle"><img [src]="mensaje.avatar_url" class="img-fluid circle" alt=""></div></div>
-                                            <div class="msgLinecaption flex-fill">
-                                                <div class="msglineTitle d-flex align-items-center justify-content-between gap-3">
-                                                    <h6 class="fw-semibold m-0 text-md">{{ mensaje.nombre }}</h6>
-                                                    <span class="text-sm fw-medium text-muted"> {{ mensaje.fecha | date:'short' }}</span>
-                                                </div>
-                                                <div class="msglineParag d-flex align-items-center justify-content-between gap-3">
-                                                    <p class="text-sm m-0"> {{mensaje.asunto}}</p>
-                                                </div>
-                                                <div class="msglineParag d-flex align-items-center justify-content-between gap-3">
-                                                    <p class="text-sm m-0 text-muted"> {{recortar(mensaje.mensaje, 150)}}</p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Row End -->
-
-            </div>
-            <!-- Panel: GRÁFICOS -->
-            <div class="tab-pane fade" id="panel-graficos" role="tabpanel">
-                <div class="row align-items-start g-4 mb-lg-5 mb-4">
-                    <div class="col-xl-6 col-lg-6 col-md-6">                
-                        <div class="card rounded-3 shadow-sm mb-lg-5 mb-3">
-                            <div class="card-header py-3 px-4">
-                                <h4 class="m-0">Calificaciones</h4>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row">
-                                    <div class="col-12" *ngIf="chartOptions">
-                                        <apx-chart 
-                                            [series]="chartOptions.series"
-                                            [chart]="chartOptions.chart"
-                                            [xaxis]="chartOptions.xaxis"
-                                            [dataLabels]="chartOptions.dataLabels"
-                                            [plotOptions]="chartOptions.plotOptions"
-                                            [tooltip]="chartOptions.tooltip">
-                                        </apx-chart>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="col-xl-6 col-lg-6 col-md-6">
-
-                        <div class="card rounded-3 shadow-sm mb-lg-5 mb-4">
-                            <div class="card-header py-3 px-4">
-                                <h4 class="m-0">Cantidad de Vistas</h4>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row">
-                                    <div class="col-12 mb-5">
-
-                                        <div class="mb-3">
-                                            <label for="periodo">Periodo:</label>
-                                            <select [(ngModel)]="periodo" (change)="cargarTendencia()" class="form-select">
-                                                <option value="diario">Diario</option>
-                                                <option value="semanal">Semanal</option>
-                                                <option value="mensual">Mensual</option>
-                                            </select>
-                                        </div>
-
-                                        <apx-chart
-                                            *ngIf="lineChartOptions.series[0]?.data?.length"
-                                            [series]="lineChartOptions.series"
-                                            [chart]="lineChartOptions.chart"
-                                            [xaxis]="lineChartOptions.xaxis"
-                                            [tooltip]="lineChartOptions.tooltip">
-                                        </apx-chart>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        
-    </div>
+  </div>
 </div>
-
-
-
