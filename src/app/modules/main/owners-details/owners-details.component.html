@@ -18,7 +18,9 @@
       <h3>Estado y plan</h3>
       <div class="chip">Estatus usuario: {{ propietario.estatus }}</div>
       <div class="chip">Onboarding: {{ propietario.onboarding_status || 'sin dato' }}</div>
-      <div class="chip">Estado plan: {{ propietario.plan_estado || 'sin dato' }}</div>
+      <div class="chip">
+        Estado plan: <span [class]="badgeClass()">{{ badgeLabel() }}</span>
+      </div>
       <div class="card__item">
         <p class="label">Plan activo</p>
         <p class="value">{{ propietario.plan?.nombre || 'Sin plan' }}</p>
@@ -30,11 +32,11 @@
       <div class="card__item" *ngIf="propietario.plan_activo_fin">
         <p class="label">Fin de ciclo</p>
         <p class="value">{{ propietario.plan_activo_fin | date:'medium' }}</p>
-        <small class="hint" *ngIf="diasRestantes() !== null">{{ diasRestantes() }} dÃ­as restantes</small>
+        <small class="hint" *ngIf="diasRestantes() !== null">{{ diasRestantes() }} días restantes</small>
       </div>
       <div class="card__item" *ngIf="propietario.plan_activo_renueva">
-        <p class="label">RenovaciÃ³n</p>
-        <p class="value">RenovaciÃ³n automÃ¡tica activa</p>
+        <p class="label">Renovación</p>
+        <p class="value">Renovación automática activa</p>
       </div>
       <div class="card__item" *ngIf="propietario.plan_origen">
         <p class="label">Origen del ciclo</p>
@@ -48,20 +50,51 @@
         <p class="label">Solicitado el</p>
         <p class="value">{{ propietario.plan_solicitado_at | date:'medium' }}</p>
       </div>
+      <div class="owner-details__state owner-details__state--info" *ngIf="estadoView === 'pendiente_cambio'">
+        Tiene un cambio de plan pendiente de aprobación.
+      </div>
+      <div class="owner-details__actions" *ngIf="estadoView === 'pendiente_cambio'">
+        <button class="btn btn--primary" (click)="aprobarPlan()" [disabled]="actionLoading">
+          {{ actionLoading ? 'Procesando...' : 'Aprobar solicitud' }}
+        </button>
+        <button class="btn btn--ghost" (click)="rechazarSolicitud()" [disabled]="actionLoading">
+          Rechazar solicitud
+        </button>
+      </div>
     </div>
 
     <div class="card">
-      <h3>Locales registrados ({{ propietario.comercios?.length || 0 }})</h3>
-      <div *ngIf="!propietario.comercios?.length" class="owner-details__state">No tiene locales registrados.</div>
-      <ul *ngIf="propietario.comercios?.length" class="locales-list">
-        <li *ngFor="let comercio of propietario.comercios">
-          <div class="locales-list__title">{{ comercio.nombre }}</div>
-          <div class="locales-list__meta">
-            <span class="chip">Estatus: {{ comercio.estatus || 'n/d' }}</span>
-            <span class="chip">Entrega: {{ comercio.tipo_entrega || 'n/d' }}</span>
+      <h3>Locales registrados ({{ stores.length }})</h3>
+      <div *ngIf="!stores.length" class="owner-details__state">No tiene locales registrados.</div>
+
+      <div *ngIf="stores.length" class="stores-stack mb-3">
+        <div class="store-card" *ngFor="let store of stores">
+          <div
+            class="store-banner"
+            [style.background-image]="'url(' + (store.banner_url || 'assets/img/banners.png') + ')'"
+          >
+            <div class="store-logo">
+              <img [src]="store.logo_url || 'assets/img/tienda.png'" alt="Logo" />
+            </div>
           </div>
-        </li>
-      </ul>
+
+          <div class="store-body">
+            <h4 class="store-title mb-2">{{ store.nombre }}</h4>
+            <p class="store-desc text-muted mb-3">
+              {{ store.descripcion || 'Sin descripción aún.' }}
+            </p>
+            <div class="store-tags mb-3">
+              <span class="chip">Estatus: {{ store.estatus || 'n/d' }}</span>
+              <span class="chip">Entrega: {{ store.tipo_entrega || 'n/d' }}</span>
+            </div>
+            <div class="actions actions-right">
+              <button class="btn pill icon dark" aria-label="Vista previa" (click)="onPreview(store)">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

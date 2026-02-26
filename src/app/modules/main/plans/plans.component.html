@@ -68,10 +68,25 @@
             <div *ngIf="!limitEntries.length" class="text-muted small">Sin limites definidos.</div>
             <div class="row g-2 align-items-center" *ngFor="let limite of limitEntries; let i = index">
               <div class="col-md-5">
-                <input type="text" class="form-control" placeholder="Clave (ej. menus)" [(ngModel)]="limite.key" name="limite-key-{{i}}">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Clave (ej. menus)"
+                  [(ngModel)]="limite.key"
+                  [ngModelOptions]="{ standalone: true }"
+                  name="limite-key-{{ i }}"
+                >
               </div>
               <div class="col-md-5">
-                <input type="number" min="0" class="form-control" placeholder="Valor" [(ngModel)]="limite.value" name="limite-value-{{i}}">
+                <input
+                  type="number"
+                  min="0"
+                  class="form-control"
+                  placeholder="Valor"
+                  [(ngModel)]="limite.value"
+                  [ngModelOptions]="{ standalone: true }"
+                  name="limite-value-{{ i }}"
+                >
               </div>
               <div class="col-md-2 text-end">
                 <button type="button" class="btn btn-link text-danger" (click)="eliminarLimite(i)">Eliminar</button>
@@ -87,10 +102,22 @@
             <div *ngIf="!featureEntries.length" class="text-muted small">Sin features definidos.</div>
             <div class="row g-2 align-items-center" *ngFor="let feature of featureEntries; let i = index">
               <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Clave (ej. soporte_premium)" [(ngModel)]="feature.key" name="feature-key-{{i}}">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Clave (ej. soporte_premium)"
+                  [(ngModel)]="feature.key"
+                  [ngModelOptions]="{ standalone: true }"
+                  name="feature-key-{{ i }}"
+                >
               </div>
               <div class="col-md-4">
-                <select class="form-select" [(ngModel)]="feature.value" name="feature-value-{{i}}">
+                <select
+                  class="form-select"
+                  [(ngModel)]="feature.value"
+                  [ngModelOptions]="{ standalone: true }"
+                  name="feature-value-{{ i }}"
+                >
                   <option [ngValue]="true">Activo</option>
                   <option [ngValue]="false">Inactivo</option>
                 </select>

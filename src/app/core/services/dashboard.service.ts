@@ -15,6 +15,10 @@ export class DashboardService {
         this.supabase = this.authService.getSupabaseClient();
     }
 
+    private isAdmin(): boolean {
+        return this.authService.currentUsuario?.tipo_usuario === 'admin';
+    }
+
     /**
      * Cuenta filas en una tabla aplicando filtros. Usa head para no traer data.
      */
@@ -259,33 +263,39 @@ export class DashboardService {
     }
 
     private async getComercioIdsDelPropietario(propietarioId: string): Promise<string[]> {
-        const { data, error } = await this.supabase
+        let query = this.supabase
             .from('pick_comercios')
-            .select('id')
-            .eq('usuario_id', propietarioId);
+            .select('id');
 
+        if (!this.isAdmin()) {
+            query = query.eq('usuario_id', propietarioId);
+        }
+
+        const { data, error } = await query;
         if (error || !data) return [];
         return data.map(c => c.id);
     }
 
     public async getComercios(propietarioId: string, comercioId?: string): Promise<{ id: string; nombre: string }[]> {
+        let query = this.supabase
+            .from('pick_comercios')
+            .select('id, nombre');
+
         if (comercioId) {
-            const { data, error } = await this.supabase
-            .from('pick_comercios')
-            .select('id, nombre')
-            .eq('id', comercioId)
-            .eq('usuario_id', propietarioId)
-            .maybeSingle();
-
-            return data ? [data] : [];
-        } else {
-            const { data, error } = await this.supabase
-            .from('pick_comercios')
-            .select('id, nombre')
-            .eq('usuario_id', propietarioId);
-
-            return error || !data ? [] : data;
+            query = query.eq('id', comercioId);
         }
+
+        if (!this.isAdmin()) {
+            query = query.eq('usuario_id', propietarioId);
+        }
+
+        if (comercioId) {
+            const { data } = await query.maybeSingle();
+            return data ? [data] : [];
+        }
+
+        const { data, error } = await query;
+        return error || !data ? [] : data;
     }
 
     async getActividadReciente(propietarioId: string, comercioId?: string): Promise<ActividadUsuario[]> {
@@ -356,6 +366,71 @@ export class DashboardService {
         return actividades
             .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
             .slice(0, 5);
+    }
+
+    /**
+     * Últimas actividades globales (favoritos/comentarios/calificaciones) en todos los comercios.
+     */
+    async getActividadRecienteGlobal(limit = 5): Promise<ActividadUsuario[]> {
+        const { data: comercios } = await this.supabase
+            .from('pick_comercios')
+            .select('id, nombre');
+
+        if (!comercios || comercios.length === 0) return [];
+
+        const comercioMap = new Map<string, string>();
+        const comercioIds: string[] = [];
+
+        for (const c of comercios) {
+            comercioMap.set(c.id, c.nombre);
+            comercioIds.push(c.id);
+        }
+
+        const favoritosQuery = this.supabase
+            .from('pick_usuarios_comercios_favoritos')
+            .select('usuario_id, comercio_id, fecha_favorito')
+            .in('comercio_id', comercioIds)
+            .order('fecha_favorito', { ascending: false })
+            .limit(limit * 2);
+
+        const comentariosQuery = this.supabase
+            .from('pick_comentarios')
+            .select('usuario_id, comercio_id, calificacion, comentario, fecha_comentario')
+            .in('comercio_id', comercioIds)
+            .eq('estatus', 'activo')
+            .order('fecha_comentario', { ascending: false })
+            .limit(limit * 2);
+            
+        const [favoritosResult, comentariosResult] = await Promise.all([favoritosQuery, comentariosQuery]);
+
+        const favoritos = favoritosResult.data ?? [];
+        const comentarios = comentariosResult.data ?? [];
+
+        const actividades: ActividadUsuario[] = [];
+
+        for (const fav of favoritos) {
+            actividades.push({
+                tipo: 'favorito',
+                usuarioNombre: await this.getNombreUsuario(fav.usuario_id),
+                comercioNombre: comercioMap.get(fav.comercio_id) ?? '',
+                fecha: fav.fecha_favorito,
+            });
+        }
+
+        for (const com of comentarios) {
+            actividades.push({
+                tipo: com.comentario ? 'comentario' : 'calificacion',
+                usuarioNombre: await this.getNombreUsuario(com.usuario_id),
+                comercioNombre: comercioMap.get(com.comercio_id) ?? '',
+                fecha: com.fecha_comentario,
+                calificacion: com.calificacion,
+                comentario: com.comentario,
+            });
+        }
+
+        return actividades
+            .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+            .slice(0, limit);
     }
 
 

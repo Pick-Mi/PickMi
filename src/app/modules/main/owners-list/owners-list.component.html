@@ -59,7 +59,15 @@
             <td>
               <div class="owners-list__user">
                 <div class="owners-list__avatar">
-                  {{ (propietario.nombre || '?').charAt(0) }}{{ (propietario.apellido || '').charAt(0) }}
+                  <img
+                    *ngIf="propietario.avatar_url; else avatarIniciales"
+                    [src]="propietario.avatar_url"
+                    alt="Avatar de {{ propietario.nombre }}"
+                    class="owners-list__avatar-img"
+                  />
+                  <ng-template #avatarIniciales>
+                    {{ (propietario.nombre || '?').charAt(0) }}{{ (propietario.apellido || '').charAt(0) }}
+                  </ng-template>
                 </div>
                 <div>
                   <p class="owners-list__name">{{ propietario.nombre }} {{ propietario.apellido }}</p>

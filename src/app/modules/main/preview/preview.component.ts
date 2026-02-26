@@ -41,7 +41,6 @@ export class PreviewComponent implements OnInit, AfterViewInit {
   horarios: PickHorarios[] = [];
   imagenes: PickGallery[] = [];
   isOpenNow: boolean = false;
-  activeIndex = 0;
   comercioId!: string;
 
   constructor(
@@ -57,10 +56,6 @@ export class PreviewComponent implements OnInit, AfterViewInit {
       this.comercioId = comercioId;
       this.loaderService.show();
       this.loadPreviewData(comercioId);
-
-      setInterval(() => {
-        this.activeIndex = (this.activeIndex + 1) % this.imagenes.length;
-      }, 10000);
     }
   }
 
@@ -152,6 +147,25 @@ export class PreviewComponent implements OnInit, AfterViewInit {
 
   regresar(): void {
     this.router.navigate(['/stores-list']);
+  }
+
+  get bannerImagen(): string {
+    return this.comercio?.banner_url || 'assets/img/banner-business-1.jpg';
+  }
+
+  get totalComentarios(): number {
+    return this.comercio?.total_reviews ?? 0;
+  }
+
+  get promedioCalificacion(): number {
+    return this.comercio?.promedio_calificacion ?? 0;
+  }
+
+  generateThumbs(rate: number): string[] {
+    const rounded = Math.round(rate || 0);
+    return Array.from({ length: 5 }, (_, idx) =>
+      idx < rounded ? 'assets/svg/like.svg' : 'assets/svg/like_empty.svg'
+    );
   }
 
   get totalPages(): number {

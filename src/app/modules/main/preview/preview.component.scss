@@ -64,6 +64,7 @@
   flex-direction: column;
   background-color: transparent;
   padding: 0;
+  position: relative;
 }
 
 .catalog-img {
@@ -76,7 +77,7 @@
 }
 
 .catalogInfo {
-  background: rgb(247, 247, 247);
+  background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.85) 100%);
   padding: 0.5rem;
   position: absolute;
   bottom: 0;
@@ -84,4 +85,12 @@
   text-align: center;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+  color: #fff;
+
+  h6,
+  p,
+  span {
+    color: #fff;
+    font-weight: 500;
+  }
 }

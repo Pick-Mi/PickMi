@@ -94,7 +94,8 @@ export class ProfileService {
           estatus,
           tipo_usuario,
           telefono,
-          fecha_creacion
+          fecha_creacion,
+          avatar_url
         )
       `)
       .order('created_at', { ascending: false });
@@ -164,7 +165,7 @@ export class ProfileService {
 
     const { data: comercios } = await this.supabase
       .from('pick_comercios')
-      .select('id, nombre, estatus, tipo_entrega')
+      .select('id, nombre, estatus, tipo_entrega, descripcion, logo_url, banner_url')
       .eq('propietario_id', propietarioId);
 
     const usuario = (data.usuario ?? {}) as any;

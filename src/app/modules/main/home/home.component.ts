@@ -127,7 +127,8 @@ export class HomeComponent implements OnInit {
         categories: ordered.map(d => `ðŸ‘ ${d.calificacion}`),
       };
       
-      this.actividadReciente = await this.dashboardService.getActividadReciente(uid, this.comercioSeleccionado);
+      // Últimas actividades globales (top 5)
+      this.actividadReciente = await this.dashboardService.getActividadRecienteGlobal(5);
       
   }
 

@@ -41,6 +41,9 @@ export interface ComercioResumen {
     nombre: string;
     estatus?: string | null;
     tipo_entrega?: string | null;
+    descripcion?: string | null;
+    logo_url?: string | null;
+    banner_url?: string | null;
 }
 
 export interface PropietarioDetalle extends PropietarioListado {
