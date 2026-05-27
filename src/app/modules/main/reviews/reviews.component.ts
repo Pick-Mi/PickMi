@@ -5,6 +5,8 @@ import { ReviewsService } from '../../../core/services/reviews.service';
 import { PickReview } from '../../../data/interfaces/reviews';
 import * as sweetAlert from '../../../data/utils/alerts';
 
+type Orden = 'recientes' | 'mejor' | 'peor';
+
 @Component({
   selector: 'app-reviews',
   standalone: true,
@@ -23,6 +25,12 @@ export class ReviewsComponent implements OnInit {
 
   busqueda = '';
   estatusFiltro: 'todos' | 'activo' | 'inactivo' = 'todos';
+  calificacionFiltro: number | 'todas' = 'todas';
+  orden: Orden = 'recientes';
+
+  // stats
+  promedioCalificacion: number | null = null;
+  totalReportadas = 0;
 
   ngOnInit(): void {
     this.cargarReviews();
@@ -43,12 +51,29 @@ export class ReviewsComponent implements OnInit {
       this.reviews = data;
       this.totalRegistros = total;
       this.totalPaginas = Math.max(1, Math.ceil(total / this.registrosPorPagina));
+
+      if (data.length) {
+        const sum = data.reduce((acc, r) => acc + (r.calificacion ?? 0), 0);
+        this.promedioCalificacion = sum / data.length;
+      } else {
+        this.promedioCalificacion = null;
+      }
     } catch (error) {
       console.error(error);
       sweetAlert.alertError('No se pudieron cargar los reviews.');
     } finally {
       this.loading = false;
     }
+  }
+
+  get reviewsOrdenadas(): PickReview[] {
+    let result = [...this.reviews];
+    if (this.calificacionFiltro !== 'todas') {
+      result = result.filter(r => Math.floor(r.calificacion) === this.calificacionFiltro);
+    }
+    if (this.orden === 'mejor') result.sort((a, b) => b.calificacion - a.calificacion);
+    else if (this.orden === 'peor') result.sort((a, b) => a.calificacion - b.calificacion);
+    return result;
   }
 
   aplicarFiltros(): void {
@@ -59,13 +84,17 @@ export class ReviewsComponent implements OnInit {
   limpiarFiltros(): void {
     this.busqueda = '';
     this.estatusFiltro = 'todos';
+    this.calificacionFiltro = 'todas';
+    this.orden = 'recientes';
     this.aplicarFiltros();
   }
 
+  setOrden(orden: Orden): void {
+    this.orden = orden;
+  }
+
   cambiarPagina(nuevaPagina: number): void {
-    if (nuevaPagina < 1 || nuevaPagina > this.totalPaginas) {
-      return;
-    }
+    if (nuevaPagina < 1 || nuevaPagina > this.totalPaginas) return;
     this.paginaActual = nuevaPagina;
     this.cargarReviews();
   }
@@ -89,11 +118,7 @@ export class ReviewsComponent implements OnInit {
   }
 
   async eliminarReview(review: PickReview): Promise<void> {
-    const confirmDelete = confirm('¿Estás seguro de eliminar esta reseña? Esta acción no se puede deshacer.');
-    if (!confirmDelete) {
-      return;
-    }
-
+    if (!confirm('¿Estás seguro de eliminar esta reseña? Esta acción no se puede deshacer.')) return;
     try {
       await this.reviewsService.eliminarReview(review.id);
       this.reviews = this.reviews.filter(r => r.id !== review.id);
@@ -112,13 +137,11 @@ export class ReviewsComponent implements OnInit {
 
   generateThumbs(rating: number): string[] {
     const thumbs: string[] = [];
-    const fullThumbs = Math.floor(rating);
-    const halfThumb = rating % 1 >= 0.5;
-
-    for (let i = 0; i < fullThumbs; i++) thumbs.push('assets/svg/like.svg');
-    if (halfThumb) thumbs.push('assets/svg/like_half.svg');
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.5;
+    for (let i = 0; i < full; i++) thumbs.push('assets/svg/like.svg');
+    if (half) thumbs.push('assets/svg/like_half.svg');
     while (thumbs.length < 5) thumbs.push('assets/svg/like_empty.svg');
-
     return thumbs;
   }
 }

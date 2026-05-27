@@ -1,11 +1,9 @@
-<div class="slides-wrapper" [formGroup]="slideForm">
+<div class="page-wrapper" [formGroup]="slideForm">
   <app-back-button [link]="'/configurations'" label="Regresar a configuraciones"></app-back-button>
 
-  <div class="heading">
-    <div>
-      <h1 class="mb-2">Slides {{ targetLabel }}</h1>
-      <p class="text-muted mb-0">Gestiona las imágenes que aparecen en la sección {{ targetLabel | lowercase }}.</p>
-    </div>
+  <div class="page-header">
+    <h2>Slides {{ targetLabel }}</h2>
+    <p>Gestiona las imágenes que aparecen en la sección {{ targetLabel | lowercase }}.</p>
   </div>
 
   <div class="card slide-form-card">
@@ -36,15 +34,12 @@
             <input type="number" class="form-control" formControlName="position" min="0">
           </div>
           <div class="col-sm-6 d-flex align-items-end">
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="isActive" formControlName="is_active">
-              <label class="form-check-label" for="isActive">Activo</label>
-            </div>
+            <app-toggle-switch formControlName="is_active" label="Activo" color="#7e7cb9"></app-toggle-switch>
           </div>
         </div>
 
         <button type="button"
-                class="btn btn-primary mt-3"
+                class="btn--primary mt-3"
                 (click)="guardarSlide()"
                 [disabled]="saving">
           {{ saving ? 'Guardando...' : 'Guardar slide' }}
@@ -71,10 +66,10 @@
             <span class="badge" [class.active]="slide.is_active">{{ slide.is_active ? 'Activo' : 'Inactivo' }}</span>
           </div>
           <div class="actions">
-            <button type="button" class="btn btn-secondary btn-sm" (click)="cambiarEstado(slide)">
+            <button type="button" class="btn--ghost btn--sm" (click)="cambiarEstado(slide)">
               {{ slide.is_active ? 'Desactivar' : 'Activar' }}
             </button>
-            <button type="button" class="btn btn-outline-danger btn-sm" (click)="eliminarSlide(slide)">Eliminar</button>
+            <button type="button" class="btn--outline-danger btn--sm" (click)="eliminarSlide(slide)">Eliminar</button>
           </div>
         </div>
       </div>

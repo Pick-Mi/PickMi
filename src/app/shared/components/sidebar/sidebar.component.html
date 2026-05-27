@@ -1,27 +1,58 @@
-<!-- Dashboard Sidebar Start -->
-    <div class="user-dashboard-inner h-100 border-end border-2 py-5 p-3 d-lg-block d-none">
-        <div class="dashboard_users mb-4">
-            <div class="square--80 circle mx-auto mb-1">
-                <img [src]="avatar" class="img-fluid circle" alt="Avatar del usuario">
-            </div>
-            <div class="user-nameTitle text-center">
-                  <h4 class="lh-base fw-semibold text-light mb-0">Bienvenido</h4>
-                  <h6 class="text-light fw-medium opacity-75 mb-0">
-                      {{ usuario?.nombre || 'Usuario' }} {{ usuario?.apellido || '' }}
-                  </h6>
-              </div>
-          </div>
-        <div class="dashboard_Menu">
-            <ul>
-                <li><a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" routerLink="/"><i class="fa-solid fa-gauge-high me-2"></i>Dashboard</a></li>
-                <li><a [ngClass]="{ 'active': isScheduleActive() }" routerLink="/configurations"><i class="fa-solid fa-gear me-2"></i>Configuraciones</a></li>
-                <li><a [ngClass]="{ 'active': isGalleryActive() }" routerLink="/reports"><i class="fa-solid fa-chart-line me-2"></i>Reportes</a></li>
-                <li><a [ngClass]="{ 'active': isMessagesActive() }" routerLink="/messages"><i class="fa-solid fa-envelope-open-text me-2"></i>Mensajes</a></li>
-                <li><a [ngClass]="{ 'active': isMenusActive() }" routerLink="/users-list"><i class="fa-solid fa-users me-2"></i>Usuarios</a></li>
-                <li><a [ngClass]="{ 'active': isMenusActive() }" routerLink="/owners-list"><i class="fa-solid fa-user-check me-2"></i>Propietarios</a></li>
-                <li><a [ngClass]="{ 'active': isStoresActive() }" routerLink="/stores-list"><i class="fa-solid fa-store me-2"></i>Comercios</a></li>
-                <li><a [ngClass]="{ 'active': isReviewsActive() }" routerLink="/reviews"><i class="fa-solid fa-comments me-2"></i>Reseñas</a></li>
-            </ul>
-        </div>
+<nav class="pm-sidebar">
+
+  <!-- Identity block -->
+  <div class="pm-sidebar__identity">
+    <div class="pm-sidebar__avatar">
+      <img *ngIf="usuario?.avatar_url" [src]="usuario!.avatar_url" alt="Avatar del usuario">
+      <span *ngIf="!usuario?.avatar_url">
+        {{ (usuario?.nombre?.charAt(0) || 'A').toUpperCase() }}
+      </span>
     </div>
-<!-- Dashboard Sidebar End -->
+    <h4 class="pm-sidebar__welcome">Bienvenido</h4>
+    <p class="pm-sidebar__name">{{ usuario?.nombre || 'Usuario' }} {{ usuario?.apellido || '' }}</p>
+    <span class="pm-sidebar__role">Administrador</span>
+  </div>
+
+  <!-- Platform group -->
+  <div class="pm-sidebar__group">
+    <span class="pm-sidebar__group-label">Plataforma</span>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="pm-sidebar__item">
+      <i class="fa-solid fa-gauge-high"></i>
+      <span>Dashboard</span>
+    </a>
+    <a routerLink="/configurations" routerLinkActive="active" class="pm-sidebar__item">
+      <i class="fa-solid fa-gear"></i>
+      <span>Configuraciones</span>
+    </a>
+    <a routerLink="/reports" routerLinkActive="active" class="pm-sidebar__item">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>Reportes</span>
+    </a>
+    <a routerLink="/messages" routerLinkActive="active" class="pm-sidebar__item">
+      <i class="fa-solid fa-envelope-open-text"></i>
+      <span>Mensajes</span>
+    </a>
+  </div>
+
+  <!-- Community group -->
+  <div class="pm-sidebar__group">
+    <span class="pm-sidebar__group-label">Comunidad</span>
+    <a routerLink="/users-list" routerLinkActive="active" class="pm-sidebar__item">
+      <i class="fa-solid fa-users"></i>
+      <span>Usuarios</span>
+    </a>
+    <a routerLink="/owners-list" routerLinkActive="active" class="pm-sidebar__item">
+      <i class="fa-solid fa-user-check"></i>
+      <span>Propietarios</span>
+    </a>
+    <a routerLink="/stores-list" routerLinkActive="active" class="pm-sidebar__item">
+      <i class="fa-solid fa-store"></i>
+      <span>Comercios</span>
+    </a>
+    <a routerLink="/reviews" routerLinkActive="active" class="pm-sidebar__item">
+      <i class="fa-solid fa-comments"></i>
+      <span>Reseñas</span>
+    </a>
+  </div>
+
+</nav>

@@ -1,26 +1,3 @@
-.plans {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 2.5rem;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.title {
-  margin: 0;
-  font-weight: 700;
-}
-
-.subtitle {
-  margin: 0;
-  color: #6c757d;
-}
-
 .grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;

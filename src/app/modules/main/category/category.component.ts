@@ -7,11 +7,12 @@ import { PickCategoria, PickSubcategoria } from '../../../data/interfaces/catego
 import { BusinessType } from '../../../data/interfaces/business-type';
 import { BackButtonComponent } from '../../../shared/components/back-button/back-button.component';
 import * as sweetAlert from '../../../data/utils/alerts';
+import { ToggleSwitchComponent } from '../../../shared/components/toggle-switch/toggle-switch.component';
 
 @Component({
   selector: 'app-category',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, BackButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, BackButtonComponent, ToggleSwitchComponent],
   templateUrl: './category.component.html',
   styleUrls: ['./category.component.scss']
 })

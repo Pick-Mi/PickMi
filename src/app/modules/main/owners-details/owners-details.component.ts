@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProfileService } from '../../../core/services/profile.service';
 import { ComercioResumen, PropietarioDetalle } from '../../../data/interfaces/usuarios';
+import { BackButtonComponent } from '../../../shared/components/back-button/back-button.component';
 
 enum PlanEstadoView {
   SinPlan = 'sin_plan',
@@ -15,7 +16,7 @@ enum PlanEstadoView {
 @Component({
   selector: 'app-owners-details',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, BackButtonComponent],
   templateUrl: './owners-details.component.html',
   styleUrl: './owners-details.component.scss'
 })
@@ -57,10 +58,6 @@ export class OwnersDetailsComponent implements OnInit {
       this.diasRestantesValor = this.calcularDiasRestantes(data.plan_activo_fin);
     }
     this.loading = false;
-  }
-
-  regresar(): void {
-    this.router.navigate(['/owners-list']);
   }
 
   diasRestantes(): number | null {
@@ -111,16 +108,11 @@ export class OwnersDetailsComponent implements OnInit {
 
   badgeClass(): string {
     switch (this.estadoView) {
-      case PlanEstadoView.Trial:
-        return 'badge badge--warning';
-      case PlanEstadoView.Activo:
-        return 'badge badge--success';
-      case PlanEstadoView.Expirado:
-        return 'badge badge--danger';
-      case PlanEstadoView.PendienteCambio:
-        return 'badge badge--info';
-      default:
-        return 'badge';
+      case PlanEstadoView.Trial:       return 'od__row-badge od__row-badge--warning';
+      case PlanEstadoView.Activo:      return 'od__row-badge od__row-badge--success';
+      case PlanEstadoView.Expirado:    return 'od__row-badge od__row-badge--danger';
+      case PlanEstadoView.PendienteCambio: return 'od__row-badge od__row-badge--info';
+      default:                         return 'od__row-badge od__row-badge--neutral';
     }
   }
 
@@ -128,9 +120,38 @@ export class OwnersDetailsComponent implements OnInit {
     return this.propietario?.comercios ?? [];
   }
 
+  private readonly AVATAR_COLORS = [
+    { bg: '#fee2e2', text: '#b91c1c' },
+    { bg: '#fce7f3', text: '#be185d' },
+    { bg: '#ede9fe', text: '#6d28d9' },
+    { bg: '#dbeafe', text: '#1d4ed8' },
+    { bg: '#dcfce7', text: '#15803d' },
+    { bg: '#fef3c7', text: '#b45309' },
+    { bg: '#e0f2fe', text: '#0369a1' },
+    { bg: '#f3e8ff', text: '#7e22ce' },
+  ];
+
+  get avatarColors(): { bg: string; text: string } {
+    const nombre = this.propietario?.nombre || 'A';
+    return this.AVATAR_COLORS[nombre.charCodeAt(0) % this.AVATAR_COLORS.length];
+  }
+
+  get initiales(): string {
+    const n = this.propietario;
+    if (!n) return '?';
+    return `${(n.nombre || '?').charAt(0)}${(n.apellido || '').charAt(0)}`.toUpperCase();
+  }
+
   onPreview(store: ComercioResumen): void {
     if (!store?.id) return;
     this.router.navigate(['/preview/stores', store.id]);
+  }
+
+  stripHtml(html: string | null | undefined): string {
+    if (!html) return 'Sin descripción aún.';
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return (div.textContent || div.innerText || 'Sin descripción aún.').replace(/ /g, ' ');
   }
 
   private calcularEstadoPlan(data: PropietarioDetalle): PlanEstadoView {

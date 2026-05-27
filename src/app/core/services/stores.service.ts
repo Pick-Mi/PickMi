@@ -25,12 +25,27 @@ export class StoresService {
   }
 
   async listarComercios(): Promise<{ comercios: PickComercio[]; error: string | null }> {
-    const { data, error } = await this.supabase
-      .from('pick_comercios')
-      .select('*')
-      .order('fecha_creacion', { ascending: false });
+    const [{ data, error }, { data: tipos }, { data: propietarios }] = await Promise.all([
+      this.supabase.from('pick_comercios').select('*').order('fecha_creacion', { ascending: false }),
+      this.supabase.from('pick_tipo_comercio').select('id, nombre'),
+      this.supabase.from('pick_propietarios').select('id, usuario:usuario_id (nombre, apellido)'),
+    ]);
 
-    return { comercios: data || [], error: error?.message || null };
+    if (error) return { comercios: [], error: error.message };
+
+    const tipoMap = new Map((tipos ?? []).map((t: any) => [t.id, t.nombre]));
+    const propMap = new Map((propietarios ?? []).map((p: any) => {
+      const u = Array.isArray(p.usuario) ? p.usuario[0] : p.usuario;
+      return [p.id, u ? `${u.nombre ?? ''} ${u.apellido ?? ''}`.trim() : null];
+    }));
+
+    const comercios: PickComercio[] = (data ?? []).map((item: any) => ({
+      ...item,
+      tipo_comercio_nombre: tipoMap.get(item.tipo_comercio_id) ?? null,
+      propietario_nombre: propMap.get(item.propietario_id) ?? null,
+    } as PickComercio));
+
+    return { comercios, error: null };
   }
 
   async obtenerComerciosPorUsuario(usuarioId: string | undefined): Promise<{ comercios: PickComercio[]; error: string | null }> {

@@ -1,8 +1,8 @@
-<div class="business-type">
+<div class="page-wrapper">
   <app-back-button [link]="'/configurations'" label="Regresar a configuraciones"></app-back-button>
-  <div class="heading">
-    <h2 class="mb-2">Tipos de negocio</h2>
-    <p class="text-muted mb-0">Administra los tipos disponibles para clasificar los comercios.</p>
+  <div class="page-header">
+    <h2>Tipos de negocio</h2>
+    <p>Administra los tipos disponibles para clasificar los comercios.</p>
   </div>
 
   <div class="card form-card">
@@ -31,18 +31,15 @@
         </div>
 
         <div class="col-md-6">
-          <div class="form-check form-switch align-switch">
-            <input class="form-check-input" type="checkbox" formControlName="estado" id="estadoSwitch">
-            <label class="form-check-label" for="estadoSwitch">Activo</label>
-          </div>
+          <app-toggle-switch formControlName="estado" label="Activo" color="#7e7cb9"></app-toggle-switch>
         </div>
       </div>
 
       <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn btn-primary" [disabled]="saving">
+        <button type="submit" class="btn--primary" [disabled]="saving">
           {{ saving ? 'Guardando...' : (editingId ? 'Actualizar' : 'Crear') }}
         </button>
-        <button type="button" class="btn btn-outline-secondary" (click)="cancelarEdicion()" *ngIf="editingId">
+        <button type="button" class="btn--ghost" (click)="cancelarEdicion()" *ngIf="editingId">
           Cancelar
         </button>
       </div>
@@ -82,12 +79,12 @@
               </span>
             </td>
             <td>
-              <div class="btn-group">
-                <button class="btn btn-sm btn-outline-primary" (click)="editarTipo(tipo)">Editar</button>
-                <button class="btn btn-sm btn-outline-secondary" (click)="alternarEstado(tipo)">
+              <div class="d-flex gap-1">
+                <button class="btn--outline btn--sm" (click)="editarTipo(tipo)">Editar</button>
+                <button class="btn--ghost btn--sm" (click)="alternarEstado(tipo)">
                   {{ tipo.estado ? 'Desactivar' : 'Activar' }}
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="eliminarTipo(tipo)">Eliminar</button>
+                <button class="btn--outline-danger btn--sm" (click)="eliminarTipo(tipo)">Eliminar</button>
               </div>
             </td>
           </tr>

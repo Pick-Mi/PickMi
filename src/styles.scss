@@ -1,4 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
 @use '../node_modules/@swimlane/ngx-datatable/index.css';
 @use '../node_modules/@swimlane/ngx-datatable/themes/material.scss';
 @use '../node_modules/@swimlane/ngx-datatable/themes/dark.scss';
@@ -6,5 +5,268 @@
 @use '../node_modules/@swimlane/ngx-datatable/assets/icons.css';
 @use '@angular/material' as mat;
 
+
+:root {
+  
+  --pm-bg:               #f5f4f7;
+  --pm-surface:          #ffffff;
+
+  
+  --pm-accent:           oklch(0.58 0.13 285);
+  --pm-accent-strong:    oklch(0.50 0.15 285);
+  --pm-accent-soft:      oklch(0.95 0.035 285);
+  --pm-accent-ink:       oklch(0.32 0.10 285);
+
+  
+  --pm-danger:           oklch(0.60 0.16 25);
+
+  
+  --pm-chrome-header:    #0d0d12;
+  --pm-chrome-sidebar:   #181820;
+  --pm-chrome-active-bg: rgba(140, 116, 220, 0.22);
+
+  
+  --pm-text:             #1a1a28;
+  --pm-text-muted:       #6c6c84;
+
+  
+  --pm-radius-sm:        8px;
+  --pm-radius:           12px;
+  --pm-radius-lg:        16px;
+  --pm-radius-pill:      999px;
+
+  
+  --pm-shadow:    0 1px 0 rgba(20,20,30,.04), 0 2px 6px rgba(20,20,30,.04), 0 8px 24px rgba(20,20,30,.06);
+  --pm-shadow-lg: 0 1px 0 rgba(20,20,30,.04), 0 4px 12px rgba(20,20,30,.06), 0 16px 48px rgba(20,20,30,.10);
+
+  
+  --pm-navbar-height: 64px;
+  --pm-sidebar-width: 248px;
+  --pm-content-max:   1100px;
+}
+
+
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--pm-bg);
+  color: var(--pm-text);
+}
+
+
+.page-wrapper {
+  max-width: var(--pm-content-max);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.page-header h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--pm-text);
+}
+
+.page-header p {
+  color: var(--pm-text-muted);
+  margin: 0;
+}
+
+
+.pm-card {
+  background: var(--pm-surface);
+  border-radius: var(--pm-radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--pm-shadow);
+}
+
+
+.pm-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.pm-stat {
+  background: var(--pm-surface);
+  border-radius: var(--pm-radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--pm-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pm-stat__label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pm-text-muted);
+}
+
+.pm-stat__value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--pm-text);
+  line-height: 1.1;
+}
+
+.pm-stat__hint {
+  font-size: 0.8rem;
+  color: var(--pm-text-muted);
+}
+
+
+.pm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.pm-table th {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pm-text-muted);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  white-space: nowrap;
+}
+
+.pm-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  color: var(--pm-text);
+  vertical-align: middle;
+}
+
+.pm-table tbody tr:last-child td { border-bottom: none; }
+.pm-table tbody tr:hover td { background: rgba(0, 0, 0, 0.02); }
+
+
+.pm-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--pm-radius-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pm-badge--success { color: #1a6b3a; background: rgba(26, 107, 58, 0.12); }
+.pm-badge--warning { color: #7a5200; background: rgba(255, 167, 0, 0.15); }
+.pm-badge--danger  { color: #b71c1c; background: rgba(183, 28, 28, 0.10); }
+.pm-badge--info    { color: #1565c0; background: rgba(21, 101, 192, 0.10); }
+.pm-badge--neutral { color: var(--pm-text-muted); background: rgba(0, 0, 0, 0.07); }
+.pm-badge--accent  { color: var(--pm-accent-ink); background: var(--pm-accent-soft); }
+
+
+.pm-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--pm-accent-soft);
+  color: var(--pm-accent-ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.pm-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.pm-avatar--sm  { width: 28px; height: 28px; font-size: 0.7rem; }
+.pm-avatar--lg  { width: 48px; height: 48px; font-size: 1rem; }
+
+
+.pm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 0.75rem;
+  color: var(--pm-text-muted);
+  text-align: center;
+}
+
+.pm-empty__icon  { font-size: 2.5rem; opacity: 0.4; }
+.pm-empty__title { font-size: 1rem; font-weight: 600; color: var(--pm-text); margin: 0; }
+.pm-empty__desc  { font-size: 0.875rem; margin: 0; }
+
+
+@mixin _btn-base {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  border-radius: var(--pm-radius-sm);
+  padding: 0.55rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.btn--primary {
+  @include _btn-base;
+  background: var(--pm-accent);
+  color: #fff;
+  &:hover:not(:disabled) { opacity: 0.88; }
+}
+
+.btn--ghost {
+  @include _btn-base;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  color: #444;
+  &:hover:not(:disabled) { background: rgba(0, 0, 0, 0.05); }
+}
+
+.btn--danger {
+  @include _btn-base;
+  background: var(--pm-danger);
+  color: #fff;
+  &:hover:not(:disabled) { opacity: 0.88; }
+}
+
+.btn--outline {
+  @include _btn-base;
+  background: transparent;
+  border: 1px solid var(--pm-accent);
+  color: var(--pm-accent);
+  &:hover:not(:disabled) { background: var(--pm-accent-soft); }
+}
+
+.btn--success {
+  @include _btn-base;
+  background: #16a34a;
+  color: #fff;
+  &:hover:not(:disabled) { opacity: 0.88; }
+}
+
+.btn--outline-danger {
+  @include _btn-base;
+  background: transparent;
+  border: 1px solid var(--pm-danger);
+  color: var(--pm-danger);
+  &:hover:not(:disabled) { background: rgba(224, 80, 83, 0.06); }
+}
+
+.btn--sm {
+  padding: 0.35rem 0.85rem !important;
+  font-size: 0.82rem !important;
+}

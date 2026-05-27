@@ -5,6 +5,7 @@ import { PlansService } from '../../../core/services/plans.service';
 import { PickPlan } from '../../../data/interfaces/planes';
 import * as sweetAlert from '../../../data/utils/alerts';
 import { BackButtonComponent } from '../../../shared/components/back-button/back-button.component';
+import { ToggleSwitchComponent } from '../../../shared/components/toggle-switch/toggle-switch.component';
 
 interface LimitEntry {
   key: string;
@@ -19,7 +20,7 @@ interface FeatureEntry {
 @Component({
   selector: 'app-plans',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, BackButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, BackButtonComponent, ToggleSwitchComponent],
   templateUrl: './plans.component.html',
   styleUrls: ['./plans.component.scss']
 })

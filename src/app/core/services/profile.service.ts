@@ -86,6 +86,7 @@ export class ProfileService {
         onboarding_status,
         plan_solicitado_id,
         plan_solicitado_at,
+        plan_activo:plan_activo_id (nombre),
         usuario:usuario_id (
           id,
           nombre,
@@ -107,12 +108,14 @@ export class ProfileService {
 
     const propietarios: PropietarioListado[] = (data ?? []).map((item: any) => {
       const usuario = item.usuario ?? {};
+      const planActivo = Array.isArray(item.plan_activo) ? item.plan_activo[0] : item.plan_activo;
       return {
         propietario_id: item.id,
         onboarding_status: item.onboarding_status,
         plan_solicitado_id: item.plan_solicitado_id,
         plan_solicitado_at: item.plan_solicitado_at,
         plan_activo_id: item.plan_activo_id ?? null,
+        plan_activo_nombre: planActivo?.nombre ?? null,
         plan_estado: item.plan_estado ?? null,
         plan_activo_inicio: item.plan_activo_inicio ?? null,
         plan_activo_fin: item.plan_activo_fin ?? null,
@@ -150,7 +153,8 @@ export class ProfileService {
           estatus,
           tipo_usuario,
           telefono,
-          fecha_creacion
+          fecha_creacion,
+          avatar_url
         ),
         plan:plan_activo_id (id, nombre, slug, descripcion),
         plan_solicitado:plan_solicitado_id (id, nombre, slug, descripcion)

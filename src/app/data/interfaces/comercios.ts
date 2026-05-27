@@ -1,4 +1,6 @@
 export interface PickComercio {
+  tipo_comercio_nombre?: string | null;
+  propietario_nombre?: string | null;
   id?: string;
   nombre: string;
   descripcion?: string;

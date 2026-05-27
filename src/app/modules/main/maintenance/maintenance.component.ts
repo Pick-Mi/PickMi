@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ConfigurationsService } from '../../../core/services/configurations.service';
 import { PickConfiguracionGlobal } from '../../../data/interfaces/configurations';
 import { BackButtonComponent } from '../../../shared/components/back-button/back-button.component';
+import { ToggleSwitchComponent } from '../../../shared/components/toggle-switch/toggle-switch.component';
 
 @Component({
   selector: 'app-maintenance',
   standalone: true,
-  imports: [CommonModule, FormsModule, BackButtonComponent],
+  imports: [CommonModule, FormsModule, BackButtonComponent, ToggleSwitchComponent],
   templateUrl: './maintenance.component.html',
   styleUrls: ['./maintenance.component.scss']
 })

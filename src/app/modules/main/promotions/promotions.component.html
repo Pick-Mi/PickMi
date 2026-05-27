@@ -1,10 +1,8 @@
-<div class="promotion-wrapper">
+<div class="page-wrapper">
   <app-back-button [link]="'/configurations/promotions/list'" label="Regresar a Promociones"></app-back-button>
-  <div class="heading">
-    <h2 class="mb-2">{{ editingId ? 'Editar promoción' : 'Nueva promoción' }}</h2>
-    <p class="text-muted mb-0">
-      Carga y recorta la imagen, define vigencia y montos.
-    </p>
+  <div class="page-header">
+    <h2>{{ editingId ? 'Editar promoción' : 'Nueva promoción' }}</h2>
+    <p>Carga y recorta la imagen, define vigencia y montos.</p>
   </div>
 
   <form class="card promo-form-card" [formGroup]="form" (ngSubmit)="submit()">
@@ -30,10 +28,10 @@
             (imageCropped)="imageCropped($event)">
           </image-cropper>
           <div class="cropper__actions">
-            <button class="btn btn-primary flex-fill d-flex align-items-center justify-content-center gap-2" (click)="cropperVisible = false">
+            <button class="btn--primary flex-fill" (click)="cropperVisible = false">
               Listo
             </button>
-            <button class="btn btn-outline-secondary flex-fill" type="button" (click)="cancelCropper()">
+            <button class="btn--ghost flex-fill" type="button" (click)="cancelCropper()">
               Cancelar
             </button>
           </div>
@@ -93,10 +91,10 @@
         </label>
 
         <div class="actions">
-          <button type="submit" class="btn btn-primary" [disabled]="saving || form.invalid">
+          <button type="submit" class="btn--primary" [disabled]="saving || form.invalid">
             {{ saving ? 'Guardando…' : (editingId ? 'Actualizar promoción' : 'Crear promoción') }}
           </button>
-          <button type="button" class="btn ghost" (click)="resetForm()">Cancelar</button>
+          <button type="button" class="btn--ghost" (click)="resetForm()">Cancelar</button>
         </div>
       </div>
     </div>

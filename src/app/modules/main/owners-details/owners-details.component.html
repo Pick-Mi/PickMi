@@ -1,100 +1,172 @@
-<section class="owner-details">
-  <div class="owner-details__header">
-    <div>
-      <p class="owner-details__eyebrow">Propietario</p>
-      <h2>{{ propietario?.nombre }} {{ propietario?.apellido }}</h2>
-      <p class="owner-details__subtitle" *ngIf="propietario">
-        {{ propietario.email }} · {{ propietario.telefono || 'Sin teléfono' }}
-      </p>
-    </div>
-    <button class="btn btn--ghost" (click)="regresar()">Volver al listado</button>
+<div class="page-wrapper">
+
+  <app-back-button label="Volver al listado" link="/owners-list"></app-back-button>
+
+  <div *ngIf="loading" class="pm-empty">
+    <i class="pm-empty__icon fa-solid fa-spinner fa-spin"></i>
+    <p class="pm-empty__title">Cargando información…</p>
   </div>
 
-  <div *ngIf="loading" class="owner-details__state">Cargando información...</div>
-  <div *ngIf="error && !loading" class="owner-details__state owner-details__state--error">{{ error }}</div>
+  <div *ngIf="error && !loading" class="od__state od__state--error">{{ error }}</div>
 
-  <div *ngIf="!loading && propietario" class="owner-details__grid">
-    <div class="card">
-      <h3>Estado y plan</h3>
-      <div class="chip">Estatus usuario: {{ propietario.estatus }}</div>
-      <div class="chip">Onboarding: {{ propietario.onboarding_status || 'sin dato' }}</div>
-      <div class="chip">
-        Estado plan: <span [class]="badgeClass()">{{ badgeLabel() }}</span>
-      </div>
-      <div class="card__item">
-        <p class="label">Plan activo</p>
-        <p class="value">{{ propietario.plan?.nombre || 'Sin plan' }}</p>
-      </div>
-      <div class="card__item" *ngIf="propietario.plan_activo_inicio">
-        <p class="label">Inicio de ciclo</p>
-        <p class="value">{{ propietario.plan_activo_inicio | date:'medium' }}</p>
-      </div>
-      <div class="card__item" *ngIf="propietario.plan_activo_fin">
-        <p class="label">Fin de ciclo</p>
-        <p class="value">{{ propietario.plan_activo_fin | date:'medium' }}</p>
-        <small class="hint" *ngIf="diasRestantes() !== null">{{ diasRestantes() }} días restantes</small>
-      </div>
-      <div class="card__item" *ngIf="propietario.plan_activo_renueva">
-        <p class="label">Renovación</p>
-        <p class="value">Renovación automática activa</p>
-      </div>
-      <div class="card__item" *ngIf="propietario.plan_origen">
-        <p class="label">Origen del ciclo</p>
-        <p class="value">{{ propietario.plan_origen }}</p>
-      </div>
-      <div class="card__item">
-        <p class="label">Plan solicitado</p>
-        <p class="value">{{ propietario.plan_solicitado?.nombre || 'Sin solicitud' }}</p>
-      </div>
-      <div class="card__item" *ngIf="propietario.plan_solicitado_at">
-        <p class="label">Solicitado el</p>
-        <p class="value">{{ propietario.plan_solicitado_at | date:'medium' }}</p>
-      </div>
-      <div class="owner-details__state owner-details__state--info" *ngIf="estadoView === 'pendiente_cambio'">
-        Tiene un cambio de plan pendiente de aprobación.
-      </div>
-      <div class="owner-details__actions" *ngIf="estadoView === 'pendiente_cambio'">
-        <button class="btn btn--primary" (click)="aprobarPlan()" [disabled]="actionLoading">
-          {{ actionLoading ? 'Procesando...' : 'Aprobar solicitud' }}
-        </button>
-        <button class="btn btn--ghost" (click)="rechazarSolicitud()" [disabled]="actionLoading">
-          Rechazar solicitud
-        </button>
-      </div>
-    </div>
+  <ng-container *ngIf="!loading && propietario">
 
-    <div class="card">
-      <h3>Locales registrados ({{ stores.length }})</h3>
-      <div *ngIf="!stores.length" class="owner-details__state">No tiene locales registrados.</div>
-
-      <div *ngIf="stores.length" class="stores-stack mb-3">
-        <div class="store-card" *ngFor="let store of stores">
-          <div
-            class="store-banner"
-            [style.background-image]="'url(' + (store.banner_url || 'assets/img/banners.png') + ')'"
-          >
-            <div class="store-logo">
-              <img [src]="store.logo_url || 'assets/img/tienda.png'" alt="Logo" />
-            </div>
-          </div>
-
-          <div class="store-body">
-            <h4 class="store-title mb-2">{{ store.nombre }}</h4>
-            <p class="store-desc text-muted mb-3">
-              {{ store.descripcion || 'Sin descripción aún.' }}
-            </p>
-            <div class="store-tags mb-3">
-              <span class="chip">Estatus: {{ store.estatus || 'n/d' }}</span>
-              <span class="chip">Entrega: {{ store.tipo_entrega || 'n/d' }}</span>
-            </div>
-            <div class="actions actions-right">
-              <button class="btn pill icon dark" aria-label="Vista previa" (click)="onPreview(store)">
-                <i class="bi bi-search"></i>
-              </button>
-            </div>
-          </div>
+    <!-- Profile header card -->
+    <div class="pm-card od__profile-card">
+      <div class="od__profile-left">
+        <div class="od__avatar"
+          [style.background]="avatarColors.bg"
+          [style.color]="avatarColors.text">
+          <img *ngIf="propietario.avatar_url" [src]="propietario.avatar_url" alt="Avatar">
+          <span *ngIf="!propietario.avatar_url">{{ initiales }}</span>
+        </div>
+        <div>
+          <p class="od__eyebrow">Propietario</p>
+          <h2 class="od__profile-name">{{ propietario.nombre }} {{ propietario.apellido }}</h2>
+          <p class="od__profile-sub">{{ propietario.email }}<span *ngIf="propietario.telefono"> · {{ propietario.telefono }}</span></p>
+        </div>
+      </div>
+      <div class="od__profile-stats">
+        <div class="od__profile-stat">
+          <p class="od__profile-stat-label">Estatus</p>
+          <span class="od__status-badge" [class.od__status-badge--active]="propietario.estatus === 'activo'">
+            <span class="od__status-dot"></span>
+            {{ propietario.estatus }}
+          </span>
+        </div>
+        <div class="od__profile-stat">
+          <p class="od__profile-stat-label">Locales</p>
+          <p class="od__profile-stat-value">{{ stores.length }}</p>
+        </div>
+        <div class="od__profile-stat">
+          <p class="od__profile-stat-label">Reseñas recibidas</p>
+          <p class="od__profile-stat-value">0</p>
+        </div>
+        <div class="od__profile-stat">
+          <p class="od__profile-stat-label">Cliente desde</p>
+          <p class="od__profile-stat-date">{{ propietario.fecha_creacion | date:'MMM d, y' }}</p>
         </div>
       </div>
     </div>
-  </div>
-</section>
+
+    <!-- Two-column grid -->
+    <div class="od__grid">
+
+      <!-- Plan & status card -->
+      <div class="pm-card od__plan-card">
+        <div>
+          <h3 class="od__card-title">Estado y plan</h3>
+          <p class="od__card-subtitle">Información de suscripción y ciclo de pago</p>
+        </div>
+
+        <div class="od__rows">
+          <div class="od__row">
+            <p class="od__row-label">Estatus usuario</p>
+            <span class="od__row-badge od__row-badge--dot"
+              [class.od__row-badge--success]="propietario.estatus === 'activo'"
+              [class.od__row-badge--neutral]="propietario.estatus !== 'activo'">
+              <span class="od__badge-dot"></span>{{ propietario.estatus }}
+            </span>
+          </div>
+          <div class="od__row">
+            <p class="od__row-label">Onboarding</p>
+            <span class="od__row-badge od__row-badge--dot"
+              [class.od__row-badge--success]="propietario.onboarding_status === 'activo'"
+              [class.od__row-badge--neutral]="propietario.onboarding_status !== 'activo'">
+              <span class="od__badge-dot"></span>{{ propietario.onboarding_status || 'sin dato' }}
+            </span>
+          </div>
+        </div>
+
+        <hr class="od__divider">
+
+        <div class="od__rows">
+          <div class="od__row">
+            <p class="od__row-label">Plan activo</p>
+            <p class="od__row-value od__row-value--strong">{{ propietario.plan?.nombre || 'Sin plan' }}</p>
+          </div>
+          <div class="od__row" *ngIf="propietario.plan_activo_inicio">
+            <p class="od__row-label">Inicio de ciclo</p>
+            <p class="od__row-value">{{ propietario.plan_activo_inicio | date:'MMM d, y · h:mm a' }}</p>
+          </div>
+          <div class="od__row" *ngIf="propietario.plan_activo_fin">
+            <p class="od__row-label">Fin de ciclo</p>
+            <div class="od__row-value-group">
+              <p class="od__row-value">{{ propietario.plan_activo_fin | date:'MMM d, y · h:mm a' }}</p>
+              <small class="od__row-hint" *ngIf="diasRestantes() !== null">{{ diasRestantes() }} días restantes</small>
+            </div>
+          </div>
+          <div class="od__row" *ngIf="propietario.plan_origen">
+            <p class="od__row-label">Origen del ciclo</p>
+            <p class="od__row-value od__row-value--mono">{{ propietario.plan_origen }}</p>
+          </div>
+          <div class="od__row">
+            <p class="od__row-label">Plan solicitado</p>
+            <p class="od__row-value">{{ propietario.plan_solicitado?.nombre || 'Sin solicitud' }}</p>
+          </div>
+        </div>
+
+        <div class="od__state od__state--info" *ngIf="estadoView === 'pendiente_cambio'">
+          Tiene un cambio de plan pendiente de aprobación.
+        </div>
+
+        <div class="od__plan-actions" *ngIf="estadoView === 'pendiente_cambio'">
+          <button class="btn--primary" style="flex:1" [disabled]="actionLoading" (click)="aprobarPlan()">
+            {{ actionLoading ? 'Procesando…' : 'Aprobar solicitud' }}
+          </button>
+          <button class="btn--ghost" [disabled]="actionLoading" (click)="rechazarSolicitud()">
+            Rechazar
+          </button>
+        </div>
+        <div class="od__plan-actions" *ngIf="estadoView !== 'pendiente_cambio'">
+          <button class="btn--ghost" type="button">
+            <i class="fa-solid fa-clock-rotate-left"></i> Historial
+          </button>
+        </div>
+      </div>
+
+      <!-- Stores card -->
+      <div class="pm-card od__stores-card">
+        <div class="od__stores-header">
+          <div>
+            <h3 class="od__card-title">Locales registrados ({{ stores.length }})</h3>
+            <p class="od__card-subtitle">Comercios del propietario en la plataforma</p>
+          </div>
+        </div>
+
+        <div *ngIf="!stores.length" class="pm-empty">
+          <i class="pm-empty__icon fa-solid fa-store"></i>
+          <p class="pm-empty__title">Sin locales registrados</p>
+        </div>
+
+        <div *ngIf="stores.length" class="od__stores-grid">
+          <div class="od__store-card" *ngFor="let store of stores">
+            <div class="od__store-banner"
+              [style.background-image]="'url(' + (store.banner_url || 'assets/img/banners.png') + ')'">
+              <div class="od__store-logo">
+                <img [src]="store.logo_url || 'assets/img/tienda.png'" alt="Logo">
+              </div>
+            </div>
+            <div class="od__store-body">
+              <h4 class="od__store-name">{{ store.nombre }}</h4>
+              <p class="od__store-desc">{{ stripHtml(store.descripcion) }}</p>
+              <div class="od__store-tags">
+                <span class="pm-badge pm-badge--neutral">{{ store.estatus || 'n/d' }}</span>
+                <span class="pm-badge pm-badge--neutral">{{ store.tipo_entrega || 'n/d' }}</span>
+              </div>
+              <div class="od__store-actions">
+                <button class="od__preview-btn" aria-label="Vista previa" (click)="onPreview(store)">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</div>

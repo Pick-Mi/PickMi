@@ -13,13 +13,15 @@ import * as sweetAlert from '../../../data/utils/alerts';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import { PickCategoria, PickSubcategoria } from '../../../data/interfaces/categorias';
 import { LoaderService } from '../../../core/services/loader.service';
+import { ToggleSwitchComponent } from '../../../shared/components/toggle-switch/toggle-switch.component';
+import { BackButtonComponent } from '../../../shared/components/back-button/back-button.component';
 
 @Component({
   selector: 'app-stores',
   templateUrl: './stores.component.html',
   styleUrl: './stores.component.scss',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, ImageCropperComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ImageCropperComponent, ToggleSwitchComponent, BackButtonComponent],
 })
 export class StoresComponent implements OnInit {
   localForm!: FormGroup;

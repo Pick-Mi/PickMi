@@ -1,6 +1,6 @@
 
 .dashboard-container {
-  height: calc(100vh - 78px);
+  height: calc(100vh - var(--pm-navbar-height, 64px));
   display: flex;
   flex-direction: column;
 }
@@ -12,10 +12,11 @@
 }
 
 .sidebar {
-  width: 280px;
+  width: var(--pm-sidebar-width, 248px);
+  flex-shrink: 0;
   overflow-y: auto;
-  background-color: var(--bs-dashboard-bg);
-  transition: all 0.3s ease;
+  background: #2e3338;
+  transition: width 0.3s ease;
 }
 
 .main-content {
@@ -25,6 +26,7 @@
   position: relative;
   min-height: 0;
   overflow-y: auto;
+  background: var(--pm-bg, #f5f4f7);
 }
 
 @media (max-width: 992px) {

@@ -5,11 +5,12 @@ import { BusinessTypeService } from '../../../core/services/business-type.servic
 import { BusinessType } from '../../../data/interfaces/business-type';
 import * as sweetAlert from '../../../data/utils/alerts';
 import { BackButtonComponent } from '../../../shared/components/back-button/back-button.component';
+import { ToggleSwitchComponent } from '../../../shared/components/toggle-switch/toggle-switch.component';
 
 @Component({
   selector: 'app-business-type',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, BackButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, BackButtonComponent, ToggleSwitchComponent],
   templateUrl: './business-type.component.html',
   styleUrls: ['./business-type.component.scss']
 })

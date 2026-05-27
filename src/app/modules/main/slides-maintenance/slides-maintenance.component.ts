@@ -8,11 +8,12 @@ import { PickSlide } from '../../../data/interfaces/slides';
 import { AuthService } from '../../../core/services/auth.service';
 import * as sweetAlert from '../../../data/utils/alerts';
 import Swal from 'sweetalert2';
+import { ToggleSwitchComponent } from '../../../shared/components/toggle-switch/toggle-switch.component';
 
 @Component({
   selector: 'app-slides-maintenance',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, BackButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, BackButtonComponent, ToggleSwitchComponent],
   templateUrl: './slides-maintenance.component.html',
   styleUrls: ['./slides-maintenance.component.scss']
 })

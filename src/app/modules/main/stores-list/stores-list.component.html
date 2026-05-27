@@ -1,84 +1,172 @@
-<section class="stores-list">
-  <div class="stores-list__card stores-list__hero">
-    <header class="stores-list__header">
-      <div>
-        <p class="stores-list__eyebrow">Negocios</p>
-        <h3>Negocios registrados</h3>
-        <p class="stores-list__subtitle">
-          Revisa los comercios dados de alta en la plataforma. Refresca la lista para mantenerte al dia.
-        </p>
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <p class="sl__eyebrow">Comercios</p>
+    <h2>Negocios registrados</h2>
+    <p>Revisa los comercios dados de alta en la plataforma.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="sl__stats">
+    <div class="sl__stat-card">
+      <div class="sl__stat-top">
+        <div>
+          <p class="sl__stat-label">Negocios totales</p>
+          <p class="sl__stat-num">{{ negocios.length }}</p>
+        </div>
+        <div class="sl__stat-icon" style="background: #e0e7ff; color: #4338ca">
+          <i class="fa-solid fa-store"></i>
+        </div>
       </div>
-      <button class="stores-list__refresh" (click)="cargarNegocios()" [disabled]="loading">
-        {{ loading ? 'Actualizando...' : 'Actualizar' }}
-      </button>
-    </header>
-    <div class="stores-list__stats">
-      <div class="stores-list__stat">
-        <p class="stat-label">Negocios totales</p>
-        <p class="stat-value">{{ negocios.length }}</p>
+    </div>
+    <div class="sl__stat-card">
+      <div class="sl__stat-top">
+        <div>
+          <p class="sl__stat-label">Activos</p>
+          <p class="sl__stat-num">{{ totalActivos }}</p>
+        </div>
+        <div class="sl__stat-icon" style="background: #dcfce7; color: #15803d">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
       </div>
-      <div class="stores-list__stat">
-        <p class="stat-label">Activos</p>
-        <p class="stat-value">{{ negociosActivos }}</p>
+      <p class="sl__stat-hint">{{ porcentajeActivos }}% del total</p>
+    </div>
+    <div class="sl__stat-card">
+      <div class="sl__stat-top">
+        <div>
+          <p class="sl__stat-label">Pausados</p>
+          <p class="sl__stat-num">{{ totalPausados }}</p>
+        </div>
+        <div class="sl__stat-icon" style="background: #fef3c7; color: #b45309">
+          <i class="fa-solid fa-circle-pause"></i>
+        </div>
+      </div>
+    </div>
+    <div class="sl__stat-card">
+      <div class="sl__stat-top">
+        <div>
+          <p class="sl__stat-label">Pendiente verif.</p>
+          <p class="sl__stat-num">{{ totalPendiente }}</p>
+        </div>
+        <div class="sl__stat-icon" style="background: #e0f2fe; color: #0369a1">
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="stores-list__card stores-list__content">
-    <div class="stores-list__list-header">
-      <p>{{ negocios.length }} resultados</p>
+  <!-- Table card -->
+  <div class="pm-card">
+
+    <!-- Toolbar -->
+    <div class="sl__toolbar">
+      <div class="sl__tabs">
+        <button type="button" class="sl__tab" [class.sl__tab--active]="filtroTab === 'todos'" (click)="setFiltroTab('todos')">
+          Todos <span class="sl__tab-count">{{ negocios.length }}</span>
+        </button>
+        <button type="button" class="sl__tab" [class.sl__tab--active]="filtroTab === 'activos'" (click)="setFiltroTab('activos')">
+          Activos <span class="sl__tab-count">{{ totalActivos }}</span>
+        </button>
+        <button type="button" class="sl__tab" [class.sl__tab--active]="filtroTab === 'pausados'" (click)="setFiltroTab('pausados')">
+          Pausados <span class="sl__tab-count">{{ totalPausados }}</span>
+        </button>
+      </div>
+      <div class="sl__toolbar-right">
+        <div class="sl__search">
+          <i class="fa-solid fa-magnifying-glass sl__search-icon"></i>
+          <input type="text" [(ngModel)]="busqueda" placeholder="Buscar comercio" (input)="onBusqueda()" />
+        </div>
+        <div class="sl__select-wrap">
+          <select [(ngModel)]="filtroTipo">
+            <option value="todos">Todos los tipos</option>
+            <option *ngFor="let tipo of tiposDisponibles" [value]="tipo">{{ tipo }}</option>
+          </select>
+          <i class="fa-solid fa-chevron-down sl__select-icon"></i>
+        </div>
+      </div>
     </div>
 
-    <div *ngIf="error" class="stores-list__state stores-list__state--error">
-      {{ error }}
+    <div *ngIf="error" class="sl__state sl__state--error">{{ error }}</div>
+
+    <div *ngIf="loading && !error" class="pm-empty">
+      <i class="pm-empty__icon fa-solid fa-spinner fa-spin"></i>
+      <p class="pm-empty__title">Cargando negocios…</p>
     </div>
 
-    <div *ngIf="loading && !error" class="stores-list__state">
-      Cargando negocios...
+    <div *ngIf="!loading && !error && !negocios.length" class="pm-empty">
+      <i class="pm-empty__icon fa-solid fa-store"></i>
+      <p class="pm-empty__title">Sin negocios registrados</p>
+      <p class="pm-empty__desc">Aún no hay comercios dados de alta en la plataforma.</p>
     </div>
 
-    <div *ngIf="!loading && !error && !negocios.length" class="stores-list__state">
-      No hay negocios registrados por el momento.
-    </div>
-
-    <div *ngIf="!loading && negocios.length" class="stores-list__table-wrapper">
-      <table class="stores-list__table">
+    <div *ngIf="!loading && negocios.length" class="sl__table-wrap">
+      <table class="pm-table">
         <thead>
           <tr>
             <th>Nombre</th>
+            <th>Tipo</th>
             <th>Contacto</th>
-            <th>Telefono</th>
+            <th>Propietario</th>
             <th>Estatus</th>
             <th>Registrado</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let negocio of negocios; trackBy: trackByNegocio">
+          <tr *ngFor="let negocio of negociosFiltrados; let i = index; trackBy: trackByNegocio">
+
             <td>
-              <div class="stores-list__store">
-                <div class="stores-list__logo">
-                  <img *ngIf="negocio.logo_url; else initials" [src]="negocio.logo_url" alt="{{ negocio.nombre }}">
-                  <ng-template #initials>
-                    <span>{{ (negocio.nombre || '?').slice(0, 2).toUpperCase() }}</span>
-                  </ng-template>
+              <div class="sl__store">
+                <div class="sl__logo"
+                  [style.background]="negocio.logo_url ? 'transparent' : avatarColor(negocio.nombre).bg"
+                  [style.color]="avatarColor(negocio.nombre).text">
+                  <img *ngIf="negocio.logo_url" [src]="negocio.logo_url" [alt]="negocio.nombre">
+                  <span *ngIf="!negocio.logo_url">{{ initiales(negocio.nombre) }}</span>
                 </div>
-                <div>
-                  <p class="stores-list__name">{{ negocio.nombre }}</p>
-                  <!--p class="stores-list__location">{{ negocio.municipio || 'Sin ubicacion' }}</p-->
-                </div>
+                <p class="sl__name">{{ negocio.nombre }}</p>
               </div>
             </td>
-            <td>{{ negocio.email || 'Sin correo' }}</td>
-            <td>{{ negocio.telefono || 'Sin registro' }}</td>
+
             <td>
-              <span class="badge" [class.badge--success]="negocio.estatus === 'activo'">
-                {{ negocio.estatus || 'sin estatus' }}
+              <span class="sl__tipo-badge" *ngIf="negocio.tipo_comercio_nombre">
+                {{ negocio.tipo_comercio_nombre }}
+              </span>
+              <span *ngIf="!negocio.tipo_comercio_nombre" class="sl__muted">—</span>
+            </td>
+
+            <td>
+              <p class="sl__contact-email">{{ negocio.email || '—' }}</p>
+              <p class="sl__contact-phone">{{ negocio.telefono || '—' }}</p>
+            </td>
+
+            <td class="sl__owner">{{ negocio.propietario_nombre || '—' }}</td>
+
+            <td>
+              <span [class]="estatusBadgeClass(negocio)">
+                <span class="sl__badge-dot"></span>
+                {{ estatusLabel(negocio) }}
               </span>
             </td>
-            <td>{{ negocio.fecha_creacion | date:'mediumDate' }}</td>
+
+            <td class="sl__date">{{ negocio.fecha_creacion | date:'MMM d, y' }}</td>
+
+            <td>
+              <button class="sl__action-btn" (click)="verPreview(negocio)" title="Ver preview">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+            </td>
+
           </tr>
         </tbody>
       </table>
     </div>
+
+    <div class="sl__footer" *ngIf="!loading && negocios.length">
+      <span class="sl__footer-info">
+        {{ negociosFiltrados.length }} de {{ negocios.length }} resultado{{ negocios.length !== 1 ? 's' : '' }}
+      </span>
+    </div>
+
   </div>
-</section>
+
+</div>

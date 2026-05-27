@@ -1,0 +1,14 @@
+<div class="toggle-wrapper" [class.toggle-disabled]="disabled">
+  <div
+    class="toggle-track"
+    [class.toggle-on]="checked"
+    [style.--toggle-color]="color"
+    (click)="toggle()"
+    role="switch"
+    [attr.aria-checked]="checked"
+    [attr.aria-disabled]="disabled">
+    <span class="toggle-thumb"></span>
+    <span class="toggle-text">{{ checked ? 'SI' : 'NO' }}</span>
+  </div>
+  <span class="toggle-label" *ngIf="label">{{ label }}</span>
+</div>

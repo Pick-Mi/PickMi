@@ -1,0 +1,38 @@
+<div class="modal-backdrop" *ngIf="visible && product">
+  <div class="modal-card" role="dialog" aria-modal="true" appClickOutside (appClickOutside)="onClose()">
+    <button type="button" class="close-btn" aria-label="Cerrar" (click)="onClose()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div class="image-wrapper">
+      <img [src]="product.url_imagen || 'assets/img/tienda.png'" [alt]="product.nombre || 'Producto'">
+      <span *ngIf="hasPromotion" class="promo-badge">{{ promoLabel }}</span>
+      <button *ngIf="hasPrev" type="button" class="nav-btn nav-prev" (click)="prevClicked.emit()" aria-label="Anterior">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button *ngIf="hasNext" type="button" class="nav-btn nav-next" (click)="nextClicked.emit()" aria-label="Siguiente">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="content">
+      <div class="d-flex align-items-start justify-content-between gap-3">
+        <div class="flex-grow-1 min-w-0">
+          <h4 class="mb-1">{{ product.nombre }}</h4>
+          <p class="text-muted mb-2">{{ product.descripcion }}</p>
+        </div>
+        <div class="price-box text-end flex-shrink-0">
+          <ng-container *ngIf="product">
+            <div *ngIf="hasPromotion; else normalPrice" class="prices">
+              <span class="new">{{ displayPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span class="old">{{ product.precio | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+            <ng-template #normalPrice>
+              <span class="new">{{ product.precio | currency:'USD':'symbol':'1.2-2' }}</span>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

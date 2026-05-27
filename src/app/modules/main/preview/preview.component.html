@@ -6,11 +6,21 @@
     </svg>
   </button>
 
-  <div
-    class="slide active"
-    [ngStyle]="{ 'background-image': 'url(' + bannerImagen + ')' }"
-    data-overlay="4"
-  ></div>
+  <ng-container *ngIf="comercio.banner_url; else slideGaleria">
+    <div class="slide active" [ngStyle]="{ 'background-image': 'url(' + comercio.banner_url + ')' }"></div>
+  </ng-container>
+
+  <ng-template #slideGaleria>
+    <div
+      class="slide"
+      *ngFor="let banner of imagenes; let i = index"
+      [class.active]="i === activeIndex"
+      [ngStyle]="{ 'background-image': 'url(' + banner.url_imagen + ')' }">
+    </div>
+    <div *ngIf="imagenes.length === 0" class="slide active"
+      [ngStyle]="{ 'background-image': 'url(assets/img/banners.png)' }">
+    </div>
+  </ng-template>
 
   <div class="container h-100">
     <div class="row align-items-start">
@@ -20,7 +30,9 @@
             <div class="firstColumn">
               <div class="listingFirstinfo d-flex align-items-center justify-content-start gap-3 flex-wrap">
                 <div class="listingAvatar">
-                  <img [src]="comercio.logo_url || 'assets/img/tienda.png'" class="img-fluid rounded-3" width="95" alt="Avatar" />
+                  <a href="#" class="d-block">
+                    <img [src]="comercio.logo_url || 'assets/img/tienda.png'" class="img-fluid rounded-3" width="95" alt="Avatar" />
+                  </a>
                 </div>
                 <div class="listingCaptioninfo">
                   <div class="propertyTitlename d-flex align-items-center gap-2 mb-1">
@@ -78,6 +90,9 @@
       <li class="nav-item">
         <a class="nav-link" (click)="scrollTo('Galleries')"><i class="bi bi-images me-2"></i>Galería</a>
       </li>
+      <li class="nav-item" *ngIf="menus.length > 0">
+        <a class="nav-link" (click)="scrollTo('menus')"><i class="fa-solid fa-book-open me-2"></i>Menús</a>
+      </li>
       <li class="nav-item" *ngIf="comercio.posee_local">
         <a class="nav-link" (click)="scrollTo('ubications')"><i class="bi bi-map me-2"></i>Mapa</a>
       </li>
@@ -106,7 +121,7 @@
 
             <div id="description" class="panel-collapse collapse show">
               <div class="card-body p-4 pt-2">
-                <p class="descripcion-texto">{{ comercio.descripcion }}</p>
+                <div class="descripcion-texto" [innerHTML]="descripcionHtml"></div>
               </div>
             </div>
           </div>
@@ -121,40 +136,29 @@
 
             <div id="pricing" class="panel-collapse collapse show">
               <div class="card-body p-4 pt-2">
-                <ul class="deatil_features row align-items-start g-3 p-0">
-
-                  <li class="col-xl-4 col-lg-6 col-md-6" *ngFor="let item of productosPaginados">
-                    <div class="pricingMenu d-block">
-                      <div class="d-flex align-items-center justify-content-between gap-2 border br-dashed rounded-pill p-2">
-                        <div class="pricingMain d-flex align-items-center justify-content-start gap-2">
-                          <div class="pricingMenuthumb">
-                            <figure class="m-0"><img [src]="item.url_imagen" class="img-fluid avatar-lg circle" alt="" /></figure>
-                          </div>
-
-                          <div class="prcCaptions">
-                            <h6 class="fw-medium mb-0">{{ item.nombre }}</h6>
-                          </div>
-                        </div>
-                        <div class="pricingCharges">
-                          <div *ngIf="item.en_promocion; else sinPromo">
-                            <div class="d-flex flex-column align-items-end">
-                              <span class="text-muted text-decoration-line-through small">
-                                {{ item.precio | currency:'USD':'symbol':'1.2-2' }}
-                              </span>
-                              <span class="fw-bold text-warn">
-                                {{ calcularPrecioConDescuento(item) | currency:'USD':'symbol':'1.2-2' }}
-                              </span>
-                            </div>
-                          </div>
+                <div class="row g-3">
+                  <div class="col-xl-6 col-lg-6 col-md-6" *ngFor="let item of productosPaginados">
+                    <div class="product-h-card" (click)="abrirModal(item, productosPaginados)" style="cursor:pointer">
+                      <img [src]="item.url_imagen || 'assets/img/tienda.png'" class="product-h-img" [alt]="item.nombre" />
+                      <div class="product-h-info">
+                        <h6 class="product-h-name" [title]="item.nombre">{{ item.nombre }}</h6>
+                        <div class="product-h-price">
+                          <ng-container *ngIf="item.en_promocion; else sinPromo">
+                            <span class="text-muted text-decoration-line-through small">
+                              {{ item.precio | currency:'USD':'symbol':'1.2-2' }}
+                            </span>
+                            <span class="fw-bold ms-1">
+                              {{ calcularPrecioConDescuento(item) | currency:'USD':'symbol':'1.2-2' }}
+                            </span>
+                          </ng-container>
                           <ng-template #sinPromo>
-                            <h6 class="text-primary m-0">{{ item.precio | currency:'USD':'symbol':'1.2-2' }}</h6>
+                            <span class="fw-semibold">{{ item.precio | currency:'USD':'symbol':'1.2-2' }}</span>
                           </ng-template>
                         </div>
                       </div>
                     </div>
-                  </li>
-
-                </ul>
+                  </div>
+                </div>
 
                 <!-- Controles de paginación -->
                 <nav class="d-flex justify-content-center mt-5 mb-3" *ngIf="totalPages > 1">
@@ -162,14 +166,12 @@
                     <li class="page-item" [class.disabled]="page === 1">
                       <a class="page-link" (click)="page > 1 && cambiarPagina(page - 1)">Anterior</a>
                     </li>
-
                     <li
                       class="page-item"
                       *ngFor="let p of [].constructor(totalPages); let i = index"
                       [class.active]="page === (i + 1)">
                       <a class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</a>
                     </li>
-
                     <li class="page-item" [class.disabled]="page === totalPages">
                       <a class="page-link" (click)="page < totalPages && cambiarPagina(page + 1)">Siguiente</a>
                     </li>
@@ -179,7 +181,7 @@
             </div>
           </div>
 
-          <!-- Main Products -->
+          <!-- Destacados -->
           <div *ngIf="productosDestacados.length > 0" class="listingSingleblock mb-4" id="productss">
             <div class="SingleblockHeader">
               <a data-bs-toggle="collapse" data-parent="#products" data-bs-target="#products" aria-controls="products" href="#" aria-expanded="false" class="collapsed">
@@ -192,16 +194,11 @@
                 <owl-carousel-o [options]="catalogs_owloptions">
                   <ng-container *ngFor="let producto of productosDestacados">
                     <ng-template carouselSlide>
-                      <div class="singleItem">
+                      <div class="singleItem" (click)="abrirModal(producto, productosDestacados)" style="cursor:pointer">
                         <div class="catalogCard">
-                          <img
-                            [src]="producto.url_imagen"
-                            alt="Producto"
-                            class="catalog-img"
-                          />
+                          <img [src]="producto.url_imagen" alt="Producto" class="catalog-img" />
                           <div class="catalogInfo">
                             <h6 class="lh-base m-0">{{ producto.nombre }}</h6>
-
                             <div *ngIf="producto.en_promocion; else sinPromoDest">
                               <div class="d-flex align-items-center justify-content-center gap-2">
                                 <span class="text-muted text-decoration-line-through small">
@@ -212,24 +209,20 @@
                                 </span>
                               </div>
                             </div>
-
                             <ng-template #sinPromoDest>
                               <p class="text-md m-0">
                                 <span>{{ producto.precio | currency: 'USD':'symbol':'1.2-2' }}</span>
                               </p>
                             </ng-template>
                           </div>
-
                         </div>
                       </div>
                     </ng-template>
                   </ng-container>
                 </owl-carousel-o>
-
               </div>
             </div>
           </div>
-
 
           <!-- Gallery -->
           <div class="listingSingleblock mb-4" id="Galleries">
@@ -241,15 +234,15 @@
 
             <div id="gallery" class="panel-collapse collapse show">
               <div class="card-body p-4 pt-2">
-                <ul class="row align-items-center justify-content-center g-3 p-0">
-                  <li class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-6" *ngFor="let image of imagenes">
-                    <a [href]="image.url_imagen" class="mfp-gallery d-block"><img [src]="image.url_imagen" class="img-fluid rounded gallery-thumb" alt="Gallery Img"></a>
-                  </li>
-                </ul>
+                <div class="gallery-grid" *ngIf="imagenes.length > 0">
+                  <a *ngFor="let image of imagenes" [href]="image.url_imagen" class="gallery-item">
+                    <img [src]="image.url_imagen" alt="Imagen de galería" />
+                  </a>
+                </div>
+                <p *ngIf="imagenes.length === 0" class="text-muted">Sin imágenes de galería.</p>
               </div>
             </div>
           </div>
-
 
           <!-- Maps -->
           <div class="listingSingleblock mb-4" id="ubications" *ngIf="comercio.posee_local">
@@ -271,18 +264,23 @@
         <!-- Sidebar Detail -->
         <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
           <div class="sidebarGroups d-flex flex-column gap-4">
-            <!-- Author -->
+
+            <!-- Contactos -->
             <div class="card">
-              <div class="card-header" style="height: 300px; background:url(assets/img/contacto.jpg)no-repeat; background-size: cover; background-position: center;"></div>
-              <div class="card-body mt-n3 p-0">
-                <div class="avatarBox position-relative mb-4">
-                  <div class="square--100 circle bg-transparents mx-auto p-2 z-2"><img [src]="comercio.logo_url || 'assets/img/tienda.png'" class="img-fluid circle" alt="Avatar"></div>
-                  <div class="listingInfo text-center">
-                    <h6 class="mb-0">Contactos</h6>
-                  </div>
+              <div class="card-header contact-header"
+                [ngStyle]="comercio.logo_url
+                  ? { 'background-image': 'url(' + comercio.logo_url + ')',
+                      'background-size': 'cover',
+                      'background-repeat': 'no-repeat',
+                      'background-position': 'center' }
+                  : { 'background': 'url(assets/img/contacto.jpg) no-repeat center / cover' }">
+              </div>
+              <div class="card-body p-0">
+                <div class="listingInfo text-center py-3">
+                  <h6 class="mb-0">Contactos</h6>
                 </div>
                 <div class="avatarInfo mb-2">
-                  <div class="py-3 px-3 border-top" *ngIf="comercio.email">
+                  <div class="py-3 px-3 border-top" *ngIf="comercio.email != ''">
                     <div class="infoFlexio d-flex align-items-center justify-content-start gap-2">
                       <div class="square--40 rounded bg-light-primary"><i class="bi bi-envelope text-primary"></i></div>
                       <div class="infoDetails">
@@ -291,7 +289,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="py-3 px-3 border-top" *ngIf="comercio.telefono">
+                  <div class="py-3 px-3 border-top" *ngIf="comercio.telefono != ''">
                     <div class="infoFlexio d-flex align-items-center justify-content-start gap-2">
                       <div class="square--40 rounded bg-light-primary"><i class="bi bi-phone text-primary"></i></div>
                       <div class="infoDetails">
@@ -300,7 +298,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="py-3 px-3 border-top" *ngIf="comercio.website">
+                  <div class="py-3 px-3 border-top" *ngIf="comercio.website != ''">
                     <div class="infoFlexio d-flex align-items-center justify-content-start gap-2">
                       <div class="square--40 rounded bg-light-primary"><i class="bi bi-browser-chrome text-primary"></i></div>
                       <div class="infoDetails">
@@ -313,18 +311,51 @@
               </div>
               <div class="card-footer bg-white border-top">
                 <div class="d-flex align-items-center justify-content-center gap-3">
-                  <div class="flexSocial" *ngIf="comercio.url_facebook"><a [href]="comercio.url_facebook" class="square--40 circle border"><i class="bi bi-facebook color--facebook"></i></a></div>
-                  <div class="flexSocial" *ngIf="comercio.url_twitter"><a [href]="comercio.url_twitter" class="square--40 circle border"><i class="bi bi-twitter color--twitter"></i></a></div>
-                  <div class="flexSocial" *ngIf="comercio.url_instagram"><a [href]="comercio.url_instagram" class="square--40 circle border"><i class="bi bi-instagram color--instagram"></i></a></div>
-                  <div class="flexSocial" *ngIf="comercio.url_tiktok"><a [href]="comercio.url_tiktok" class="square--40 circle border"><i class="bi bi-tiktok color--tiktok"></i></a></div>
-                  <div class="flexSocial" *ngIf="comercio.url_youtube"><a [href]="comercio.url_youtube" class="square--40 circle border"><i class="bi bi-youtube color--pinterest"></i></a></div>
-                  <div class="flexSocial" *ngIf="comercio.url_whatsapp"><a [href]="comercio.url_whatsapp" class="square--40 circle border"><i class="bi bi-whatsapp color--whatsapp"></i></a></div>
+                  <div class="flexSocial" *ngIf="comercio.url_facebook != ''">
+                    <a [href]="comercio.url_facebook" class="square--40 circle border"><i class="bi bi-facebook color--facebook"></i></a>
+                  </div>
+                  <div class="flexSocial" *ngIf="comercio.url_twitter != ''">
+                    <a [href]="comercio.url_twitter" class="square--40 circle border"><i class="bi bi-twitter color--twitter"></i></a>
+                  </div>
+                  <div class="flexSocial" *ngIf="comercio.url_instagram != ''">
+                    <a [href]="comercio.url_instagram" class="square--40 circle border"><i class="bi bi-instagram color--instagram"></i></a>
+                  </div>
+                  <div class="flexSocial" *ngIf="comercio.url_tiktok != ''">
+                    <a [href]="comercio.url_tiktok" class="square--40 circle border"><i class="bi bi-tiktok color--tiktok"></i></a>
+                  </div>
+                  <div class="flexSocial" *ngIf="comercio.url_youtube != ''">
+                    <a [href]="comercio.url_youtube" class="square--40 circle border"><i class="bi bi-youtube color--pinterest"></i></a>
+                  </div>
+                  <div class="flexSocial" *ngIf="comercio.url_whatsapp != ''">
+                    <a [href]="comercio.url_whatsapp" class="square--40 circle border"><i class="bi bi-whatsapp color--whatsapp"></i></a>
+                  </div>
                 </div>
               </div>
             </div>
 
+            <!-- Menús / Catálogos -->
+            <div class="card" id="menus" *ngIf="menus.length > 0">
+              <div class="card-header py-3">
+                <div class="headerFirst">
+                  <h6 class="mb-0">Menús / Catálogos</h6>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <a *ngFor="let menu of menus"
+                  [href]="menu.archivo_url"
+                  target="_blank"
+                  rel="noopener"
+                  class="menu-pdf-item">
+                  <div class="menu-pdf-icon">
+                    <i class="fa-solid fa-file-pdf"></i>
+                  </div>
+                  <span class="menu-pdf-title">{{ menu.titulo }}</span>
+                  <i class="fa-solid fa-download menu-pdf-download ms-auto"></i>
+                </a>
+              </div>
+            </div>
 
-            <!-- Openings -->
+            <!-- Horarios -->
             <div class="card" *ngIf="horarios.length > 0">
               <div class="card-header py-3">
                 <div class="headerFirst"><h6>Horarios</h6></div>
@@ -348,7 +379,6 @@
                       <p class="text-dark text-sm fw-medium lh-base mb-0">
                         {{ formatHorarioDia(horario.hora_apertura, horario.hora_cierre) }}
                       </p>
-
                     </div>
                   </div>
                 </div>
@@ -359,8 +389,17 @@
         </div>
 
       </div>
-
     </div>
   </div>
 </section>
 <!-- ================================= All Section Content ================================ -->
+
+<app-product-detail-modal
+  [product]="selectedProduct"
+  [visible]="modalVisible"
+  [hasPrev]="modalHasPrev"
+  [hasNext]="modalHasNext"
+  (closed)="cerrarModal()"
+  (prevClicked)="navegarModal('prev')"
+  (nextClicked)="navegarModal('next')">
+</app-product-detail-modal>

@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { PreviewService } from '../../../core/services/preview.service';
 import { PickProductos } from '../../../data/interfaces/productos';
 import { PickHorarios } from '../../../data/interfaces/horarios';
 import { PickGallery } from '../../../data/interfaces/galeria';
+import { PickMenuPdf } from '../../../data/interfaces/menus';
 import { PickComercioConTipoYUbicacion } from '../../../data/interfaces/preview';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { LoaderService } from '../../../core/services/loader.service';
@@ -13,14 +14,15 @@ import * as mapboxgl from 'mapbox-gl';
 import { environment } from '../../../../environments/environment';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { catalogs_owloptions } from '../../../data/utils/owl.options';
+import { ProductDetailModalComponent } from '../../../shared/components/product-detail-modal/product-detail-modal.component';
 
 @Component({
   selector: 'app-preview',
-  imports: [NgIf, CommonModule, TelephoneFormatPipe, NgFor, CarouselModule],
+  imports: [NgIf, CommonModule, TelephoneFormatPipe, NgFor, CarouselModule, ProductDetailModalComponent],
   templateUrl: './preview.component.html',
   styleUrl: './preview.component.scss'
 })
-export class PreviewComponent implements OnInit, AfterViewInit {
+export class PreviewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   diasSemana = [
     'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
@@ -40,8 +42,19 @@ export class PreviewComponent implements OnInit, AfterViewInit {
   productosDestacados: PickProductos[] = [];
   horarios: PickHorarios[] = [];
   imagenes: PickGallery[] = [];
+  menus: PickMenuPdf[] = [];
   isOpenNow: boolean = false;
   comercioId!: string;
+
+  // Gallery slider
+  activeIndex = 0;
+  private sliderInterval: ReturnType<typeof setInterval> | null = null;
+
+  // Product detail modal
+  selectedProduct: PickProductos | null = null;
+  modalVisible = false;
+  private currentModalList: PickProductos[] = [];
+  private currentModalIndex = 0;
 
   constructor(
     private previewService: PreviewService,
@@ -59,8 +72,10 @@ export class PreviewComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(): void {
-      
+  ngAfterViewInit(): void {}
+
+  ngOnDestroy(): void {
+    this.stopSlider();
   }
 
   loadPreviewData(comercioId: string): void {
@@ -68,25 +83,42 @@ export class PreviewComponent implements OnInit, AfterViewInit {
       comercio: this.previewService.getComercioWithUbicacion(comercioId),
       productos: this.previewService.getProductos(comercioId),
       horarios: this.previewService.getHorarios(comercioId),
-      imagenes: this.previewService.getGaleria(comercioId)
-    }).subscribe(({ comercio, productos, horarios, imagenes }) => {
+      imagenes: this.previewService.getGaleria(comercioId),
+      menus: this.previewService.getMenus(comercioId)
+    }).subscribe(({ comercio, productos, horarios, imagenes, menus }) => {
       this.comercio = comercio;
       this.productos = productos;
       this.horarios = horarios;
       this.imagenes = imagenes;
+      this.menus = menus;
       this.productosDestacados = this.productos.filter(p => p.destacado);
-      
+
       this.isOpenNow = this.previewService.evaluarSiEstaAbierto(horarios);
 
+      if (!this.comercio?.banner_url && this.imagenes.length > 1) {
+        this.startSlider();
+      }
 
       if (this.comercio?.posee_local) {
         setTimeout(() => this.initMap(), 0);
       }
-      
-      this.updateProductosPaginados();
 
+      this.updateProductosPaginados();
       this.loaderService.hide();
     });
+  }
+
+  private startSlider(): void {
+    this.sliderInterval = setInterval(() => {
+      this.activeIndex = (this.activeIndex + 1) % this.imagenes.length;
+    }, 4000);
+  }
+
+  private stopSlider(): void {
+    if (this.sliderInterval) {
+      clearInterval(this.sliderInterval);
+      this.sliderInterval = null;
+    }
   }
 
   private initMap() {
@@ -113,9 +145,7 @@ export class PreviewComponent implements OnInit, AfterViewInit {
     this.marker = new mapboxgl.Marker({ draggable: true, color: '#d02b38' })
       .setLngLat([lng, lat])
       .addTo(this.map);
-
   }
-
 
   getHorariosOrdenados(): PickHorarios[] {
     return this.horarios.slice().sort((a, b) => a.dia_semana - b.dia_semana);
@@ -149,16 +179,18 @@ export class PreviewComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/stores-list']);
   }
 
-  get bannerImagen(): string {
-    return this.comercio?.banner_url || 'assets/img/banner-business-1.jpg';
-  }
-
   get totalComentarios(): number {
     return this.comercio?.total_reviews ?? 0;
   }
 
   get promedioCalificacion(): number {
     return this.comercio?.promedio_calificacion ?? 0;
+  }
+
+  get descripcionHtml(): string {
+    return (this.comercio?.descripcion || '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/ /g, ' ');
   }
 
   generateThumbs(rate: number): string[] {
@@ -170,6 +202,14 @@ export class PreviewComponent implements OnInit, AfterViewInit {
 
   get totalPages(): number {
     return Math.ceil(this.productos.length / this.pageSize);
+  }
+
+  get modalHasPrev(): boolean {
+    return this.currentModalIndex > 0;
+  }
+
+  get modalHasNext(): boolean {
+    return this.currentModalIndex < this.currentModalList.length - 1;
   }
 
   updateProductosPaginados(): void {
@@ -195,18 +235,25 @@ export class PreviewComponent implements OnInit, AfterViewInit {
     return producto.precio;
   }
 
-  obtenerTextoPromocion(producto: PickProductos): string {
-    if (!producto.en_promocion || !producto.valor_promocion) {
-      return '';
-    }
-
-    if (producto.tipo_promocion === 'porcentaje') {
-      return `-${producto.valor_promocion}%`;
-    } else if (producto.tipo_promocion === 'cantidad') {
-      return `-${producto.valor_promocion} USD`;
-    }
-
-    return '';
+  abrirModal(producto: PickProductos, lista: PickProductos[]): void {
+    this.currentModalList = lista;
+    this.currentModalIndex = lista.indexOf(producto);
+    this.selectedProduct = producto;
+    this.modalVisible = true;
   }
 
+  cerrarModal(): void {
+    this.modalVisible = false;
+    this.selectedProduct = null;
+  }
+
+  navegarModal(direccion: 'prev' | 'next'): void {
+    const newIndex = direccion === 'prev'
+      ? this.currentModalIndex - 1
+      : this.currentModalIndex + 1;
+    if (newIndex >= 0 && newIndex < this.currentModalList.length) {
+      this.currentModalIndex = newIndex;
+      this.selectedProduct = this.currentModalList[newIndex];
+    }
+  }
 }

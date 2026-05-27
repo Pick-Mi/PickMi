@@ -1,131 +1,227 @@
-<div class="reviews-admin">
-  <h1 class="page-title">Reseñas registradas</h1>
+<div class="page-wrapper">
 
-  <div class="card filters-card">
-    <div class="filters-grid">
-      <div>
-        <label class="form-label">Buscar</label>
-        <div class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Comentario, comercio o usuario"
-            [(ngModel)]="busqueda"
-            (keydown.enter)="aplicarFiltros()">
-          <button class="btn btn-secondary" type="button" (click)="aplicarFiltros()">
-            <i class="bi bi-search"></i>
-          </button>
+  <!-- Header -->
+  <div class="rv__page-head">
+    <div class="page-header">
+      <p class="rv__eyebrow">Reseñas</p>
+      <h2>Reseñas registradas</h2>
+      <p>Modera y responde las reseñas que reciben los comercios. Las reseñas reportadas tienen prioridad.</p>
+    </div>
+    <div class="rv__head-actions">
+      <button class="btn--ghost btn--sm" type="button">
+        <i class="fa-solid fa-file-export"></i> Exportar
+      </button>
+      <button class="btn--primary btn--sm" type="button" (click)="cargarReviews()" [disabled]="loading">
+        <i class="fa-solid fa-rotate"></i> Actualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="rv__stats">
+    <div class="rv__stat-card">
+      <div class="rv__stat-top">
+        <div>
+          <p class="rv__stat-label">Reseñas totales</p>
+          <p class="rv__stat-num">{{ totalRegistros }}</p>
+        </div>
+        <div class="rv__stat-icon" style="background: #ede9fe; color: #6d28d9">
+          <i class="fa-solid fa-comments"></i>
         </div>
       </div>
-      <div>
-        <label class="form-label">Estatus</label>
-        <select class="form-select" [(ngModel)]="estatusFiltro" (change)="aplicarFiltros()">
-          <option value="todos">Todos</option>
-          <option value="activo">Activo</option>
-          <option value="inactivo">Inactivo</option>
-        </select>
+      <p class="rv__stat-hint">{{ totalRegistros ? totalRegistros + ' registradas' : 'Sin reseñas registradas' }}</p>
+    </div>
+    <div class="rv__stat-card">
+      <div class="rv__stat-top">
+        <div>
+          <p class="rv__stat-label">Promedio</p>
+          <p class="rv__stat-num">{{ promedioCalificacion !== null ? (promedioCalificacion | number:'1.1-1') : '—' }}</p>
+        </div>
+        <div class="rv__stat-icon" style="background: #fef3c7; color: #b45309">
+          <i class="fa-solid fa-star"></i>
+        </div>
       </div>
-      <div>
-        <label class="form-label">Registros por página</label>
-        <select class="form-select" [(ngModel)]="registrosPorPagina" (change)="cambiarRegistrosPorPagina(registrosPorPagina)">
-          <option [ngValue]="5">5</option>
-          <option [ngValue]="10">10</option>
-          <option [ngValue]="20">20</option>
-          <option [ngValue]="50">50</option>
-        </select>
+      <p class="rv__stat-hint">{{ reviews.length }} calificaciones</p>
+    </div>
+    <div class="rv__stat-card">
+      <div class="rv__stat-top">
+        <div>
+          <p class="rv__stat-label">Pendientes</p>
+          <p class="rv__stat-num">0</p>
+        </div>
+        <div class="rv__stat-icon" style="background: #e0f2fe; color: #0369a1">
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
       </div>
-      <div class="d-flex align-items-end justify-content-start gap-2">
-        <button class="btn btn-secondary" type="button" (click)="limpiarFiltros()">Limpiar</button>
+      <p class="rv__stat-hint">Por moderar</p>
+    </div>
+    <div class="rv__stat-card">
+      <div class="rv__stat-top">
+        <div>
+          <p class="rv__stat-label">Reportadas</p>
+          <p class="rv__stat-num">0</p>
+        </div>
+        <div class="rv__stat-icon" style="background: #ffe4e6; color: #be123c">
+          <i class="fa-solid fa-flag"></i>
+        </div>
+      </div>
+      <p class="rv__stat-hint">Necesitan atención</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="pm-card rv__filters-card">
+    <div class="rv__filters">
+      <label class="rv__field rv__field--grow">
+        <span class="rv__field-label">Buscar</span>
+        <div class="rv__search">
+          <i class="fa-solid fa-magnifying-glass rv__search-icon"></i>
+          <input type="text" [(ngModel)]="busqueda" placeholder="Comentario, comercio o usuario"
+            (keydown.enter)="aplicarFiltros()">
+        </div>
+      </label>
+      <label class="rv__field">
+        <span class="rv__field-label">Estatus</span>
+        <div class="rv__select-wrap">
+          <select [(ngModel)]="estatusFiltro">
+            <option value="todos">Todos</option>
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+          <i class="fa-solid fa-chevron-down rv__select-icon"></i>
+        </div>
+      </label>
+      <label class="rv__field">
+        <span class="rv__field-label">Calificación</span>
+        <div class="rv__select-wrap">
+          <select [(ngModel)]="calificacionFiltro">
+            <option [ngValue]="'todas'">Todas</option>
+            <option [ngValue]="5">5 estrellas</option>
+            <option [ngValue]="4">4 estrellas</option>
+            <option [ngValue]="3">3 estrellas</option>
+            <option [ngValue]="2">2 estrellas</option>
+            <option [ngValue]="1">1 estrella</option>
+          </select>
+          <i class="fa-solid fa-chevron-down rv__select-icon"></i>
+        </div>
+      </label>
+      <label class="rv__field">
+        <span class="rv__field-label">Por página</span>
+        <div class="rv__select-wrap">
+          <select [(ngModel)]="registrosPorPagina" (change)="cambiarRegistrosPorPagina(registrosPorPagina)">
+            <option [ngValue]="5">5</option>
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="20">20</option>
+            <option [ngValue]="50">50</option>
+          </select>
+          <i class="fa-solid fa-chevron-down rv__select-icon"></i>
+        </div>
+      </label>
+      <div class="rv__filter-actions">
+        <button class="rv__clear-btn" type="button" (click)="limpiarFiltros()">Limpiar</button>
+        <button class="btn--primary btn--sm" type="button" (click)="aplicarFiltros()">
+          <i class="fa-solid fa-filter"></i> Aplicar
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="card list-card">
-    <div class="list-header">
-      <span class="text-muted small">{{ totalRegistros }} resultados</span>
-    </div>
-
-    <div *ngIf="loading" class="state-message">Cargando reseñas...</div>
-
-    <div *ngIf="!loading && reviews.length">
-      <div class="table-responsive">
-        <table class="table align-middle">
-          <thead>
-            <tr>
-              <th>Comercio</th>
-              <th>Usuario</th>
-              <th>Calificación</th>
-              <th>Comentario</th>
-              <th>Fecha</th>
-              <th>Estatus</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let review of reviews">
-              <td>
-                <div class="fw-semibold">{{ review.comercio.nombre }}</div>
-              </td>
-              <td class="col-user">
-                <div class="d-flex align-items-center gap-2">
-                  <img [src]="review.usuario.avatar_url || 'assets/img/usuario.png'" class="avatar" alt="avatar">
-                  <div>
-                    <div class="fw-semibold">{{ review.usuario.nombre }} {{ review.usuario.apellido }}</div>
-                    <div class="reviewsStar d-flex align-items-center">
-                      <img *ngFor="let t of generateThumbs(review.calificacion)" [src]="t" width="14" class="me-1" />
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td class="col-score">
-                <span class="fw-semibold">{{ review.calificacion | number:'1.1-1' }}</span>
-              </td>
-              <td class="comment-cell">
-                {{ review.comentario }}
-              </td>
-              <td class="col-date">
-                {{ review.fecha_comentario | date:'dd/MM/yyyy' }}
-              </td>
-              <td>
-                <span class="badge" [class.active]="review.estatus === 'activo'">
-                  {{ review.estatus === 'activo' ? 'Visible' : 'Oculto' }}
-                </span>
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <button class="btn btn-sm btn-outline-secondary" (click)="alternarEstatus(review)">
-                    {{ review.estatus === 'activo' ? 'Ocultar' : 'Activar' }}
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" (click)="eliminarReview(review)">
-                    Eliminar
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Results -->
+  <div class="pm-card">
+    <div class="rv__results-header">
+      <div>
+        <h3 class="rv__results-title">Resultados</h3>
+        <p class="rv__results-sub">Mostrando {{ reviewsOrdenadas.length }} de {{ totalRegistros }} reseñas</p>
+      </div>
+      <div class="rv__sort-pills">
+        <button type="button" class="rv__sort-pill" [class.rv__sort-pill--active]="orden === 'recientes'" (click)="setOrden('recientes')">
+          Más recientes
+        </button>
+        <button type="button" class="rv__sort-pill" [class.rv__sort-pill--active]="orden === 'mejor'" (click)="setOrden('mejor')">
+          Mejor calif.
+        </button>
+        <button type="button" class="rv__sort-pill" [class.rv__sort-pill--active]="orden === 'peor'" (click)="setOrden('peor')">
+          Peor calif.
+        </button>
       </div>
     </div>
 
-    <div *ngIf="!loading && !reviews.length" class="state-message">
-      No se encontraron reseñas con los filtros seleccionados.
+    <div *ngIf="loading" class="pm-empty">
+      <i class="pm-empty__icon fa-solid fa-spinner fa-spin"></i>
+      <p class="pm-empty__title">Cargando reseñas…</p>
     </div>
-  </div>
 
-  <nav *ngIf="totalPaginas > 1" class="pagination-wrapper">
-    <ul class="pagination mb-0">
-      <li class="page-item" [class.disabled]="paginaActual === 1">
-        <button class="page-link" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
-      </li>
-      <li
-        class="page-item"
+    <div *ngIf="!loading && !reviewsOrdenadas.length" class="pm-empty">
+      <i class="pm-empty__icon fa-solid fa-comments"></i>
+      <p class="pm-empty__title">Sin resultados</p>
+      <p class="pm-empty__desc">No se encontraron reseñas con los filtros seleccionados.</p>
+    </div>
+
+    <div *ngIf="!loading && reviewsOrdenadas.length" class="rv__table-wrap">
+      <table class="pm-table">
+        <thead>
+          <tr>
+            <th>Comercio</th>
+            <th>Usuario</th>
+            <th>Calificación</th>
+            <th>Comentario</th>
+            <th>Fecha</th>
+            <th>Estatus</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let review of reviewsOrdenadas">
+            <td class="rv__td-commerce">{{ review.comercio.nombre }}</td>
+            <td>
+              <div class="rv__user">
+                <div class="pm-avatar pm-avatar--sm">
+                  <img [src]="review.usuario.avatar_url || 'assets/img/usuario.png'" alt="avatar">
+                </div>
+                <p class="rv__username">{{ review.usuario.nombre }} {{ review.usuario.apellido }}</p>
+              </div>
+            </td>
+            <td class="rv__score">{{ review.calificacion | number:'1.1-1' }}</td>
+            <td class="rv__comment">{{ review.comentario }}</td>
+            <td class="rv__date">{{ review.fecha_comentario | date:'MMM d, y' }}</td>
+            <td>
+              <span class="rv__badge"
+                [class.rv__badge--success]="review.estatus === 'activo'"
+                [class.rv__badge--neutral]="review.estatus !== 'activo'">
+                <span class="rv__badge-dot"></span>
+                {{ review.estatus === 'activo' ? 'Visible' : 'Oculto' }}
+              </span>
+            </td>
+            <td>
+              <div class="rv__actions">
+                <button class="btn--ghost btn--sm" (click)="alternarEstatus(review)">
+                  {{ review.estatus === 'activo' ? 'Ocultar' : 'Activar' }}
+                </button>
+                <button class="btn--outline-danger btn--sm" (click)="eliminarReview(review)">
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <nav *ngIf="totalPaginas > 1" class="rv__pagination">
+      <button class="rv__page-btn" (click)="cambiarPagina(paginaActual - 1)" [disabled]="paginaActual === 1">
+        <i class="fa-solid fa-chevron-left"></i> Anterior
+      </button>
+      <button
         *ngFor="let page of [].constructor(totalPaginas); let i = index"
-        [class.active]="paginaActual === i + 1">
-        <button class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</button>
-      </li>
-      <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
-        <button class="page-link" (click)="cambiarPagina(paginaActual + 1)">Siguiente</button>
-      </li>
-    </ul>
-  </nav>
+        class="rv__page-btn"
+        [class.rv__page-btn--active]="paginaActual === i + 1"
+        (click)="cambiarPagina(i + 1)">
+        {{ i + 1 }}
+      </button>
+      <button class="rv__page-btn" (click)="cambiarPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas">
+        Siguiente <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </nav>
+  </div>
+
 </div>

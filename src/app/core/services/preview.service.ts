@@ -6,6 +6,7 @@ import { PickGallery } from '../../data/interfaces/galeria';
 import { PickProductos } from '../../data/interfaces/productos';
 import { PickHorarios } from '../../data/interfaces/horarios';
 import { PickComercioConTipoYUbicacion } from '../../data/interfaces/preview';
+import { PickMenuPdf } from '../../data/interfaces/menus';
 
 @Injectable({
   providedIn: 'root'
@@ -82,6 +83,20 @@ export class PreviewService {
             return [];
         }
         return data as PickProductos[];
+    }
+
+    async getMenus(comercioId: string): Promise<PickMenuPdf[]> {
+        const { data, error } = await this.supabase
+        .from('pick_menus')
+        .select('*')
+        .eq('comercio_id', comercioId)
+        .eq('activo', true);
+
+        if (error) {
+            console.error('❌ Error obteniendo menús:', error);
+            return [];
+        }
+        return data as PickMenuPdf[];
     }
 
     evaluarSiEstaAbierto(horarios: any[]) {

@@ -1,73 +1,34 @@
-<!-- ============================================================== -->
-<!-- Top header  -->
-<!-- ============================================================== -->
-<!-- Start Navigation -->
-<div class="header header-dark navdark" data-sticky-element="">
-  <div class="container-fluid">
-    <nav id="navigation" class="navigation navigation-landscape">
-      <div class="nav-header d-flex justify-content-between align-items-center">
-        <a class="nav-brand" href="#">
-          <img src="assets/img/logo-light.svg" style="height: 50px;" class="logo" alt="">
-        </a>
-
-        <!-- Botón de menú solo en móvil -->
-        <button class="navbar-toggler d-lg-none btn" type="button" (click)="toggleMenu()">
-          <i class="bi bi-list fs-2 text-white"></i>
-        </button>
-      </div>
-
-      <!-- Menú normal para escritorio -->
-      <div class="nav-menus-wrapper d-none d-lg-flex justify-content-between">
-        <ul class="nav-menu">
-          <li class="active">
-            <a href="https://dev-pickmi-web.web.app" target="_blank" rel="noopener noreferrer">
-              Sitio Principal
-            </a>
-          </li>
-        </ul>
-
-        <ul class="nav-menu nav-menu-social align-to-right">
-          <li class="list-buttons">
-            <a (click)="logout()"><i class="bi bi-door-open fs-6 me-1"></i>Cerrar Sesión</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+<header class="pm-navbar">
+  <div class="pm-navbar__brand">
+    <img src="assets/img/logo-light.svg" alt="Pickmi" class="pm-navbar__logo">
   </div>
 
-  <!-- Menú móvil personalizado -->
-  <div class="mobile-menu bg-dark text-white" [class.active]="menuAbierto">
-    <ul class="list-unstyled p-4">
-      <li class="mb-3"><a class="text-white" style="cursor: pointer;" routerLink="/" (click)="menuAbierto = false">
-        <i class="bi bi-speedometer me-2"></i>Dashboard</a>
-      </li>
-      <li class="mb-3"><a class="text-white" style="cursor: pointer;" routerLink="/profile" (click)="menuAbierto = false">
-        <i class="bi bi-person-lines-fill me-2"></i>Mi Perfil</a>
-      </li>
-      <li class="mb-3"><a class="text-white" style="cursor: pointer;" routerLink="/stores-list" (click)="menuAbierto = false">
-        <i class="bi bi-cart-check me-2"></i>Mis Locales</a>
-      </li>
-      <li class="mb-3"><a class="text-white" style="cursor: pointer;" routerLink="/menus-list" (click)="menuAbierto = false">
-        <i class="bi bi-journal-check me-2"></i>Mis Productos</a>
-      </li>
-      <li class="mb-3"><a class="text-white" style="cursor: pointer;" routerLink="/schedule-list" (click)="menuAbierto = false">
-        <i class="bi bi-clock me-2"></i>Horarios de Locales</a>
-      </li>
-      <li class="mb-3"><a class="text-white" style="cursor: pointer;" routerLink="/gallery-list" (click)="menuAbierto = false">
-        <i class="bi bi-camera me-2"></i>Mi Galería</a>
-      </li>
-      <li class="mb-3"><a class="text-white" style="cursor: pointer;" routerLink="/reviews-list" (click)="menuAbierto = false">
-        <i class="bi bi-chat-text me-2"></i>Mis Reseñas</a>
-      </li>
-      <li><a class="text-white" style="cursor: pointer;" (click)="logout()">
-        <i class="bi bi-door-open fs-6 me-1"></i>Cerrar sesión</a>
-      </li>
-    </ul>
+  <div class="pm-navbar__actions">
+    <a href="https://dev-pickmi-web.web.app" target="_blank" rel="noopener noreferrer" class="pm-navbar__link">
+      <i class="bi bi-box-arrow-up-right"></i>
+      Sitio Principal
+    </a>
+    <button class="pm-navbar__logout" type="button" (click)="logout()">
+      <i class="bi bi-door-open"></i>
+      Cerrar Sesión
+    </button>
   </div>
-</div>
 
-<!-- End Navigation -->
+  <button class="pm-navbar__toggle" type="button" (click)="toggleMenu()" aria-label="Abrir menú">
+    <i class="bi bi-list"></i>
+  </button>
+</header>
 
-<!-- ============================================================== -->
-<!-- Top header  -->
-<!-- ============================================================== -->
+<nav class="pm-mobile-nav" [class.pm-mobile-nav--open]="menuAbierto" (click)="menuAbierto = false">
+  <a routerLink="/" class="pm-mobile-nav__item"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+  <a routerLink="/configurations" class="pm-mobile-nav__item"><i class="fa-solid fa-gear"></i> Configuraciones</a>
+  <a routerLink="/reports" class="pm-mobile-nav__item"><i class="fa-solid fa-chart-line"></i> Reportes</a>
+  <a routerLink="/messages" class="pm-mobile-nav__item"><i class="fa-solid fa-envelope-open-text"></i> Mensajes</a>
+  <a routerLink="/users-list" class="pm-mobile-nav__item"><i class="fa-solid fa-users"></i> Usuarios</a>
+  <a routerLink="/owners-list" class="pm-mobile-nav__item"><i class="fa-solid fa-user-check"></i> Propietarios</a>
+  <a routerLink="/stores-list" class="pm-mobile-nav__item"><i class="fa-solid fa-store"></i> Comercios</a>
+  <a routerLink="/reviews" class="pm-mobile-nav__item"><i class="fa-solid fa-comments"></i> Reseñas</a>
+  <button class="pm-mobile-nav__item pm-mobile-nav__item--logout" type="button" (click)="logout()">
+    <i class="bi bi-door-open"></i> Cerrar Sesión
+  </button>
+</nav>

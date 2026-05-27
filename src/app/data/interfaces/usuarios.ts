@@ -22,6 +22,7 @@ export interface PropietarioListado extends PickUsuario {
     plan_solicitado_id?: string | null;
     plan_solicitado_at?: string | null;
     plan_activo_id?: string | null;
+    plan_activo_nombre?: string | null;
     plan_estado?: string | null;
     plan_activo_inicio?: string | null;
     plan_activo_fin?: string | null;

@@ -12,55 +12,71 @@ import { Router } from '@angular/router';
 export class ConfigurationsComponent {
   constructor(private router: Router) {}
 
-  readonly options = [
+  readonly groups = [
     {
-      label: 'Sitio en mantenimiento',
-      icon: 'bi-tools',
-      description: 'Gestiona el estado del portal',
-      link: '/configurations/maintenance'
+      label: 'Sitio público',
+      subtitle: 'Lo que ven los visitantes y comercios potenciales',
+      items: [
+        {
+          label: 'Sitio en mantenimiento',
+          icon: 'fa-solid fa-screwdriver-wrench',
+          description: 'Gestiona el estado del portal y los mensajes que ven los visitantes.',
+          link: '/configurations/maintenance',
+        },
+        {
+          label: 'Slide del Home',
+          icon: 'fa-solid fa-house',
+          description: 'Actualiza el carrusel principal con campañas y noticias destacadas.',
+          link: '/configurations/slides/home',
+        },
+        {
+          label: 'Slide de Negocios',
+          icon: 'fa-solid fa-building',
+          description: 'Controla los banners que aparecen en la sección de negocios.',
+          link: '/configurations/slides/business',
+        },
+      ]
     },
     {
-      label: 'Slide Home',
-      icon: 'bi-house-door',
-      description: 'Actualiza el carrusel principal',
-      link: '/configurations/slides/home'
+      label: 'Catálogo y comercio',
+      subtitle: 'Estructura que alimenta a las plataformas hermanas',
+      items: [
+        {
+          label: 'Tipos de negocio',
+          icon: 'fa-solid fa-sitemap',
+          description: 'Administra los tipos disponibles para clasificar los comercios.',
+          link: '/configurations/business-type',
+        },
+        {
+          label: 'Categorías',
+          icon: 'fa-solid fa-tags',
+          description: 'Edita las categorías principales y subcategorías del catálogo.',
+          link: '/configurations/category',
+        },
+        {
+          label: 'Promociones',
+          icon: 'fa-solid fa-ticket',
+          description: 'Administra promociones y descuentos visibles en toda la plataforma.',
+          link: '/configurations/promotions/list',
+        },
+      ]
     },
     {
-      label: 'Slide Negocios',
-      icon: 'bi-building',
-      description: 'Controla los banners para negocios',
-      link: '/configurations/slides/business'
-    },
-    {
-      label: 'Tipo negocio',
-      icon: 'bi-diagram-3',
-      description: 'Administra los tipos de negocios disponibles',
-      link: '/configurations/business-type'
-    },
-    {
-      label: 'Planes',
-      icon: 'bi-card-checklist',
-      description: 'Gestiona precios, limites y features de planes',
-      link: '/configurations/plans'
-    },
-    {
-      label: 'Categorias',
-      icon: 'bi-tags',
-      description: 'Edita las categorias principales y subcategorias',
-      link: '/configurations/category'
-    },
-    {
-      label: 'Promociones',
-      icon: 'bi-ticket-perforated',
-      description: 'Administra promociones y descuentos',
-      link: '/configurations/promotions/list'
+      label: 'Monetización',
+      subtitle: 'Planes y reglas comerciales',
+      items: [
+        {
+          label: 'Planes',
+          icon: 'fa-solid fa-layer-group',
+          description: 'Configura precios, límites y features de los planes para propietarios.',
+          link: '/configurations/plans',
+        },
+      ]
     },
   ];
 
   goTo(link: string): void {
-    if (!link) {
-      return;
-    }
+    if (!link) return;
     this.router.navigate([link]);
   }
 }

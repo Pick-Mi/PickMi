@@ -1,36 +1,47 @@
-<section class="reports">
-  <div class="reports__header-card">
-    <p class="reports__eyebrow">Reportes</p>
-    <div class="reports__header-content">
-      <div>
-        <h3>Generacion de Reportes</h3>
-        <p class="reports__subtitle">
-          Genera informes para entender el crecimiento, la reputación y el impacto de los negocios suscritos.
-        </p>
-      </div>
-      <button class="reports__cta" disabled>Exportar todo</button>
+<div class="page-wrapper">
+
+  <div class="rpt__header">
+    <div class="page-header">
+      <p class="rpt__eyebrow">Reportes</p>
+      <h2>Generación de reportes</h2>
+      <p>Genera informes para entender el crecimiento, la reputación y el impacto de los negocios suscritos.</p>
     </div>
+    <button class="btn--primary rpt__export" type="button">
+      <i class="fa-solid fa-file-export"></i>
+      Exportar todo
+    </button>
   </div>
 
-  <div class="reports__grid">
+  <div class="rpt__grid">
     <article
-      class="report-card"
+      class="rpt__card"
       *ngFor="let reporte of reportes"
       (click)="ejecutarReporte(reporte)">
-      <div class="report-card__icon">
-        <i [ngClass]="reporte.iconClass"></i>
-      </div>
-      <div class="report-card__body">
-        <div class="report-card__title">
-          <h2>{{ reporte.title }}</h2>
-          <span *ngIf="reporte.chip" class="chip">{{ reporte.chip }}</span>
+
+      <div class="rpt__card-top">
+        <div class="rpt__icon"
+          [style.background]="reporte.iconBg"
+          [style.color]="reporte.iconColor">
+          <i [ngClass]="reporte.iconClass"></i>
         </div>
-        <p>{{ reporte.description }}</p>
       </div>
-      <div class="report-card__footer">
-        <span>Generar reporte</span>
-        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+      <div class="rpt__card-body">
+        <h3 class="rpt__card-title">{{ reporte.title }}</h3>
+        <p class="rpt__card-desc">{{ reporte.description }}</p>
       </div>
+
+      <div class="rpt__card-footer">
+        <span class="rpt__link">
+          Generar reporte
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </span>
+        <button class="rpt__dots" type="button" (click)="$event.stopPropagation()">
+          <i class="fa-solid fa-ellipsis"></i>
+        </button>
+      </div>
+
     </article>
   </div>
-</section>
+
+</div>

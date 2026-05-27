@@ -1,10 +1,8 @@
-<div class="category-wrapper">
+<div class="page-wrapper">
   <app-back-button [link]="'/configurations'" label="Regresar a configuraciones"></app-back-button>
-  <div class="heading">
-    <h2 class="mb-2">Categorías y subcategorías</h2>
-    <p class="text-muted mb-0">
-      Mantén ambos catálogos en una sola vista para que las subcategorías siempre estén contextualizadas a su categoría.
-    </p>
+  <div class="page-header">
+    <h2>Categorías y subcategorías</h2>
+    <p>Mantén ambos catálogos en una sola vista para que las subcategorías siempre estén contextualizadas a su categoría.</p>
   </div>
 
   <div class="card form-card">
@@ -42,10 +40,10 @@
         </div>
 
         <div class="d-flex gap-2 mt-4">
-          <button type="submit" class="btn btn-primary" [disabled]="savingCategory">
+          <button type="submit" class="btn--primary" [disabled]="savingCategory">
             {{ savingCategory ? 'Guardando...' : (editingCategoryId ? 'Actualizar' : 'Crear') }}
           </button>
-          <button class="btn btn-outline-secondary" type="button" (click)="cancelarCategoria()" *ngIf="editingCategoryId">
+          <button class="btn--ghost" type="button" (click)="cancelarCategoria()" *ngIf="editingCategoryId">
             Cancelar
           </button>
         </div>
@@ -76,12 +74,12 @@
               <td>{{ getBusinessTypeName(categoria.tipo_comercio_id) }}</td>
               <td><i class="fa-solid me-2" [ngClass]="categoria.icono"></i>{{ categoria.icono }}</td>
               <td class="text-end">
-                <div class="btn-group">
-                  <button class="btn btn-sm btn-outline-secondary" type="button" (click)="seleccionarCategoria(categoria.id!)">
+                <div class="d-flex gap-1 justify-content-end">
+                  <button class="btn--ghost btn--sm" type="button" (click)="seleccionarCategoria(categoria.id!)">
                     {{ selectedCategoryId === categoria.id ? 'Seleccionada' : 'Ver subcategorías' }}
                   </button>
-                  <button class="btn btn-sm btn-outline-primary" type="button" (click)="editarCategoria(categoria)">Editar</button>
-                  <button class="btn btn-sm btn-outline-danger" type="button" (click)="eliminarCategoria(categoria)">Eliminar</button>
+                  <button class="btn--outline btn--sm" type="button" (click)="editarCategoria(categoria)">Editar</button>
+                  <button class="btn--outline-danger btn--sm" type="button" (click)="eliminarCategoria(categoria)">Eliminar</button>
                 </div>
               </td>
             </tr>
@@ -129,18 +127,15 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Estado</label>
-            <div class="form-check form-switch align-switch mt-1">
-              <input type="checkbox" class="form-check-input" formControlName="estado" id="subEstado">
-              <label for="subEstado" class="form-check-label">{{ subcategoryForm.get('estado')?.value ? 'Activo' : 'Inactivo' }}</label>
-            </div>
+            <app-toggle-switch formControlName="estado" label="Estado" color="#7e7cb9"></app-toggle-switch>
           </div>
         </div>
 
         <div class="d-flex gap-2 mt-3">
-          <button class="btn btn-primary" type="submit" [disabled]="savingSubcategory">
+          <button class="btn--primary" type="submit" [disabled]="savingSubcategory">
             {{ savingSubcategory ? 'Guardando...' : (editingSubcategoryId ? 'Actualizar' : 'Agregar') }}
           </button>
-          <button class="btn btn-outline-secondary" type="button" (click)="cancelarSubcategoria()" *ngIf="editingSubcategoryId">
+          <button class="btn--ghost" type="button" (click)="cancelarSubcategoria()" *ngIf="editingSubcategoryId">
             Cancelar
           </button>
         </div>
@@ -160,9 +155,9 @@
                 <strong>{{ sub.nombre }}</strong>
                 <span class="badge ms-2" [class.active]="sub.estado">{{ sub.estado ? 'Activo' : 'Inactivo' }}</span>
               </div>
-              <div class="btn-group">
-                <button class="btn btn-sm btn-outline-primary" (click)="editarSubcategoria(sub)">Editar</button>
-                <button class="btn btn-sm btn-outline-danger" (click)="eliminarSubcategoria(sub)">Eliminar</button>
+              <div class="d-flex gap-1">
+                <button class="btn--outline btn--sm" (click)="editarSubcategoria(sub)">Editar</button>
+                <button class="btn--outline-danger btn--sm" (click)="eliminarSubcategoria(sub)">Eliminar</button>
               </div>
             </li>
           </ul>

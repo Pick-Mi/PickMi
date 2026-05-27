@@ -10,7 +10,7 @@
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
-  background-size: cover; 
+  background-size: cover;
   background-position: center;
   transition: opacity 1s ease-in-out;
   opacity: 0;
@@ -39,16 +39,151 @@
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease;
-}
 
-.back-button:hover {
-  background-color: rgba(255, 255, 255, 1);
+  &:hover { background-color: rgba(255, 255, 255, 1); }
 }
 
 .descripcion-texto {
-  white-space: pre-line;
+  line-height: 1.7;
+  color: #444;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 100%;
+
+  p { margin-bottom: 0.75rem; &:last-child { margin-bottom: 0; } }
+  ul, ol { padding-left: 1.4rem; margin-bottom: 0.75rem; }
+  li { margin-bottom: 0.25rem; }
+  strong { font-weight: 700; }
+  em { font-style: italic; }
+  u { text-decoration: underline; }
 }
 
+// Product horizontal card
+.product-h-card {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 80px;
+  transition: box-shadow 0.2s ease;
+
+  &:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+}
+
+.product-h-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 0;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.product-h-info {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.product-h-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  line-height: 1.3;
+}
+
+.product-h-price {
+  font-size: 0.85rem;
+}
+
+// Gallery grid
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+  margin-bottom: 5px;
+}
+
+.gallery-item {
+  display: block;
+  aspect-ratio: 25 / 21;
+  overflow: hidden;
+  border-radius: 12px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img { transform: scale(1.04); }
+}
+
+// Contact card header
+.contact-header {
+  height: 300px;
+}
+
+// Menus / PDF card
+.menu-pdf-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #f0f0f0;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+
+  &:first-child { border-top: none; }
+
+  &:hover {
+    background: #f8f9fa;
+    .menu-pdf-download { color: #d02b38; }
+  }
+}
+
+.menu-pdf-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(208, 43, 56, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #d02b38;
+  font-size: 1rem;
+}
+
+.menu-pdf-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #2b2b2b;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-pdf-download {
+  color: #adb5bd;
+  font-size: 0.85rem;
+  transition: color 0.15s ease;
+}
+
+// Carousel
 .singleItem {
   height: 500px;
   display: flex;
