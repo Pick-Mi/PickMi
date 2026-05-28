@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProfileService } from '../../../core/services/profile.service';
+import { LoaderService } from '../../../core/services/loader.service';
 import { ComercioResumen, PropietarioDetalle } from '../../../data/interfaces/usuarios';
 import { BackButtonComponent } from '../../../shared/components/back-button/back-button.component';
 
@@ -31,7 +32,8 @@ export class OwnersDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private loaderService: LoaderService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -46,18 +48,23 @@ export class OwnersDetailsComponent implements OnInit {
   async cargarPropietario(propietarioId: string): Promise<void> {
     this.loading = true;
     this.error = null;
-    const { data, error } = await this.profileService.obtenerDetallePropietario(propietarioId);
-    if (error || !data) {
-      this.error = error ?? 'No se pudo cargar el propietario';
-      this.propietario = null;
-      this.estadoView = PlanEstadoView.SinPlan;
-      this.diasRestantesValor = null;
-    } else {
-      this.propietario = data;
-      this.estadoView = this.calcularEstadoPlan(data);
-      this.diasRestantesValor = this.calcularDiasRestantes(data.plan_activo_fin);
+    this.loaderService.show();
+    try {
+      const { data, error } = await this.profileService.obtenerDetallePropietario(propietarioId);
+      if (error || !data) {
+        this.error = error ?? 'No se pudo cargar el propietario';
+        this.propietario = null;
+        this.estadoView = PlanEstadoView.SinPlan;
+        this.diasRestantesValor = null;
+      } else {
+        this.propietario = data;
+        this.estadoView = this.calcularEstadoPlan(data);
+        this.diasRestantesValor = this.calcularDiasRestantes(data.plan_activo_fin);
+      }
+    } finally {
+      this.loading = false;
+      this.loaderService.hide();
     }
-    this.loading = false;
   }
 
   diasRestantes(): number | null {

@@ -2,11 +2,6 @@
 
   <app-back-button label="Volver al listado" link="/owners-list"></app-back-button>
 
-  <div *ngIf="loading" class="pm-empty">
-    <i class="pm-empty__icon fa-solid fa-spinner fa-spin"></i>
-    <p class="pm-empty__title">Cargando información…</p>
-  </div>
-
   <div *ngIf="error && !loading" class="od__state od__state--error">{{ error }}</div>
 
   <ng-container *ngIf="!loading && propietario">
@@ -129,7 +124,7 @@
       <div class="pm-card od__stores-card">
         <div class="od__stores-header">
           <div>
-            <h3 class="od__card-title">Locales registrados ({{ stores.length }})</h3>
+            <h3 class="od__card-title">Locales registrados</h3>
             <p class="od__card-subtitle">Comercios del propietario en la plataforma</p>
           </div>
         </div>

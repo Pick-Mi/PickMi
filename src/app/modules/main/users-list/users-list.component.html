@@ -1,82 +1,155 @@
 <div class="page-wrapper">
 
-  <div class="page-header">
-    <h2>Listado de clientes</h2>
-    <p>Usuarios con rol cliente dentro de la plataforma.</p>
-  </div>
-
-  <div class="pm-stats-grid">
-    <div class="pm-stat">
-      <span class="pm-stat__label">Clientes totales</span>
-      <span class="pm-stat__value">{{ clientes.length }}</span>
+  <!-- Header -->
+  <div class="ul__page-head">
+    <div class="page-header">
+      <p class="ul__eyebrow">Clientes</p>
+      <h2>Listado de clientes</h2>
+      <p>Usuarios con rol cliente dentro de la plataforma. Actualiza la lista para ver los cambios más recientes.</p>
     </div>
-    <div class="pm-stat">
-      <span class="pm-stat__label">Última actualización</span>
-      <span class="pm-stat__value pm-stat__value--sm">
-        {{ loading ? 'En progreso' : (clientes.length ? 'Hace un momento' : '—') }}
-      </span>
-    </div>
-  </div>
-
-  <div class="pm-card">
-    <div class="users-list__toolbar">
-      <span class="users-list__count">{{ clientes.length }} resultado{{ clientes.length !== 1 ? 's' : '' }}</span>
-      <button class="btn--ghost btn--sm" (click)="cargarClientes()" [disabled]="loading">
-        <i class="bi bi-arrow-clockwise"></i>
-        {{ loading ? 'Actualizando…' : 'Actualizar' }}
+    <div class="ul__head-actions">
+      <button class="btn--ghost btn--sm" type="button">
+        <i class="fa-solid fa-file-export"></i> Exportar CSV
+      </button>
+      <button class="btn--primary btn--sm" type="button" (click)="cargarClientes()" [disabled]="loading">
+        <i class="fa-solid fa-rotate"></i> Actualizar
       </button>
     </div>
+  </div>
 
-    <div *ngIf="error" class="users-list__state users-list__state--error">{{ error }}</div>
+  <!-- Stats -->
+  <div class="ul__stats">
+    <div class="ul__stat-card">
+      <div class="ul__stat-top">
+        <div>
+          <p class="ul__stat-label">Clientes totales</p>
+          <p class="ul__stat-num">{{ clientes.length }}</p>
+        </div>
+        <div class="ul__stat-icon" style="background: #ede9fe; color: #6d28d9">
+          <i class="fa-solid fa-users"></i>
+        </div>
+      </div>
+      <p class="ul__stat-hint">{{ clientes.length ? clientes.length + ' registrados' : 'Aún sin clientes' }}</p>
+    </div>
+    <div class="ul__stat-card">
+      <div class="ul__stat-top">
+        <div>
+          <p class="ul__stat-label">Activos 30 días</p>
+          <p class="ul__stat-num">{{ totalActivos30dias }}</p>
+        </div>
+        <div class="ul__stat-icon" style="background: #dcfce7; color: #15803d">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+      </div>
+      <p class="ul__stat-hint">{{ porcentajeActivos }}% del total</p>
+    </div>
+    <div class="ul__stat-card">
+      <div class="ul__stat-top">
+        <div>
+          <p class="ul__stat-label">Nuevos del mes</p>
+          <p class="ul__stat-num">{{ nuevosDelMes }}</p>
+        </div>
+        <div class="ul__stat-icon" style="background: #e0f2fe; color: #0369a1">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+      </div>
+      <p class="ul__stat-hint">vs. mes anterior</p>
+    </div>
+    <div class="ul__stat-card">
+      <div class="ul__stat-top">
+        <div>
+          <p class="ul__stat-label">Última actualización</p>
+          <p class="ul__stat-num ul__stat-num--sm">{{ ultimaActualizacion ? (ultimaActualizacion | date:'HH:mm') : '—' }}</p>
+        </div>
+        <div class="ul__stat-icon" style="background: #f1f5f9; color: #64748b">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+      </div>
+      <p class="ul__stat-hint">{{ ultimaActualizacion ? (ultimaActualizacion | date:'MMM d, y') : 'Sin datos disponibles' }}</p>
+    </div>
+  </div>
+
+  <!-- Results card -->
+  <div class="pm-card">
+    <div class="ul__results-header">
+      <div>
+        <h3 class="ul__results-title">Resultados ({{ clientesFiltrados.length }})</h3>
+        <p class="ul__results-sub">Filtra para encontrar usuarios específicos</p>
+      </div>
+      <div class="ul__toolbar-right">
+        <div class="ul__search">
+          <i class="fa-solid fa-magnifying-glass ul__search-icon"></i>
+          <input type="text" [(ngModel)]="busqueda" placeholder="Nombre, email o teléfono" />
+        </div>
+        <div class="ul__select-wrap">
+          <select [(ngModel)]="filtroEstatus">
+            <option value="todos">Todos los estados</option>
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+          <i class="fa-solid fa-chevron-down ul__select-icon"></i>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="ul__error">{{ error }}</div>
 
     <div *ngIf="loading && !error" class="pm-empty">
-      <i class="pm-empty__icon bi bi-hourglass-split"></i>
+      <i class="pm-empty__icon fa-solid fa-spinner fa-spin"></i>
       <p class="pm-empty__title">Cargando clientes…</p>
     </div>
 
-    <div *ngIf="!loading && !error && !clientes.length" class="pm-empty">
+    <div *ngIf="!loading && !error && !clientesFiltrados.length" class="pm-empty">
       <i class="pm-empty__icon fa-solid fa-users"></i>
-      <p class="pm-empty__title">Sin clientes registrados</p>
-      <p class="pm-empty__desc">Aún no hay usuarios con rol cliente en la plataforma.</p>
+      <p class="pm-empty__title">
+        {{ clientes.length ? 'Sin resultados para los filtros aplicados' : 'No hay clientes registrados por el momento' }}
+      </p>
+      <p class="pm-empty__desc">
+        {{ clientes.length ? 'Intenta con otros términos de búsqueda.' : 'Cuando los usuarios se registren desde la app pública, aparecerán aquí.' }}
+      </p>
     </div>
 
-    <div *ngIf="!loading && clientes.length" class="users-list__table-wrap">
+    <div *ngIf="!loading && clientesFiltrados.length" class="ul__table-wrap">
       <table class="pm-table">
         <thead>
           <tr>
             <th>Nombre</th>
-            <th>Email</th>
-            <th>Teléfono</th>
+            <th>Contacto</th>
             <th>Estatus</th>
             <th>Registrado</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let cliente of clientes; trackBy: trackByUsuario">
+          <tr *ngFor="let cliente of clientesFiltrados; trackBy: trackByUsuario">
             <td>
-              <div class="users-list__user">
+              <div class="ul__user">
                 <div class="pm-avatar pm-avatar--sm">
-                  {{ (cliente.nombre || '?').charAt(0) }}{{ (cliente.apellido || '').charAt(0) }}
+                  <img *ngIf="cliente.avatar_url" [src]="cliente.avatar_url" [alt]="cliente.nombre">
+                  <span *ngIf="!cliente.avatar_url">{{ (cliente.nombre || '?').charAt(0) }}{{ (cliente.apellido || '').charAt(0) }}</span>
                 </div>
-                <div>
-                  <p class="users-list__name">{{ cliente.nombre }} {{ cliente.apellido }}</p>
-                  <p class="users-list__sub">{{ cliente.tipo_usuario }}</p>
-                </div>
+                <p class="ul__name">{{ cliente.nombre }} {{ cliente.apellido }}</p>
               </div>
             </td>
-            <td>{{ cliente.email }}</td>
-            <td>{{ cliente.telefono || '—' }}</td>
             <td>
-              <span class="pm-badge"
-                [class.pm-badge--success]="cliente.estatus === 'activo'"
-                [class.pm-badge--neutral]="cliente.estatus !== 'activo'">
-                {{ cliente.estatus }}
+              <p class="ul__contact-email">{{ cliente.email }}</p>
+              <p class="ul__contact-phone">{{ cliente.telefono || '—' }}</p>
+            </td>
+            <td>
+              <span class="ul__badge"
+                [class.ul__badge--success]="cliente.estatus === 'activo'"
+                [class.ul__badge--neutral]="cliente.estatus !== 'activo'">
+                <span class="ul__badge-dot"></span>
+                {{ cliente.estatus === 'activo' ? 'Activo' : 'Inactivo' }}
               </span>
             </td>
-            <td>{{ cliente.fecha_creacion | date:'mediumDate' }}</td>
+            <td class="ul__date">{{ cliente.fecha_creacion | date:'MMM d, y' }}</td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div class="ul__footer" *ngIf="!loading && clientes.length">
+      <span class="ul__footer-info">{{ clientesFiltrados.length }} de {{ clientes.length }} cliente{{ clientes.length !== 1 ? 's' : '' }}</span>
     </div>
   </div>
 
