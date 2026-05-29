@@ -1,25 +1,33 @@
 <div class="page-wrapper">
   <app-back-button [link]="'/configurations/promotions/list'" label="Regresar a Promociones"></app-back-button>
+
   <div class="page-header">
+    <p class="pr__eyebrow">Configuraciones · Catálogo</p>
     <h2>{{ editingId ? 'Editar promoción' : 'Nueva promoción' }}</h2>
-    <p>Carga y recorta la imagen, define vigencia y montos.</p>
+    <p>Define la vigencia, precios e imagen de la promoción.</p>
   </div>
 
-  <form class="card promo-form-card" [formGroup]="form" (ngSubmit)="submit()">
-    <h2 class="mb-3 fs-5">Datos de la promoción</h2>
-    <div class="form-grid">
-      <div class="upload-box">
-        <label class="upload-area">
+  <form class="pm-card pr__form-card" [formGroup]="form" (ngSubmit)="submit()">
+
+    <div class="pr__layout">
+
+      <!-- Image upload -->
+      <div class="pr__upload-col">
+        <p class="pr__section-label">Imagen</p>
+        <label class="pr__upload-area">
           <input type="file" accept="image/*" (change)="onFileChange($event)">
           <ng-container *ngIf="croppedPreview; else emptyPreview">
-            <img [src]="croppedPreview" alt="Vista previa de la promoción">
+            <img [src]="croppedPreview" alt="Vista previa">
           </ng-container>
           <ng-template #emptyPreview>
-            <span>Selecciona una imagen</span>
+            <div class="pr__upload-placeholder">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>Selecciona una imagen</span>
+            </div>
           </ng-template>
         </label>
 
-        <div class="cropper" *ngIf="cropperVisible">
+        <div class="pr__cropper" *ngIf="cropperVisible">
           <image-cropper
             [imageChangedEvent]="imageChangedEvent"
             [maintainAspectRatio]="false"
@@ -27,76 +35,93 @@
             [resizeToWidth]="900"
             (imageCropped)="imageCropped($event)">
           </image-cropper>
-          <div class="cropper__actions">
-            <button class="btn--primary flex-fill" (click)="cropperVisible = false">
-              Listo
+          <div class="pr__cropper-actions">
+            <button class="btn--primary btn--sm" type="button" (click)="cropperVisible = false">
+              <i class="fa-solid fa-check"></i> Listo
             </button>
-            <button class="btn--ghost flex-fill" type="button" (click)="cancelCropper()">
-              Cancelar
-            </button>
+            <button class="btn--ghost btn--sm" type="button" (click)="cancelCropper()">Cancelar</button>
           </div>
         </div>
       </div>
 
-      <div class="fields" >
-        <div class="grid">
-          <label>
-            <span>Comercio *</span>
-            <select formControlName="comercio_id">
-              <option value="">Selecciona un comercio</option>
-              <option *ngFor="let c of comercios" [value]="c.id">{{ c.nombre }}</option>
-            </select>
-          </label>
-          <label>
-            <span>Título *</span>
-            <input type="text" formControlName="titulo" maxlength="200" placeholder="Ej. 2x1 en café" />
-          </label>
-          <label>
-            <span>Código</span>
-            <input type="text" formControlName="codigo_promocion" placeholder="Generado automáticamente" readonly />
-          </label>
-          <label>
-            <span>Estatus</span>
-            <select formControlName="estatus">
-              <option value="activo">Activo</option>
-              <option value="inactivo">Inactivo</option>
-              <option value="borrado">Borrado</option>
-            </select>
-          </label>
-          <label>
-            <span>Fecha inicio *</span>
-            <input type="datetime-local" formControlName="fecha_inicio" />
-          </label>
-          <label>
-            <span>Fecha fin *</span>
-            <input type="datetime-local" formControlName="fecha_fin" />
-          </label>
-          <label>
-            <span>Precio original *</span>
-            <input type="number" step="0.01" min="0" formControlName="precio_original" />
-          </label>
-          <label>
-            <span>Precio promoción *</span>
-            <input type="number" step="0.01" min="0" formControlName="precio_promocion" />
-          </label>
-          <label>
-            <span>% Descuento</span>
-            <input type="number" step="0.01" min="0" max="100" formControlName="porcentaje_descuento" />
-          </label>
+      <!-- Fields -->
+      <div class="pr__fields-col">
+
+        <div class="pr__form-grid">
+          <div class="pr__field">
+            <label class="pr__field-label">Comercio <span class="pr__required">*</span></label>
+            <div class="pr__select-wrap">
+              <select class="pr__select" formControlName="comercio_id">
+                <option value="">Selecciona un comercio</option>
+                <option *ngFor="let c of comercios" [value]="c.id">{{ c.nombre }}</option>
+              </select>
+              <i class="fa-solid fa-chevron-down pr__select-icon"></i>
+            </div>
+          </div>
+
+          <div class="pr__field">
+            <label class="pr__field-label">Título <span class="pr__required">*</span></label>
+            <input type="text" class="pr__input" formControlName="titulo" maxlength="200" placeholder="Ej. 2x1 en café">
+          </div>
+
+          <div class="pr__field">
+            <label class="pr__field-label">Código</label>
+            <input type="text" class="pr__input pr__input--mono" formControlName="codigo_promocion" readonly>
+          </div>
+
+          <div class="pr__field">
+            <label class="pr__field-label">Estatus</label>
+            <div class="pr__select-wrap">
+              <select class="pr__select" formControlName="estatus">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+                <option value="borrado">Borrado</option>
+              </select>
+              <i class="fa-solid fa-chevron-down pr__select-icon"></i>
+            </div>
+          </div>
+
+          <div class="pr__field">
+            <label class="pr__field-label">Fecha inicio <span class="pr__required">*</span></label>
+            <input type="datetime-local" class="pr__input" formControlName="fecha_inicio">
+          </div>
+
+          <div class="pr__field">
+            <label class="pr__field-label">Fecha fin <span class="pr__required">*</span></label>
+            <input type="datetime-local" class="pr__input" formControlName="fecha_fin">
+          </div>
+
+          <div class="pr__field">
+            <label class="pr__field-label">Precio original <span class="pr__required">*</span></label>
+            <input type="number" step="0.01" min="0" class="pr__input" formControlName="precio_original">
+          </div>
+
+          <div class="pr__field">
+            <label class="pr__field-label">Precio promoción <span class="pr__required">*</span></label>
+            <input type="number" step="0.01" min="0" class="pr__input" formControlName="precio_promocion">
+          </div>
+
+          <div class="pr__field">
+            <label class="pr__field-label">% Descuento</label>
+            <input type="number" step="0.01" min="0" max="100" class="pr__input" formControlName="porcentaje_descuento">
+          </div>
         </div>
 
-        <label class="w-100">
-          <span>Descripción</span>
-          <textarea rows="3" formControlName="descripcion" placeholder="Detalles adicionales..."></textarea>
-        </label>
+        <div class="pr__field pr__field--full">
+          <label class="pr__field-label">Descripción</label>
+          <textarea class="pr__input pr__textarea" rows="3" formControlName="descripcion"
+            placeholder="Detalles adicionales…"></textarea>
+        </div>
 
-        <div class="actions">
+        <div class="pr__form-actions">
           <button type="submit" class="btn--primary" [disabled]="saving || form.invalid">
             {{ saving ? 'Guardando…' : (editingId ? 'Actualizar promoción' : 'Crear promoción') }}
           </button>
           <button type="button" class="btn--ghost" (click)="resetForm()">Cancelar</button>
         </div>
+
       </div>
     </div>
+
   </form>
 </div>

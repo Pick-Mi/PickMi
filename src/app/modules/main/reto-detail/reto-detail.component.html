@@ -1,0 +1,160 @@
+<div class="page-wrapper">
+
+  <app-back-button link="/configurations/retos" label="Volver a retos"></app-back-button>
+
+  <ng-container *ngIf="!loading && reto">
+
+    <!-- Header -->
+    <div class="rd__page-head">
+      <div class="rd__head-left">
+        <div class="rd__reto-icon">
+          <i class="fa-solid" [ngClass]="reto.icono || 'fa-trophy'"></i>
+        </div>
+        <div>
+          <p class="rd__eyebrow">Gamificación · Reto</p>
+          <h2 class="rd__title">{{ reto.titulo }}</h2>
+          <p class="rd__desc" *ngIf="reto.descripcion">{{ reto.descripcion }}</p>
+          <div class="rd__badges">
+            <span class="rd__badge" [ngClass]="tipoBadgeClass(reto.tipo_reto)">{{ tipoLabel(reto.tipo_reto) }}</span>
+            <span class="rd__badge" [class.rd__badge--active]="reto.activo" [class.rd__badge--inactive]="!reto.activo">
+              {{ reto.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+            <span class="rd__badge rd__badge--neutral">
+              Meta: {{ reto.meta }} {{ reto.tipo_accion }}
+            </span>
+            <span class="rd__badge rd__badge--neutral" *ngIf="reto.tipo_reto === 'permanente' && reto.periodo_dias">
+              Ciclo: {{ reto.periodo_dias }} días
+            </span>
+            <span class="rd__badge rd__badge--neutral" *ngIf="reto.tipo_reto === 'evento' && reto.fecha_inicio">
+              {{ reto.fecha_inicio | date:'MMM d' }} – {{ reto.fecha_fin | date:'MMM d, y' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="rd__stats">
+      <div class="rd__stat-card">
+        <div class="rd__stat-top">
+          <div>
+            <p class="rd__stat-label">Participantes</p>
+            <p class="rd__stat-num">{{ totalParticipantes }}</p>
+          </div>
+          <div class="rd__stat-icon" style="background:#ede9fe;color:#6d28d9">
+            <i class="fa-solid fa-users"></i>
+          </div>
+        </div>
+        <p class="rd__stat-hint">Con el reto asignado</p>
+      </div>
+      <div class="rd__stat-card">
+        <div class="rd__stat-top">
+          <div>
+            <p class="rd__stat-label">Completados</p>
+            <p class="rd__stat-num">{{ totalCompletados }}</p>
+          </div>
+          <div class="rd__stat-icon" style="background:#dcfce7;color:#15803d">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+        </div>
+        <p class="rd__stat-hint">Llegaron a la meta</p>
+      </div>
+      <div class="rd__stat-card">
+        <div class="rd__stat-top">
+          <div>
+            <p class="rd__stat-label">En progreso</p>
+            <p class="rd__stat-num">{{ totalEnProgreso }}</p>
+          </div>
+          <div class="rd__stat-icon" style="background:#e0f2fe;color:#0369a1">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+        </div>
+        <p class="rd__stat-hint">Han avanzado</p>
+      </div>
+      <div class="rd__stat-card">
+        <div class="rd__stat-top">
+          <div>
+            <p class="rd__stat-label">Tasa de completado</p>
+            <p class="rd__stat-num">{{ tasaCompletado }}%</p>
+          </div>
+          <div class="rd__stat-icon" style="background:#fef3c7;color:#b45309">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+        </div>
+        <p class="rd__stat-hint">Del total de participantes</p>
+      </div>
+    </div>
+
+    <!-- Ranking card -->
+    <div class="pm-card">
+      <div class="rd__ranking-header">
+        <h3 class="rd__ranking-title">Ranking de participantes</h3>
+        <p class="rd__ranking-sub">Ordenado por completado y progreso</p>
+      </div>
+
+      <div *ngIf="!progreso.length" class="pm-empty">
+        <i class="pm-empty__icon fa-solid fa-users"></i>
+        <p class="pm-empty__title">Sin participantes aún</p>
+        <p class="pm-empty__desc">El proceso no asignó el reto automáticamente o aún no hay clientes registrados.</p>
+        <button class="btn--primary" type="button" (click)="asignarATodos()" [disabled]="asignando" style="font-weight: 500">
+          <i class="fa-solid fa-user-plus"></i>
+          {{ asignando ? 'Asignando…' : 'Asignar a todos los clientes' }}
+        </button>
+      </div>
+
+      <div class="rd__table-wrap" *ngIf="progreso.length">
+        <table class="pm-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cliente</th>
+              <th>Progreso</th>
+              <th>Estatus</th>
+              <th>Completado el</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of progreso; let i = index" [class.rd__row--winner]="p.completado && i < 3">
+              <td class="rd__pos">
+                <i *ngIf="i < 3 && p.completado" class="fa-solid rd__medal" [ngClass]="medallaIcon(i)"></i>
+                <span *ngIf="!(i < 3 && p.completado)" class="rd__pos-num">{{ i + 1 }}</span>
+              </td>
+              <td>
+                <div class="rd__user">
+                  <div class="pm-avatar pm-avatar--sm">
+                    <img *ngIf="p.usuario_avatar" [src]="p.usuario_avatar" [alt]="p.usuario_nombre">
+                    <span *ngIf="!p.usuario_avatar">{{ initiales(p.usuario_nombre, p.usuario_apellido) }}</span>
+                  </div>
+                  <div>
+                    <p class="rd__user-name">{{ p.usuario_nombre }} {{ p.usuario_apellido }}</p>
+                    <p class="rd__user-email">{{ p.usuario_email }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="rd__progress-cell">
+                <div class="rd__progress-bar-wrap">
+                  <div class="rd__progress-bar">
+                    <div class="rd__progress-fill" [style.width.%]="porcentajeBarra(p)"
+                      [class.rd__progress-fill--done]="p.completado"></div>
+                  </div>
+                  <span class="rd__progress-label">{{ p.progreso }} / {{ reto.meta }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="rd__status-badge" [class.rd__status-badge--done]="p.completado">
+                  <span class="rd__status-dot"></span>
+                  {{ p.completado ? 'Completado' : 'En progreso' }}
+                </span>
+              </td>
+              <td class="rd__date">
+                {{ p.fecha_completado ? (p.fecha_completado | date:'MMM d, y · h:mm a') : '—' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </ng-container>
+
+</div>

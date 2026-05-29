@@ -1,176 +1,210 @@
 <div class="page-wrapper">
   <app-back-button [link]="'/configurations'" label="Regresar a configuraciones"></app-back-button>
 
-  <div class="page-header">
-    <h2>Planes</h2>
-    <p>Configura precios, limites y features disponibles.</p>
+  <!-- Header -->
+  <div class="pl__page-head">
+    <div class="page-header">
+      <p class="pl__eyebrow">Monetización</p>
+      <h2>Planes</h2>
+      <p>Configura precios, límites y features disponibles para los propietarios.</p>
+    </div>
+    <div class="pl__head-actions">
+      <button class="btn--primary btn--sm" type="button" (click)="toggleForm()">
+        <i class="fa-solid" [class.fa-plus]="!showForm || editingId" [class.fa-xmark]="showForm && !editingId"></i>
+        {{ showForm && !editingId ? 'Cancelar' : 'Nuevo plan' }}
+      </button>
+    </div>
   </div>
 
-  <div class="grid">
-    <div class="card form-card">
-      <div class="card-header">
-        <h5 class="mb-0">{{ editingId ? 'Editar plan' : 'Nuevo plan' }}</h5>
-      </div>
-      <div class="card-body">
-        <form [formGroup]="planForm" (ngSubmit)="guardarPlan()">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Nombre</label>
-              <input type="text" class="form-control" formControlName="nombre" (blur)="onNombreBlur()">
-              <small *ngIf="planForm.get('nombre')?.invalid && planForm.get('nombre')?.touched" class="text-danger">Requerido.</small>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Slug</label>
-              <input type="text" class="form-control" formControlName="slug">
-              <small class="text-muted">Usado como identificador unico.</small>
-            </div>
-            <div class="col-12">
-              <label class="form-label">Descripcion</label>
-              <textarea rows="2" class="form-control" formControlName="descripcion"></textarea>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Precio mensual</label>
-              <input type="number" min="0" step="0.01" class="form-control" formControlName="precio_mensual">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Moneda</label>
-              <select class="form-select" formControlName="moneda">
-                <option *ngFor="let m of monedas" [value]="m">{{ m }}</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Dias de prueba</label>
-              <input type="number" min="0" class="form-control" formControlName="trial_dias">
-            </div>
-            <div class="col-12 d-flex gap-4 flex-wrap align-items-center">
-              <app-toggle-switch formControlName="es_activo" label="Activo" color="#7e7cb9"></app-toggle-switch>
-              <app-toggle-switch formControlName="es_default" label="Default" color="#7e7cb9"></app-toggle-switch>
-              <app-toggle-switch formControlName="es_trial_default" label="Trial default" color="#7e7cb9"></app-toggle-switch>
-            </div>
-          </div>
+  <!-- Form panel -->
+  <div class="pm-card pl__form-card" *ngIf="showForm">
+    <h3 class="pl__form-title">{{ editingId ? 'Editar plan' : 'Nuevo plan' }}</h3>
+    <form [formGroup]="planForm" (ngSubmit)="guardarPlan()">
 
-          <div class="mt-4">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="mb-0">Limites</h6>
-              <button type="button" class="btn--outline btn--sm" (click)="agregarLimite()">Agregar</button>
-            </div>
-            <div *ngIf="!limitEntries.length" class="text-muted small">Sin limites definidos.</div>
-            <div class="row g-2 align-items-center" *ngFor="let limite of limitEntries; let i = index">
-              <div class="col-md-5">
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Clave (ej. menus)"
-                  [(ngModel)]="limite.key"
-                  [ngModelOptions]="{ standalone: true }"
-                  name="limite-key-{{ i }}"
-                >
-              </div>
-              <div class="col-md-5">
-                <input
-                  type="number"
-                  min="0"
-                  class="form-control"
-                  placeholder="Valor"
-                  [(ngModel)]="limite.value"
-                  [ngModelOptions]="{ standalone: true }"
-                  name="limite-value-{{ i }}"
-                >
-              </div>
-              <div class="col-md-2 text-end">
-                <button type="button" class="btn btn-link text-danger" (click)="eliminarLimite(i)">Eliminar</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-4">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="mb-0">Features</h6>
-              <button type="button" class="btn--outline btn--sm" (click)="agregarFeature()">Agregar</button>
-            </div>
-            <div *ngIf="!featureEntries.length" class="text-muted small">Sin features definidos.</div>
-            <div class="row g-2 align-items-center" *ngFor="let feature of featureEntries; let i = index">
-              <div class="col-md-6">
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Clave (ej. soporte_premium)"
-                  [(ngModel)]="feature.key"
-                  [ngModelOptions]="{ standalone: true }"
-                  name="feature-key-{{ i }}"
-                >
-              </div>
-              <div class="col-md-4">
-                <select
-                  class="form-select"
-                  [(ngModel)]="feature.value"
-                  [ngModelOptions]="{ standalone: true }"
-                  name="feature-value-{{ i }}"
-                >
-                  <option [ngValue]="true">Activo</option>
-                  <option [ngValue]="false">Inactivo</option>
-                </select>
-              </div>
-              <div class="col-md-2 text-end">
-                <button type="button" class="btn btn-link text-danger" (click)="eliminarFeature(i)">Eliminar</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-4 d-flex gap-2">
-            <button class="btn--primary" type="submit" [disabled]="saving">
-              {{ saving ? 'Guardando...' : (editingId ? 'Actualizar plan' : 'Crear plan') }}
-            </button>
-            <button type="button" class="btn--ghost" (click)="cancelarEdicion()" [disabled]="saving">Limpiar</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div class="card list-card">
-      <div class="card-header">
-        <h5 class="mb-0">Planes</h5>
-      </div>
-      <div class="card-body">
-        <div *ngIf="loading">Cargando planes...</div>
-        <div *ngIf="!loading && !plans.length" class="text-muted">Aun no hay planes.</div>
-
-        <div class="plan-item" *ngFor="let plan of plans">
-          <div class="plan-header">
-            <div>
-              <h6 class="mb-1">{{ plan.nombre }} <span class="text-muted">({{ plan.slug }})</span></h6>
-              <div class="plan-tags">
-                <span class="badge bg-success" *ngIf="plan.es_activo">Activo</span>
-                <span class="badge bg-primary" *ngIf="plan.es_default">Default</span>
-                <span class="badge bg-warning text-dark" *ngIf="plan.es_trial_default">Trial default</span>
-              </div>
-            </div>
-            <div class="text-end">
-              <div class="fw-semibold">{{ plan.moneda }} {{ plan.precio_mensual | number:'1.2-2' }}</div>
-              <div class="text-muted small">Trial: {{ plan.trial_dias }} dias</div>
-            </div>
-          </div>
-
-          <p class="text-muted mb-2" *ngIf="plan.descripcion">{{ plan.descripcion }}</p>
-
-          <div class="chips" *ngIf="plan.limites && (toLimitEntries(plan.limites).length > 0)">
-            <span class="chip" *ngFor="let lim of toLimitEntries(plan.limites)">
-              {{ lim.key }}: {{ lim.value }}
-            </span>
-          </div>
-
-          <div class="chips" *ngIf="plan.features && (toFeatureEntries(plan.features).length > 0)">
-            <span class="chip" *ngFor="let feat of toFeatureEntries(plan.features)">
-              {{ feat.key }}: {{ feat.value ? 'si' : 'no' }}
-            </span>
-          </div>
-
-          <div class="mt-3 d-flex gap-2">
-            <button class="btn--outline btn--sm" (click)="editarPlan(plan)">Editar</button>
-            <button class="btn--outline-danger btn--sm" (click)="eliminarPlan(plan)">Eliminar</button>
-          </div>
+      <div class="pl__form-grid">
+        <div class="pl__field">
+          <label class="pl__field-label">Nombre <span class="pl__required">*</span></label>
+          <input type="text" class="pl__input" formControlName="nombre" (blur)="onNombreBlur()" placeholder="Ej. Plan Pro">
+          <span class="pl__field-error" *ngIf="planForm.get('nombre')?.invalid && planForm.get('nombre')?.touched">Requerido</span>
+        </div>
+        <div class="pl__field">
+          <label class="pl__field-label">Slug <span class="pl__required">*</span></label>
+          <input type="text" class="pl__input" formControlName="slug" placeholder="plan-pro">
+          <span class="pl__field-hint">Identificador único</span>
+        </div>
+        <div class="pl__field pl__field--full">
+          <label class="pl__field-label">Descripción</label>
+          <input type="text" class="pl__input" formControlName="descripcion" placeholder="Breve descripción del plan">
         </div>
       </div>
+
+      <div class="pl__form-divider"></div>
+
+      <div class="pl__form-grid">
+        <div class="pl__field">
+          <label class="pl__field-label">Precio mensual</label>
+          <input type="number" min="0" step="0.01" class="pl__input" formControlName="precio_mensual">
+        </div>
+        <div class="pl__field">
+          <label class="pl__field-label">Moneda</label>
+          <div class="pl__select-wrap">
+            <select class="pl__select" formControlName="moneda">
+              <option *ngFor="let m of monedas" [value]="m">{{ m }}</option>
+            </select>
+            <i class="fa-solid fa-chevron-down pl__select-icon"></i>
+          </div>
+        </div>
+        <div class="pl__field">
+          <label class="pl__field-label">Días de prueba</label>
+          <input type="number" min="0" class="pl__input" formControlName="trial_dias">
+        </div>
+      </div>
+
+      <div class="pl__toggles">
+        <div class="pl__toggle-item">
+          <label class="pl__field-label">Activo</label>
+          <app-toggle-switch formControlName="es_activo" label="" color="#7e7cb9"></app-toggle-switch>
+        </div>
+        <div class="pl__toggle-item">
+          <label class="pl__field-label">Default</label>
+          <app-toggle-switch formControlName="es_default" label="" color="#7e7cb9"></app-toggle-switch>
+        </div>
+        <div class="pl__toggle-item">
+          <label class="pl__field-label">Trial default</label>
+          <app-toggle-switch formControlName="es_trial_default" label="" color="#7e7cb9"></app-toggle-switch>
+        </div>
+      </div>
+
+      <div class="pl__form-divider"></div>
+
+      <!-- Límites -->
+      <div class="pl__entries-section">
+        <div class="pl__entries-header">
+          <div>
+            <p class="pl__entries-title">Límites</p>
+            <p class="pl__entries-sub">Restricciones numéricas del plan</p>
+          </div>
+          <button type="button" class="btn--ghost btn--sm" (click)="agregarLimite()">
+            <i class="fa-solid fa-plus"></i> Agregar
+          </button>
+        </div>
+        <p class="pl__entries-empty" *ngIf="!limitEntries.length">Sin límites definidos.</p>
+        <div class="pl__entry-row" *ngFor="let limite of limitEntries; let i = index">
+          <input type="text" class="pl__input" placeholder="Clave (ej. menus)"
+            [(ngModel)]="limite.key" [ngModelOptions]="{standalone:true}">
+          <input type="number" min="0" class="pl__input pl__input--short" placeholder="Valor"
+            [(ngModel)]="limite.value" [ngModelOptions]="{standalone:true}">
+          <button type="button" class="pl__entry-del" (click)="eliminarLimite(i)">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="pl__form-divider"></div>
+
+      <!-- Features -->
+      <div class="pl__entries-section">
+        <div class="pl__entries-header">
+          <div>
+            <p class="pl__entries-title">Features</p>
+            <p class="pl__entries-sub">Características habilitadas o deshabilitadas</p>
+          </div>
+          <button type="button" class="btn--ghost btn--sm" (click)="agregarFeature()">
+            <i class="fa-solid fa-plus"></i> Agregar
+          </button>
+        </div>
+        <p class="pl__entries-empty" *ngIf="!featureEntries.length">Sin features definidos.</p>
+        <div class="pl__entry-row" *ngFor="let feature of featureEntries; let i = index">
+          <input type="text" class="pl__input" placeholder="Clave (ej. soporte_premium)"
+            [(ngModel)]="feature.key" [ngModelOptions]="{standalone:true}">
+          <div class="pl__select-wrap pl__select-wrap--short">
+            <select class="pl__select" [(ngModel)]="feature.value" [ngModelOptions]="{standalone:true}">
+              <option [ngValue]="true">Sí</option>
+              <option [ngValue]="false">No</option>
+            </select>
+            <i class="fa-solid fa-chevron-down pl__select-icon"></i>
+          </div>
+          <button type="button" class="pl__entry-del" (click)="eliminarFeature(i)">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="pl__form-actions">
+        <button type="submit" class="btn--primary" [disabled]="saving">
+          {{ saving ? 'Guardando…' : (editingId ? 'Actualizar plan' : 'Crear plan') }}
+        </button>
+        <button type="button" class="btn--ghost" (click)="cancelarEdicion()">Cancelar</button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="pm-empty">
+    <i class="pm-empty__icon fa-solid fa-spinner fa-spin"></i>
+    <p class="pm-empty__title">Cargando planes…</p>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && !plans.length" class="pm-empty">
+    <i class="pm-empty__icon fa-solid fa-layer-group"></i>
+    <p class="pm-empty__title">Sin planes creados</p>
+    <p class="pm-empty__desc">Crea el primer plan para los propietarios.</p>
+  </div>
+
+  <!-- Plans grid -->
+  <div class="pl__grid" *ngIf="!loading && plans.length">
+    <div class="pl__plan-card" *ngFor="let plan of plans">
+
+      <div class="pl__plan-head">
+        <div class="pl__plan-icon">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <div class="pl__plan-badges">
+          <span class="pl__badge" [class.pl__badge--active]="plan.es_activo" [class.pl__badge--inactive]="!plan.es_activo">
+            {{ plan.es_activo ? 'Activo' : 'Inactivo' }}
+          </span>
+          <span class="pl__badge pl__badge--default" *ngIf="plan.es_default">Default</span>
+          <span class="pl__badge pl__badge--trial" *ngIf="plan.es_trial_default">Trial default</span>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="pl__plan-title">{{ plan.nombre }}</h4>
+        <p class="pl__plan-slug">{{ plan.slug }}</p>
+        <p class="pl__plan-desc" *ngIf="plan.descripcion">{{ plan.descripcion }}</p>
+      </div>
+
+      <div class="pl__plan-stats">
+        <div class="pl__plan-stat">
+          <p class="pl__plan-stat-label">Precio</p>
+          <p class="pl__plan-stat-value">{{ plan.moneda }} {{ plan.precio_mensual | number:'1.2-2' }}</p>
+        </div>
+        <div class="pl__plan-stat">
+          <p class="pl__plan-stat-label">Trial</p>
+          <p class="pl__plan-stat-value">{{ plan.trial_dias }} días</p>
+        </div>
+        <div class="pl__plan-stat" *ngIf="toLimitEntries(plan.limites).length">
+          <p class="pl__plan-stat-label">Límites</p>
+          <p class="pl__plan-stat-value">{{ toLimitEntries(plan.limites).length }}</p>
+        </div>
+        <div class="pl__plan-stat" *ngIf="toFeatureEntries(plan.features).length">
+          <p class="pl__plan-stat-label">Features</p>
+          <p class="pl__plan-stat-value">{{ toFeatureEntries(plan.features).length }}</p>
+        </div>
+      </div>
+
+      <div class="pl__plan-actions">
+        <button class="btn--ghost btn--sm" type="button" (click)="editarPlan(plan)" style="flex:1">
+          <i class="fa-solid fa-pen"></i> Editar
+        </button>
+        <button class="pl__icon-btn pl__icon-btn--danger" type="button" (click)="eliminarPlan(plan)" title="Eliminar">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+
     </div>
   </div>
+
 </div>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { RetosService } from '../../../core/services/retos.service';
 import { PickReto, TipoReto } from '../../../data/interfaces/retos';
 import { BackButtonComponent } from '../../../shared/components/back-button/back-button.component';
@@ -36,7 +37,7 @@ export class RetosComponent implements OnInit {
     'reseñas', 'favoritos', 'calificar', 'visitas', 'compartidos'
   ];
 
-  constructor(private fb: FormBuilder, private retosService: RetosService) {
+  constructor(private fb: FormBuilder, private retosService: RetosService, private router: Router) {
     this.form = this.fb.group({
       titulo: ['', [Validators.required, Validators.maxLength(120)]],
       descripcion: [''],
@@ -44,6 +45,7 @@ export class RetosComponent implements OnInit {
       meta: [1, [Validators.required, Validators.min(1)]],
       tipo_accion: ['reseñas', Validators.required],
       periodo_dias: [7],
+      dia_reinicio: [0],
       fecha_inicio: [null],
       fecha_fin: [null],
       activo: [true],
@@ -85,7 +87,7 @@ export class RetosComponent implements OnInit {
     this.form.reset({
       titulo: '', descripcion: '', tipo_reto: 'permanente',
       meta: 1, tipo_accion: 'reseñas', periodo_dias: 7,
-      fecha_inicio: null, fecha_fin: null, activo: true, icono: 'fa-star'
+      dia_reinicio: 0, fecha_inicio: null, fecha_fin: null, activo: true, icono: 'fa-star'
     });
     this.showForm = true;
   }
@@ -99,6 +101,7 @@ export class RetosComponent implements OnInit {
       meta: reto.meta,
       tipo_accion: reto.tipo_accion,
       periodo_dias: reto.periodo_dias ?? 7,
+      dia_reinicio: reto.dia_reinicio ?? 0,
       fecha_inicio: reto.fecha_inicio ? reto.fecha_inicio.slice(0, 10) : null,
       fecha_fin: reto.fecha_fin ? reto.fecha_fin.slice(0, 10) : null,
       activo: reto.activo ?? true,
@@ -125,6 +128,7 @@ export class RetosComponent implements OnInit {
         meta: val.meta,
         tipo_accion: val.tipo_accion,
         periodo_dias: val.tipo_reto === 'permanente' ? val.periodo_dias : null,
+        dia_reinicio: val.tipo_reto === 'permanente' ? val.dia_reinicio : null,
         fecha_inicio: val.tipo_reto === 'evento' ? val.fecha_inicio : null,
         fecha_fin: val.tipo_reto === 'evento' ? val.fecha_fin : null,
         activo: val.activo,
@@ -156,6 +160,10 @@ export class RetosComponent implements OnInit {
     } catch (e) {
       sweetAlert.alertError('No se pudo eliminar el reto.');
     }
+  }
+
+  verDetalle(reto: PickReto): void {
+    this.router.navigate(['/configurations/retos', reto.reto_id]);
   }
 
   async toggleActivo(reto: PickReto): Promise<void> {

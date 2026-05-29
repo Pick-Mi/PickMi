@@ -1,100 +1,99 @@
 <div class="page-wrapper">
   <app-back-button [link]="'/configurations'" label="Regresar a configuraciones"></app-back-button>
-  <div class="page-header">
-    <h2>Tipos de negocio</h2>
-    <p>Administra los tipos disponibles para clasificar los comercios.</p>
+
+  <!-- Header -->
+  <div class="bt__page-head">
+    <div class="page-header">
+      <p class="bt__eyebrow">Catálogo</p>
+      <h2>Tipos de negocio</h2>
+      <p>Administra los tipos disponibles para clasificar los comercios.</p>
+    </div>
+    <div class="bt__head-actions">
+      <button class="btn--primary btn--sm" type="button" (click)="toggleForm()">
+        <i class="fa-solid" [class.fa-plus]="!showForm || editingId" [class.fa-xmark]="showForm && !editingId"></i>
+        {{ showForm && !editingId ? 'Cancelar' : 'Nuevo tipo' }}
+      </button>
+    </div>
   </div>
 
-  <div class="card form-card">
-    <h2 class="fs-5 mb-3">{{ editingId ? 'Editar tipo' : 'Nuevo tipo' }}</h2>
+  <!-- Form panel -->
+  <div class="pm-card bt__form-card" *ngIf="showForm">
+    <h3 class="bt__form-title">{{ editingId ? 'Editar tipo' : 'Nuevo tipo' }}</h3>
     <form [formGroup]="typeForm" (ngSubmit)="guardarTipo()">
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label">Nombre</label>
-          <input type="text" class="form-control" formControlName="nombre" placeholder="Ej. Restaurante">
-
-          <div class="text-danger small mt-1" *ngIf="typeForm.get('nombre')?.invalid && typeForm.get('nombre')?.touched">
-            El nombre es obligatorio (máx. 100 caracteres).
-          </div>
+      <div class="bt__form-grid">
+        <div class="bt__field bt__field--grow">
+          <label class="bt__field-label">Nombre <span class="bt__required">*</span></label>
+          <input type="text" class="bt__input" formControlName="nombre" placeholder="Ej. Restaurante">
+          <span class="bt__field-error" *ngIf="typeForm.get('nombre')?.invalid && typeForm.get('nombre')?.touched">Requerido</span>
         </div>
-
-        <div class="col-md-4">
-          <label class="form-label">Icono</label>
-          <div class="icon-select-wrapper">
-            <select class="form-select icon-select" formControlName="icono">
-              <option *ngFor="let icon of iconOptions" [value]="icon.name">{{ icon.name }}</option>
-            </select>
-            <div class="selected-icon">
+        <div class="bt__field">
+          <label class="bt__field-label">Icono</label>
+          <div class="bt__icon-row">
+            <div class="bt__select-wrap">
+              <select class="bt__select" formControlName="icono">
+                <option *ngFor="let icon of iconOptions" [value]="icon.name">{{ icon.name }}</option>
+              </select>
+              <i class="fa-solid fa-chevron-down bt__select-icon"></i>
+            </div>
+            <div class="bt__icon-preview">
               <i class="fa-solid" [ngClass]="typeForm.get('icono')?.value"></i>
             </div>
           </div>
         </div>
-
-        <div class="col-md-6">
-          <app-toggle-switch formControlName="estado" label="Activo" color="#7e7cb9"></app-toggle-switch>
+        <div class="bt__field">
+          <label class="bt__field-label">Activo</label>
+          <app-toggle-switch formControlName="estado" label="" color="#7e7cb9"></app-toggle-switch>
         </div>
       </div>
-
-      <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn--primary" [disabled]="saving">
-          {{ saving ? 'Guardando...' : (editingId ? 'Actualizar' : 'Crear') }}
+      <div class="bt__form-actions">
+        <button type="submit" class="btn--primary btn--sm" [disabled]="saving">
+          {{ saving ? 'Guardando…' : (editingId ? 'Actualizar' : 'Crear') }}
         </button>
-        <button type="button" class="btn--ghost" (click)="cancelarEdicion()" *ngIf="editingId">
-          Cancelar
-        </button>
+        <button type="button" class="btn--ghost btn--sm" (click)="cancelarEdicion()">Cancelar</button>
       </div>
     </form>
   </div>
 
-  <div class="card list-card">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="fs-5 mb-0">Listado</h2>
-      <span class="text-muted small">{{ types.length }} tipos</span>
+  <!-- List card -->
+  <div class="pm-card">
+    <div class="bt__list-header">
+      <h3 class="bt__list-title">Tipos registrados</h3>
+      <span class="bt__list-count">{{ types.length }} tipos</span>
     </div>
 
-    <div *ngIf="loading" class="state-message">Cargando tipos de negocio...</div>
-
-    <div *ngIf="!loading && types.length > 0" class="table-responsive">
-      <table class="table align-middle">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Icono</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let tipo of types">
-            <td>{{ tipo.id }}</td>
-            <td>{{ tipo.nombre }}</td>
-            <td>
-              <i class="fa-solid me-2" [ngClass]="tipo.icono"></i>
-              {{ tipo.icono }}
-            </td>
-            <td>
-              <span class="badge" [class.active]="tipo.estado">
-                {{ tipo.estado ? 'Activo' : 'Inactivo' }}
-              </span>
-            </td>
-            <td>
-              <div class="d-flex gap-1">
-                <button class="btn--outline btn--sm" (click)="editarTipo(tipo)">Editar</button>
-                <button class="btn--ghost btn--sm" (click)="alternarEstado(tipo)">
-                  {{ tipo.estado ? 'Desactivar' : 'Activar' }}
-                </button>
-                <button class="btn--outline-danger btn--sm" (click)="eliminarTipo(tipo)">Eliminar</button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div *ngIf="loading" class="pm-empty">
+      <i class="pm-empty__icon fa-solid fa-spinner fa-spin"></i>
+      <p class="pm-empty__title">Cargando tipos…</p>
     </div>
 
-    <div *ngIf="!loading && !types.length" class="state-message">
-      Aún no hay tipos registrados.
+    <div *ngIf="!loading && !types.length" class="pm-empty">
+      <i class="pm-empty__icon fa-solid fa-sitemap"></i>
+      <p class="pm-empty__title">Sin tipos registrados</p>
+      <p class="pm-empty__desc">Agrega el primer tipo de negocio.</p>
     </div>
+
+    <ul class="bt__list" *ngIf="!loading && types.length">
+      <li class="bt__row" *ngFor="let tipo of types">
+        <div class="bt__row-icon">
+          <i class="fa-solid" [ngClass]="tipo.icono"></i>
+        </div>
+        <p class="bt__row-name">{{ tipo.nombre }}</p>
+        <span class="bt__badge" [class.bt__badge--active]="tipo.estado" [class.bt__badge--inactive]="!tipo.estado">
+          {{ tipo.estado ? 'Activo' : 'Inactivo' }}
+        </span>
+        <div class="bt__row-actions">
+          <button class="bt__icon-btn" type="button" title="Editar" (click)="editarTipo(tipo)">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="bt__icon-btn" type="button" [title]="tipo.estado ? 'Desactivar' : 'Activar'" (click)="alternarEstado(tipo)">
+            <i class="fa-solid fa-ban"></i>
+          </button>
+          <button class="bt__icon-btn bt__icon-btn--danger" type="button" title="Eliminar" (click)="eliminarTipo(tipo)">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </li>
+    </ul>
   </div>
-</div>
 
+</div>

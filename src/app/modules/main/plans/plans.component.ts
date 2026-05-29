@@ -29,6 +29,7 @@ export class PlansComponent implements OnInit {
   loading = false;
   saving = false;
   editingId: string | null = null;
+  showForm = false;
 
   planForm!: FormGroup;
   limitEntries: LimitEntry[] = [];
@@ -89,8 +90,18 @@ export class PlansComponent implements OnInit {
     this.featureEntries.splice(index, 1);
   }
 
+  toggleForm(): void {
+    if (this.showForm && !this.editingId) {
+      this.cancelarEdicion();
+    } else {
+      this.cancelarEdicion();
+      this.showForm = true;
+    }
+  }
+
   editarPlan(plan: PickPlan): void {
     this.editingId = plan.id ?? null;
+    this.showForm = true;
     this.planForm.setValue({
       nombre: plan.nombre,
       slug: plan.slug,
@@ -109,6 +120,7 @@ export class PlansComponent implements OnInit {
 
   cancelarEdicion(): void {
     this.editingId = null;
+    this.showForm = false;
     this.planForm.reset({
       nombre: '',
       slug: '',

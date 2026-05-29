@@ -132,10 +132,26 @@
           </div>
         </div>
 
-        <!-- Condicional: Permanente → periodo_dias -->
+        <!-- Condicional: Permanente → periodo + fecha de referencia -->
         <div class="rt__field" *ngIf="tipoActual === 'permanente'">
           <label class="rt__field-label">Periodo (días)</label>
           <input type="number" class="rt__input" formControlName="periodo_dias" min="1" placeholder="7">
+        </div>
+        <div class="rt__field" *ngIf="tipoActual === 'permanente'">
+          <label class="rt__field-label">Día de reinicio</label>
+          <div class="rt__select-wrap">
+            <select class="rt__select" formControlName="dia_reinicio">
+              <option [ngValue]="0">Lunes</option>
+              <option [ngValue]="1">Martes</option>
+              <option [ngValue]="2">Miércoles</option>
+              <option [ngValue]="3">Jueves</option>
+              <option [ngValue]="4">Viernes</option>
+              <option [ngValue]="5">Sábado</option>
+              <option [ngValue]="6">Domingo</option>
+            </select>
+            <i class="fa-solid fa-chevron-down rt__select-icon"></i>
+          </div>
+          <span class="rt__field-hint">El ciclo reinicia cada {{ form.get('periodo_dias')?.value || '?' }} días en este día.</span>
         </div>
 
         <!-- Condicional: Evento → fechas -->
@@ -241,8 +257,11 @@
         </div>
 
         <div class="rt__reto-actions">
+          <button class="btn--ghost btn--sm" type="button" (click)="verDetalle(reto)" style="flex:1">
+            <i class="fa-solid fa-chart-bar"></i> Ver progreso
+          </button>
           <button class="rt__action-btn" type="button" (click)="toggleActivo(reto)" [title]="reto.activo ? 'Desactivar' : 'Activar'">
-            <i class="fa-solid" [class.fa-eye]="reto.activo" [class.fa-eye-slash]="!reto.activo"></i>
+            <i class="fa-solid fa-ban"></i>
           </button>
           <button class="rt__action-btn" type="button" (click)="editar(reto)" title="Editar">
             <i class="fa-solid fa-pen"></i>

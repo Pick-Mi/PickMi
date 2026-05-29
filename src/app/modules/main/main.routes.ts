@@ -22,6 +22,7 @@ import { OwnersDetailsComponent } from './owners-details/owners-details.componen
 import { PlansComponent } from './plans/plans.component';
 import { MessagesComponent } from './messages/messages.component';
 import { RetosComponent } from './retos/retos.component';
+import { RetoDetailComponent } from './reto-detail/reto-detail.component';
 
 export const mainRoutes: Routes = [
   { path: '', 
@@ -46,6 +47,7 @@ export const mainRoutes: Routes = [
       { path: 'configurations/promotions', component: PromotionsComponent },
       { path: 'configurations/promotions/list', component: PromotionsListComponent },
       { path: 'configurations/retos', component: RetosComponent },
+      { path: 'configurations/retos/:id', component: RetoDetailComponent },
       { path: 'messages', component: MessagesComponent },
     ] 
   },

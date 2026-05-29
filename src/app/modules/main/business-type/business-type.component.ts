@@ -19,6 +19,7 @@ export class BusinessTypeComponent implements OnInit {
   loading = false;
   saving = false;
   editingId: number | null = null;
+  showForm = false;
 
   iconOptions = [
     { name: 'fa-utensils', label: '\uf2e7  fa-utensils' },
@@ -58,8 +59,18 @@ export class BusinessTypeComponent implements OnInit {
     }
   }
 
+  toggleForm(): void {
+    if (this.showForm && !this.editingId) {
+      this.cancelarEdicion();
+    } else {
+      this.cancelarEdicion();
+      this.showForm = true;
+    }
+  }
+
   editarTipo(tipo: BusinessType): void {
     this.editingId = tipo.id ?? null;
+    this.showForm = true;
     this.typeForm.setValue({
       nombre: tipo.nombre,
       icono: tipo.icono || this.iconOptions[0].name,
@@ -69,6 +80,7 @@ export class BusinessTypeComponent implements OnInit {
 
   cancelarEdicion(): void {
     this.editingId = null;
+    this.showForm = false;
     this.typeForm.reset({
       nombre: '',
       icono: this.iconOptions[0].name,

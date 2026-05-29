@@ -1,81 +1,109 @@
 <div class="page-wrapper" [formGroup]="slideForm">
   <app-back-button [link]="'/configurations'" label="Regresar a configuraciones"></app-back-button>
 
-  <div class="page-header">
-    <h2>Slides {{ targetLabel }}</h2>
-    <p>Gestiona las imágenes que aparecen en la sección {{ targetLabel | lowercase }}.</p>
+  <!-- Header -->
+  <div class="sm__page-head">
+    <div class="page-header">
+      <p class="sm__eyebrow">Configuraciones · Sitio público</p>
+      <h2>Slides {{ targetLabel }}</h2>
+      <p>Gestiona las imágenes del carrusel que aparecen en la sección {{ targetLabel | lowercase }}.</p>
+    </div>
+    <div class="sm__head-meta">
+      <span class="sm__count-badge">{{ slides.length }} slides</span>
+    </div>
   </div>
 
-  <div class="card slide-form-card">
-    <h2 class="mb-3 fs-5">Nuevo slide</h2>
-    <div class="form-grid">
-      <div class="upload-box">
-        <label class="upload-area">
+  <!-- Form card -->
+  <div class="pm-card sm__form-card">
+    <h3 class="sm__form-title">Nuevo slide</h3>
+
+    <div class="sm__layout">
+
+      <!-- Upload -->
+      <div class="sm__upload-col">
+        <label class="sm__upload-area">
           <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)">
           <ng-container *ngIf="imagePreview; else emptyPreview">
             <img [src]="imagePreview" alt="Vista previa del slide">
           </ng-container>
           <ng-template #emptyPreview>
-            <span>Selecciona una imagen (JPG/PNG)</span>
+            <div class="sm__upload-placeholder">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>Selecciona una imagen</span>
+              <small>JPG / PNG</small>
+            </div>
           </ng-template>
         </label>
-        <button type="button" class="btn btn-link p-0 mt-2" (click)="limpiarImagen()" [disabled]="!selectedFile">Limpiar imagen</button>
-      </div>
-
-      <div class="fields">
-        <div class="mb-3">
-          <label class="form-label">Título</label>
-          <input type="text" class="form-control" formControlName="title" placeholder="Título del slide">
-        </div>
-
-        <div class="row g-3">
-          <div class="col-sm-6">
-            <label class="form-label">Posición</label>
-            <input type="number" class="form-control" formControlName="position" min="0">
-          </div>
-          <div class="col-sm-6 d-flex align-items-end">
-            <app-toggle-switch formControlName="is_active" label="Activo" color="#7e7cb9"></app-toggle-switch>
-          </div>
-        </div>
-
-        <button type="button"
-                class="btn--primary mt-3"
-                (click)="guardarSlide()"
-                [disabled]="saving">
-          {{ saving ? 'Guardando...' : 'Guardar slide' }}
+        <button type="button" class="sm__clear-btn" (click)="limpiarImagen()" [disabled]="!selectedFile">
+          <i class="fa-solid fa-xmark"></i> Limpiar imagen
         </button>
       </div>
-    </div>
-  </div>
 
-  <div class="card slides-list-card mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="fs-5 mb-0">Listado de slides</h2>
-      <span class="text-muted small">{{ slides.length }} registros</span>
-    </div>
-
-    <div *ngIf="loadingSlides" class="state-message">Cargando slides...</div>
-
-    <ng-container *ngIf="!loadingSlides">
-      <div *ngIf="slides.length; else emptySlides">
-        <div class="slide-item" *ngFor="let slide of slides">
-          <img class="thumb" [src]="slide.image_path" [alt]="slide.title">
-          <div class="info">
-            <h3>{{ slide.title }}</h3>
-            <p class="mb-1 text-muted">Posición: {{ slide.position }}</p>
-            <span class="badge" [class.active]="slide.is_active">{{ slide.is_active ? 'Activo' : 'Inactivo' }}</span>
+      <!-- Fields -->
+      <div class="sm__fields-col">
+        <div class="sm__field">
+          <label class="sm__field-label">Título <span class="sm__required">*</span></label>
+          <input type="text" class="sm__input" formControlName="title" placeholder="Título del slide">
+        </div>
+        <div class="sm__row">
+          <div class="sm__field">
+            <label class="sm__field-label">Posición</label>
+            <input type="number" class="sm__input" formControlName="position" min="0">
           </div>
-          <div class="actions">
-            <button type="button" class="btn--ghost btn--sm" (click)="cambiarEstado(slide)">
-              {{ slide.is_active ? 'Desactivar' : 'Activar' }}
-            </button>
-            <button type="button" class="btn--outline-danger btn--sm" (click)="eliminarSlide(slide)">Eliminar</button>
+          <div class="sm__field">
+            <label class="sm__field-label">Activo</label>
+            <app-toggle-switch formControlName="is_active" label="" color="#7e7cb9"></app-toggle-switch>
           </div>
         </div>
+        <div class="sm__form-actions">
+          <button type="button" class="btn--primary btn--sm" (click)="guardarSlide()" [disabled]="saving">
+            <i class="fa-solid fa-floppy-disk"></i>
+            {{ saving ? 'Guardando…' : 'Guardar slide' }}
+          </button>
+        </div>
       </div>
-      <ng-template #emptySlides>
-        <div class="state-message">Aún no has cargado slides para esta sección.</div>
-      </ng-template>
-    </ng-container>
+
+    </div>
   </div>
+
+  <!-- List card -->
+  <div class="pm-card">
+    <div class="sm__list-header">
+      <h3 class="sm__list-title">Listado de slides</h3>
+      <span class="sm__list-count">{{ slides.length }} registros</span>
+    </div>
+
+    <div *ngIf="loadingSlides" class="pm-empty">
+      <i class="pm-empty__icon fa-solid fa-spinner fa-spin"></i>
+      <p class="pm-empty__title">Cargando slides…</p>
+    </div>
+
+    <div *ngIf="!loadingSlides && !slides.length" class="pm-empty">
+      <i class="pm-empty__icon fa-solid fa-images"></i>
+      <p class="pm-empty__title">Sin slides cargados</p>
+      <p class="pm-empty__desc">Agrega el primer slide para esta sección.</p>
+    </div>
+
+    <ul class="sm__list" *ngIf="!loadingSlides && slides.length">
+      <li class="sm__row-item" *ngFor="let slide of slides">
+        <div class="sm__thumb" [style.backgroundImage]="'url(' + slide.image_path + ')'"></div>
+        <div class="sm__slide-info">
+          <p class="sm__slide-title">{{ slide.title }}</p>
+          <p class="sm__slide-pos">Posición: {{ slide.position }}</p>
+        </div>
+        <span class="sm__badge" [class.sm__badge--active]="slide.is_active" [class.sm__badge--inactive]="!slide.is_active">
+          {{ slide.is_active ? 'Activo' : 'Inactivo' }}
+        </span>
+        <div class="sm__item-actions">
+          <button class="sm__icon-btn" type="button" [title]="slide.is_active ? 'Desactivar' : 'Activar'" (click)="cambiarEstado(slide)">
+            <i class="fa-solid fa-ban"></i>
+          </button>
+          <button class="sm__icon-btn sm__icon-btn--danger" type="button" title="Eliminar" (click)="eliminarSlide(slide)">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </li>
+    </ul>
+  </div>
+
 </div>
