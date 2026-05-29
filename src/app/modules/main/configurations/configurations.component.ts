@@ -62,14 +62,20 @@ export class ConfigurationsComponent {
       ]
     },
     {
-      label: 'Monetización',
-      subtitle: 'Planes y reglas comerciales',
+      label: 'Monetización y gamificación',
+      subtitle: 'Planes, retos y reglas de engagement',
       items: [
         {
           label: 'Planes',
           icon: 'fa-solid fa-layer-group',
           description: 'Configura precios, límites y features de los planes para propietarios.',
           link: '/configurations/plans',
+        },
+        {
+          label: 'Retos',
+          icon: 'fa-solid fa-trophy',
+          description: 'Crea retos de bienvenida, permanentes y por evento para motivar a los clientes.',
+          link: '/configurations/retos',
         },
       ]
     },

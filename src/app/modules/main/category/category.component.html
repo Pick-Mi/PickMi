@@ -1,170 +1,204 @@
 <div class="page-wrapper">
+
   <app-back-button [link]="'/configurations'" label="Regresar a configuraciones"></app-back-button>
+
   <div class="page-header">
     <h2>Categorías y subcategorías</h2>
-    <p>Mantén ambos catálogos en una sola vista para que las subcategorías siempre estén contextualizadas a su categoría.</p>
+    <p>Selecciona una categoría para gestionar sus subcategorías directamente.</p>
   </div>
 
-  <div class="card form-card">
-      <h3 class="fs-5 mb-3">{{ editingCategoryId ? 'Editar categoría' : 'Nueva categoría' }}</h3>
-      <form [formGroup]="categoryForm" (ngSubmit)="guardarCategoria()">
-        <div class="row g-4 align-items-center">
-          <div class="col-md-6">
-            <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" formControlName="nombre" placeholder="Ej. Restaurante">
-            <div class="text-danger small mt-1" *ngIf="categoryForm.get('nombre')?.invalid && categoryForm.get('nombre')?.touched">
-              Nombre requerido.
+  <div class="cat__layout">
+
+    <!-- ── Left panel: category list ── -->
+    <div class="cat__panel">
+
+      <div class="cat__panel-header">
+        <div>
+          <h3 class="cat__panel-title">Categorías</h3>
+          <p class="cat__panel-sub">{{ categories.length }} registros</p>
+        </div>
+        <button class="btn--primary btn--sm" type="button" (click)="toggleCategoryForm()">
+          <i class="fa-solid" [class.fa-plus]="!showCategoryForm || editingCategoryId" [class.fa-xmark]="showCategoryForm && !editingCategoryId"></i>
+          {{ showCategoryForm && !editingCategoryId ? 'Cancelar' : 'Nueva' }}
+        </button>
+      </div>
+
+      <!-- Category form (new / edit) -->
+      <div class="cat__form-panel" *ngIf="showCategoryForm">
+        <p class="cat__form-title">{{ editingCategoryId ? 'Editar categoría' : 'Nueva categoría' }}</p>
+        <form [formGroup]="categoryForm" (ngSubmit)="guardarCategoria()">
+          <div class="cat__form-fields">
+            <div class="cat__field">
+              <label class="cat__field-label">Nombre</label>
+              <input type="text" class="cat__input" formControlName="nombre" placeholder="Ej. Restaurante">
+              <span class="cat__field-error" *ngIf="categoryForm.get('nombre')?.invalid && categoryForm.get('nombre')?.touched">
+                Requerido
+              </span>
             </div>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Tipo de negocio</label>
-            <select class="form-select" formControlName="tipo_comercio_id">
-              <option [ngValue]="null">Selecciona...</option>
-              <option *ngFor="let tipo of businessTypes" [value]="tipo.id">{{ tipo.nombre }}</option>
-            </select>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Icono</label>
-            <div class="icon-select-wrapper">
-              <select class="form-select icon-select" formControlName="icono">
-                <option *ngFor="let icon of iconOptions" [value]="icon">{{ icon }}</option>
-              </select>
-              <div class="selected-icon">
-                <i class="fa-solid" [ngClass]="categoryForm.get('icono')?.value"></i>
+            <div class="cat__field">
+              <label class="cat__field-label">Tipo de negocio</label>
+              <div class="cat__select-wrap">
+                <select class="cat__select" formControlName="tipo_comercio_id">
+                  <option [ngValue]="null">Selecciona…</option>
+                  <option *ngFor="let tipo of businessTypes" [value]="tipo.id">{{ tipo.nombre }}</option>
+                </select>
+                <i class="fa-solid fa-chevron-down cat__select-icon"></i>
+              </div>
+            </div>
+            <div class="cat__field">
+              <label class="cat__field-label">Icono</label>
+              <div class="cat__icon-row">
+                <div class="cat__select-wrap" style="flex:1">
+                  <select class="cat__select" formControlName="icono">
+                    <option *ngFor="let icon of iconOptions" [value]="icon">{{ icon }}</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down cat__select-icon"></i>
+                </div>
+                <div class="cat__icon-preview">
+                  <i class="fa-solid" [ngClass]="categoryForm.get('icono')?.value"></i>
+                </div>
               </div>
             </div>
           </div>
-          
-        </div>
-
-        <div class="d-flex gap-2 mt-4">
-          <button type="submit" class="btn--primary" [disabled]="savingCategory">
-            {{ savingCategory ? 'Guardando...' : (editingCategoryId ? 'Actualizar' : 'Crear') }}
-          </button>
-          <button class="btn--ghost" type="button" (click)="cancelarCategoria()" *ngIf="editingCategoryId">
-            Cancelar
-          </button>
-        </div>
-      </form>
-
-      <div class="divider my-4"></div>
-
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fs-6 mb-0">Listado de categorías</h3>
-        <span class="text-muted small">{{ categories.length }} registros</span>
+          <div class="cat__form-actions">
+            <button type="submit" class="btn--primary btn--sm" [disabled]="savingCategory">
+              {{ savingCategory ? 'Guardando…' : (editingCategoryId ? 'Actualizar' : 'Crear') }}
+            </button>
+            <button class="btn--ghost btn--sm" type="button" (click)="cancelarCategoria()">Cancelar</button>
+          </div>
+        </form>
       </div>
 
-      <div *ngIf="loadingCategories" class="state-message">Cargando categorías...</div>
+      <!-- Category list -->
+      <div *ngIf="loadingCategories" class="cat__state">Cargando categorías…</div>
 
-      <div *ngIf="!loadingCategories && categories.length" class="table-responsive">
-        <table class="table align-middle">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Tipo</th>
-              <th>Icono</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let categoria of paginatedCategories" [class.active]="categoria.id === selectedCategoryId">
-              <td>{{ categoria.nombre }}</td>
-              <td>{{ getBusinessTypeName(categoria.tipo_comercio_id) }}</td>
-              <td><i class="fa-solid me-2" [ngClass]="categoria.icono"></i>{{ categoria.icono }}</td>
-              <td class="text-end">
-                <div class="d-flex gap-1 justify-content-end">
-                  <button class="btn--ghost btn--sm" type="button" (click)="seleccionarCategoria(categoria.id!)">
-                    {{ selectedCategoryId === categoria.id ? 'Seleccionada' : 'Ver subcategorías' }}
-                  </button>
-                  <button class="btn--outline btn--sm" type="button" (click)="editarCategoria(categoria)">Editar</button>
-                  <button class="btn--outline-danger btn--sm" type="button" (click)="eliminarCategoria(categoria)">Eliminar</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div *ngIf="!loadingCategories && !categories.length" class="state-message">
+      <div *ngIf="!loadingCategories && !categories.length" class="cat__state">
         Aún no hay categorías registradas.
       </div>
-      <nav *ngIf="!loadingCategories && totalCategoryPages > 1" class="pagination-wrapper mt-3">
-        <ul class="pagination mb-0">
-          <li class="page-item" [class.disabled]="categoryPage === 1">
-            <button class="page-link" type="button" (click)="cambiarPaginaCategorias(categoryPage - 1)">Anterior</button>
-          </li>
-          <li class="page-item"
-              *ngFor="let page of [].constructor(totalCategoryPages); let i = index"
-              [class.active]="categoryPage === i + 1">
-            <button class="page-link" type="button" (click)="cambiarPaginaCategorias(i + 1)">{{ i + 1 }}</button>
-          </li>
-          <li class="page-item" [class.disabled]="categoryPage === totalCategoryPages">
-            <button class="page-link" type="button" (click)="cambiarPaginaCategorias(categoryPage + 1)">Siguiente</button>
+
+      <ul class="cat__list" *ngIf="!loadingCategories && categories.length">
+        <li class="cat__row"
+          *ngFor="let cat of paginatedCategories"
+          [class.cat__row--active]="cat.id === selectedCategoryId"
+          (click)="seleccionarCategoria(cat.id!)">
+          <div class="cat__row-icon">
+            <i class="fa-solid" [ngClass]="cat.icono"></i>
+          </div>
+          <div class="cat__row-info">
+            <p class="cat__row-name">{{ cat.nombre }}</p>
+            <span class="cat__row-type">{{ getBusinessTypeName(cat.tipo_comercio_id) }}</span>
+          </div>
+          <div class="cat__row-actions" (click)="$event.stopPropagation()">
+            <button class="cat__icon-btn" type="button" title="Editar" (click)="editarCategoria(cat)">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="cat__icon-btn cat__icon-btn--danger" type="button" title="Eliminar" (click)="eliminarCategoria(cat)">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Pagination -->
+      <nav class="cat__pagination" *ngIf="!loadingCategories && totalCategoryPages > 1">
+        <button class="cat__page-btn" (click)="cambiarPaginaCategorias(categoryPage - 1)" [disabled]="categoryPage === 1">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="cat__page-btn"
+          *ngFor="let page of [].constructor(totalCategoryPages); let i = index"
+          [class.cat__page-btn--active]="categoryPage === i + 1"
+          (click)="cambiarPaginaCategorias(i + 1)">
+          {{ i + 1 }}
+        </button>
+        <button class="cat__page-btn" (click)="cambiarPaginaCategorias(categoryPage + 1)" [disabled]="categoryPage === totalCategoryPages">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </nav>
+
+    </div>
+
+    <!-- ── Right panel: subcategories ── -->
+    <div class="cat__panel cat__panel--detail">
+
+      <!-- Empty state: no category selected -->
+      <div class="cat__detail-empty" *ngIf="!selectedCategoryId">
+        <div class="cat__detail-empty-icon">
+          <i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <p class="cat__detail-empty-title">Selecciona una categoría</p>
+        <p class="cat__detail-empty-sub">Haz clic en cualquier categoría del panel izquierdo para gestionar sus subcategorías.</p>
+      </div>
+
+      <!-- Detail: category selected -->
+      <ng-container *ngIf="selectedCategoryId">
+
+        <div class="cat__panel-header">
+          <div>
+            <h3 class="cat__panel-title">Subcategorías</h3>
+            <p class="cat__panel-sub">
+              <span class="cat__breadcrumb"><i class="fa-solid fa-folder-open"></i> {{ getSelectedCategoryName() }}</span>
+              · {{ subcategories.length }} registros
+            </p>
+          </div>
+          <button class="btn--primary btn--sm" type="button" (click)="showSubcategoryForm = !showSubcategoryForm; cancelarSubcategoria()">
+            <i class="fa-solid" [class.fa-plus]="!showSubcategoryForm || editingSubcategoryId" [class.fa-xmark]="showSubcategoryForm && !editingSubcategoryId"></i>
+            {{ showSubcategoryForm && !editingSubcategoryId ? 'Cancelar' : 'Agregar' }}
+          </button>
+        </div>
+
+        <!-- Subcategory form -->
+        <div class="cat__form-panel" *ngIf="showSubcategoryForm">
+          <p class="cat__form-title">{{ editingSubcategoryId ? 'Editar subcategoría' : 'Nueva subcategoría' }}</p>
+          <form [formGroup]="subcategoryForm" (ngSubmit)="guardarSubcategoria()">
+            <div class="cat__form-fields cat__form-fields--row">
+              <div class="cat__field" style="flex:1">
+                <label class="cat__field-label">Nombre</label>
+                <input type="text" class="cat__input" formControlName="nombre" placeholder="Ej. Comida rápida">
+              </div>
+              <div class="cat__field">
+                <label class="cat__field-label">Activa</label>
+                <app-toggle-switch formControlName="estado" label="" color="#7e7cb9"></app-toggle-switch>
+              </div>
+            </div>
+            <div class="cat__form-actions">
+              <button class="btn--primary btn--sm" type="submit" [disabled]="savingSubcategory">
+                {{ savingSubcategory ? 'Guardando…' : (editingSubcategoryId ? 'Actualizar' : 'Agregar') }}
+              </button>
+              <button class="btn--ghost btn--sm" type="button" (click)="cancelarSubcategoria()">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="loadingSubcategories" class="cat__state">Cargando subcategorías…</div>
+
+        <!-- Subcategory list -->
+        <ul class="cat__sub-list" *ngIf="!loadingSubcategories && subcategories.length">
+          <li class="cat__sub-row" *ngFor="let sub of subcategories">
+            <p class="cat__sub-name">{{ sub.nombre }}</p>
+            <span class="cat__sub-badge" [class.cat__sub-badge--active]="sub.estado">
+              {{ sub.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+            <div class="cat__row-actions">
+              <button class="cat__icon-btn" type="button" title="Editar" (click)="editarSubcategoria(sub)">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button class="cat__icon-btn cat__icon-btn--danger" type="button" title="Eliminar" (click)="eliminarSubcategoria(sub)">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
           </li>
         </ul>
-      </nav>
+
+        <!-- Empty subcategories -->
+        <div class="cat__state" *ngIf="!loadingSubcategories && !subcategories.length">
+          No hay subcategorías registradas para esta categoría.
+        </div>
+
+      </ng-container>
+
     </div>
 
-    <div class="card sub-card mt-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <h3 class="fs-5 mb-1">Subcategorías</h3>
-          <small class="text-muted" *ngIf="selectedCategoryId; else noCategory">
-            Categoría actual: {{ getSelectedCategoryName() }}
-          </small>
-          <ng-template #noCategory><small class="text-muted">Selecciona una categoría del listado.</small></ng-template>
-        </div>
-        <span class="text-muted small">{{ subcategories.length }} registros</span>
-      </div>
-
-      <form [formGroup]="subcategoryForm" (ngSubmit)="guardarSubcategoria()" *ngIf="selectedCategoryId" class="mb-4">
-        <div class="row g-3">
-          <div class="col-md-8">
-            <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" formControlName="nombre" placeholder="Ej. Comida rápida">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Estado</label>
-            <app-toggle-switch formControlName="estado" label="Estado" color="#7e7cb9"></app-toggle-switch>
-          </div>
-        </div>
-
-        <div class="d-flex gap-2 mt-3">
-          <button class="btn--primary" type="submit" [disabled]="savingSubcategory">
-            {{ savingSubcategory ? 'Guardando...' : (editingSubcategoryId ? 'Actualizar' : 'Agregar') }}
-          </button>
-          <button class="btn--ghost" type="button" (click)="cancelarSubcategoria()" *ngIf="editingSubcategoryId">
-            Cancelar
-          </button>
-        </div>
-      </form>
-
-      <div *ngIf="loadingSubcategories" class="state-message">Cargando subcategorías...</div>
-
-      <div *ngIf="!selectedCategoryId" class="state-message">
-        Selecciona una categoría para administrar sus subcategorías.
-      </div>
-
-      <div *ngIf="selectedCategoryId && !loadingSubcategories">
-        <div *ngIf="subcategories.length; else emptySub">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let sub of subcategories">
-              <div>
-                <strong>{{ sub.nombre }}</strong>
-                <span class="badge ms-2" [class.active]="sub.estado">{{ sub.estado ? 'Activo' : 'Inactivo' }}</span>
-              </div>
-              <div class="d-flex gap-1">
-                <button class="btn--outline btn--sm" (click)="editarSubcategoria(sub)">Editar</button>
-                <button class="btn--outline-danger btn--sm" (click)="eliminarSubcategoria(sub)">Eliminar</button>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <ng-template #emptySub>
-          <div class="state-message">No hay subcategorías registradas para esta categoría.</div>
-        </ng-template>
-    </div>
   </div>
+
 </div>

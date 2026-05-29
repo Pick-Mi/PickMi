@@ -21,6 +21,7 @@ import { PromotionsListComponent } from './promotions-list/promotions-list.compo
 import { OwnersDetailsComponent } from './owners-details/owners-details.component';
 import { PlansComponent } from './plans/plans.component';
 import { MessagesComponent } from './messages/messages.component';
+import { RetosComponent } from './retos/retos.component';
 
 export const mainRoutes: Routes = [
   { path: '', 
@@ -44,6 +45,7 @@ export const mainRoutes: Routes = [
       { path: 'configurations/category', component: CategoryComponent },
       { path: 'configurations/promotions', component: PromotionsComponent },
       { path: 'configurations/promotions/list', component: PromotionsListComponent },
+      { path: 'configurations/retos', component: RetosComponent },
       { path: 'messages', component: MessagesComponent },
     ] 
   },

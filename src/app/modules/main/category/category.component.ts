@@ -35,6 +35,9 @@ export class CategoryComponent implements OnInit {
   categoryPage = 1;
   readonly categoriesPerPage = 5;
 
+  showCategoryForm = false;
+  showSubcategoryForm = false;
+
   iconOptions = [
     'fa-mug-hot',
     'fa-apple-alt',
@@ -131,8 +134,18 @@ export class CategoryComponent implements OnInit {
     }
   }
 
+  toggleCategoryForm(): void {
+    if (this.showCategoryForm && !this.editingCategoryId) {
+      this.showCategoryForm = false;
+    } else {
+      this.cancelarCategoria();
+      this.showCategoryForm = true;
+    }
+  }
+
   editarCategoria(cat: PickCategoria): void {
     this.editingCategoryId = cat.id ?? null;
+    this.showCategoryForm = true;
     this.categoryForm.setValue({
       nombre: cat.nombre,
       tipo_comercio_id: cat.tipo_comercio_id ?? null,
@@ -148,6 +161,7 @@ export class CategoryComponent implements OnInit {
 
   cancelarCategoria(): void {
     this.editingCategoryId = null;
+    this.showCategoryForm = false;
     this.categoryForm.reset({
       nombre: '',
       tipo_comercio_id: null,
@@ -199,6 +213,7 @@ export class CategoryComponent implements OnInit {
 
   editarSubcategoria(sub: PickSubcategoria): void {
     this.editingSubcategoryId = sub.id ?? null;
+    this.showSubcategoryForm = true;
     this.subcategoryForm.setValue({
       nombre: sub.nombre,
       estado: sub.estado ?? true
@@ -207,6 +222,7 @@ export class CategoryComponent implements OnInit {
 
   cancelarSubcategoria(): void {
     this.editingSubcategoryId = null;
+    this.showSubcategoryForm = false;
     this.subcategoryForm.reset({
       nombre: '',
       estado: true

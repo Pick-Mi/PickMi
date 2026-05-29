@@ -1,0 +1,260 @@
+<div class="page-wrapper">
+
+  <app-back-button link="/configurations" label="Regresar a configuraciones"></app-back-button>
+
+  <!-- Header -->
+  <div class="rt__page-head">
+    <div class="page-header">
+      <p class="rt__eyebrow">Gamificación</p>
+      <h2>Retos</h2>
+      <p>Gestiona los retos que motivan a los clientes a interactuar con la plataforma.</p>
+    </div>
+    <div class="rt__head-actions">
+      <button class="btn--primary btn--sm" type="button" (click)="abrirNuevo()">
+        <i class="fa-solid fa-plus"></i> Nuevo reto
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="rt__stats">
+    <div class="rt__stat-card">
+      <div class="rt__stat-top">
+        <div>
+          <p class="rt__stat-label">Total</p>
+          <p class="rt__stat-num">{{ retos.length }}</p>
+        </div>
+        <div class="rt__stat-icon" style="background:#ede9fe;color:#6d28d9">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+      </div>
+      <p class="rt__stat-hint">{{ totalActivos }} activos</p>
+    </div>
+    <div class="rt__stat-card">
+      <div class="rt__stat-top">
+        <div>
+          <p class="rt__stat-label">Bienvenida</p>
+          <p class="rt__stat-num">{{ totalBienvenida }}</p>
+        </div>
+        <div class="rt__stat-icon" style="background:#dbeafe;color:#1d4ed8">
+          <i class="fa-solid fa-handshake"></i>
+        </div>
+      </div>
+      <p class="rt__stat-hint">Al registrarse</p>
+    </div>
+    <div class="rt__stat-card">
+      <div class="rt__stat-top">
+        <div>
+          <p class="rt__stat-label">Permanentes</p>
+          <p class="rt__stat-num">{{ totalPermanentes }}</p>
+        </div>
+        <div class="rt__stat-icon" style="background:#f3e8ff;color:#7e22ce">
+          <i class="fa-solid fa-rotate"></i>
+        </div>
+      </div>
+      <p class="rt__stat-hint">Recurrentes</p>
+    </div>
+    <div class="rt__stat-card">
+      <div class="rt__stat-top">
+        <div>
+          <p class="rt__stat-label">Eventos</p>
+          <p class="rt__stat-num">{{ totalEventos }}</p>
+        </div>
+        <div class="rt__stat-icon" style="background:#fef3c7;color:#b45309">
+          <i class="fa-solid fa-calendar-star"></i>
+        </div>
+      </div>
+      <p class="rt__stat-hint">Programados</p>
+    </div>
+  </div>
+
+  <!-- Form panel -->
+  <div class="pm-card rt__form-card" *ngIf="showForm">
+    <h3 class="rt__form-title">{{ editingId ? 'Editar reto' : 'Nuevo reto' }}</h3>
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+
+      <div class="rt__form-grid">
+
+        <!-- Fila 1: título + tipo -->
+        <div class="rt__field rt__field--span2">
+          <label class="rt__field-label">Título <span class="rt__required">*</span></label>
+          <input type="text" class="rt__input" formControlName="titulo" placeholder="Ej. Completa 5 visitas esta semana">
+          <span class="rt__field-error" *ngIf="form.get('titulo')?.invalid && form.get('titulo')?.touched">Requerido</span>
+        </div>
+
+        <div class="rt__field">
+          <label class="rt__field-label">Tipo de reto <span class="rt__required">*</span></label>
+          <div class="rt__select-wrap">
+            <select class="rt__select" formControlName="tipo_reto">
+              <option value="bienvenida">Bienvenida</option>
+              <option value="permanente">Permanente</option>
+              <option value="evento">Evento</option>
+            </select>
+            <i class="fa-solid fa-chevron-down rt__select-icon"></i>
+          </div>
+        </div>
+
+        <!-- Fila 2: descripción -->
+        <div class="rt__field rt__field--full">
+          <label class="rt__field-label">Descripción</label>
+          <textarea class="rt__input rt__textarea" formControlName="descripcion" rows="2"
+            placeholder="Describe brevemente qué debe hacer el usuario"></textarea>
+        </div>
+
+        <!-- Fila 3: meta + acción + icono -->
+        <div class="rt__field">
+          <label class="rt__field-label">Meta <span class="rt__required">*</span></label>
+          <input type="number" class="rt__input" formControlName="meta" min="1" placeholder="Ej. 5">
+        </div>
+
+        <div class="rt__field">
+          <label class="rt__field-label">Tipo de acción <span class="rt__required">*</span></label>
+          <div class="rt__select-wrap">
+            <select class="rt__select" formControlName="tipo_accion">
+              <option *ngFor="let a of accionOptions" [value]="a">{{ a }}</option>
+            </select>
+            <i class="fa-solid fa-chevron-down rt__select-icon"></i>
+          </div>
+        </div>
+
+        <div class="rt__field">
+          <label class="rt__field-label">Icono</label>
+          <div class="rt__icon-row">
+            <div class="rt__select-wrap" style="flex:1">
+              <select class="rt__select" formControlName="icono">
+                <option *ngFor="let ic of iconOptions" [value]="ic">{{ ic }}</option>
+              </select>
+              <i class="fa-solid fa-chevron-down rt__select-icon"></i>
+            </div>
+            <div class="rt__icon-preview">
+              <i class="fa-solid" [ngClass]="form.get('icono')?.value"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Condicional: Permanente → periodo_dias -->
+        <div class="rt__field" *ngIf="tipoActual === 'permanente'">
+          <label class="rt__field-label">Periodo (días)</label>
+          <input type="number" class="rt__input" formControlName="periodo_dias" min="1" placeholder="7">
+        </div>
+
+        <!-- Condicional: Evento → fechas -->
+        <ng-container *ngIf="tipoActual === 'evento'">
+          <div class="rt__field">
+            <label class="rt__field-label">Fecha inicio</label>
+            <input type="date" class="rt__input" formControlName="fecha_inicio">
+          </div>
+          <div class="rt__field">
+            <label class="rt__field-label">Fecha fin</label>
+            <input type="date" class="rt__input" formControlName="fecha_fin">
+          </div>
+        </ng-container>
+
+        <!-- Activo -->
+        <div class="rt__field">
+          <label class="rt__field-label">Activo</label>
+          <app-toggle-switch formControlName="activo" label="" color="#7e7cb9"></app-toggle-switch>
+        </div>
+
+      </div>
+
+      <div class="rt__form-actions">
+        <button type="submit" class="btn--primary" [disabled]="saving">
+          {{ saving ? 'Guardando…' : (editingId ? 'Actualizar' : 'Crear reto') }}
+        </button>
+        <button type="button" class="btn--ghost" (click)="cancelar()">Cancelar</button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Results card -->
+  <div class="pm-card">
+
+    <!-- Tabs -->
+    <div class="rt__tabs">
+      <button type="button" class="rt__tab" [class.rt__tab--active]="tabActivo === 'todos'" (click)="tabActivo = 'todos'">
+        Todos <span class="rt__tab-count">{{ retos.length }}</span>
+      </button>
+      <button type="button" class="rt__tab" [class.rt__tab--active]="tabActivo === 'bienvenida'" (click)="tabActivo = 'bienvenida'">
+        Bienvenida <span class="rt__tab-count">{{ totalBienvenida }}</span>
+      </button>
+      <button type="button" class="rt__tab" [class.rt__tab--active]="tabActivo === 'permanente'" (click)="tabActivo = 'permanente'">
+        Permanentes <span class="rt__tab-count">{{ totalPermanentes }}</span>
+      </button>
+      <button type="button" class="rt__tab" [class.rt__tab--active]="tabActivo === 'evento'" (click)="tabActivo = 'evento'">
+        Eventos <span class="rt__tab-count">{{ totalEventos }}</span>
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="pm-empty">
+      <i class="pm-empty__icon fa-solid fa-spinner fa-spin"></i>
+      <p class="pm-empty__title">Cargando retos…</p>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!loading && !retosFiltrados.length" class="pm-empty">
+      <i class="pm-empty__icon fa-solid fa-trophy"></i>
+      <p class="pm-empty__title">Sin retos</p>
+      <p class="pm-empty__desc">No hay retos en esta categoría todavía.</p>
+    </div>
+
+    <!-- Reto cards grid -->
+    <div class="rt__grid" *ngIf="!loading && retosFiltrados.length">
+      <div class="rt__reto-card" *ngFor="let reto of retosFiltrados">
+
+        <div class="rt__reto-head">
+          <div class="rt__reto-icon">
+            <i class="fa-solid" [ngClass]="reto.icono || 'fa-trophy'"></i>
+          </div>
+          <div class="rt__reto-meta">
+            <span class="rt__badge" [ngClass]="tipoBadgeClass(reto.tipo_reto)">
+              {{ tipoLabel(reto.tipo_reto) }}
+            </span>
+            <span class="rt__badge" [class.rt__badge--active]="reto.activo" [class.rt__badge--inactive]="!reto.activo">
+              {{ reto.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+        </div>
+
+        <h4 class="rt__reto-title">{{ reto.titulo }}</h4>
+        <p class="rt__reto-desc" *ngIf="reto.descripcion">{{ reto.descripcion }}</p>
+
+        <div class="rt__reto-stats">
+          <div class="rt__reto-stat">
+            <p class="rt__reto-stat-label">Meta</p>
+            <p class="rt__reto-stat-value">{{ reto.meta }} {{ reto.tipo_accion }}</p>
+          </div>
+          <div class="rt__reto-stat" *ngIf="reto.tipo_reto === 'permanente' && reto.periodo_dias">
+            <p class="rt__reto-stat-label">Ciclo</p>
+            <p class="rt__reto-stat-value">{{ reto.periodo_dias }} días</p>
+          </div>
+          <div class="rt__reto-stat" *ngIf="reto.tipo_reto === 'evento' && reto.fecha_inicio">
+            <p class="rt__reto-stat-label">Inicio</p>
+            <p class="rt__reto-stat-value rt__reto-stat-value--mono">{{ reto.fecha_inicio | date:'MMM d, y' }}</p>
+          </div>
+          <div class="rt__reto-stat" *ngIf="reto.tipo_reto === 'evento' && reto.fecha_fin">
+            <p class="rt__reto-stat-label">Fin</p>
+            <p class="rt__reto-stat-value rt__reto-stat-value--mono">{{ reto.fecha_fin | date:'MMM d, y' }}</p>
+          </div>
+        </div>
+
+        <div class="rt__reto-actions">
+          <button class="rt__action-btn" type="button" (click)="toggleActivo(reto)" [title]="reto.activo ? 'Desactivar' : 'Activar'">
+            <i class="fa-solid" [class.fa-eye]="reto.activo" [class.fa-eye-slash]="!reto.activo"></i>
+          </button>
+          <button class="rt__action-btn" type="button" (click)="editar(reto)" title="Editar">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="rt__action-btn rt__action-btn--danger" type="button" (click)="eliminar(reto)" title="Eliminar">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
