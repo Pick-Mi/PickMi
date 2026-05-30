@@ -9,11 +9,12 @@ import { PickComercio } from '../../../data/interfaces/comercios';
 import * as sweetAlert from '../../../data/utils/alerts';
 import Swal from 'sweetalert2';
 import { BackButtonComponent } from '../../../shared/components/back-button/back-button.component';
+import { PromoCardComponent } from '../../../shared/components/promo-card/promo-card.component';
 
 @Component({
   selector: 'app-promotions-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, BackButtonComponent],
+  imports: [CommonModule, FormsModule, RouterLink, BackButtonComponent, PromoCardComponent],
   templateUrl: './promotions-list.component.html',
   styleUrls: ['./promotions-list.component.scss']
 })
@@ -30,6 +31,7 @@ export class PromotionsListComponent implements OnInit {
   busqueda = '';
   estatusFiltro: 'todos' | 'activo' | 'inactivo' = 'todos';
   error: string | null = null;
+  previewPromo: PickPromocion | null = null;
 
   ngOnInit(): void {
     this.loadData();
@@ -117,6 +119,26 @@ export class PromotionsListComponent implements OnInit {
     } finally {
       this.processingId = null;
     }
+  }
+
+  abrirPreview(promo: PickPromocion): void { this.previewPromo = promo; }
+  cerrarPreview(): void { this.previewPromo = null; }
+
+  tipoBadgeClass(tipo?: string | null): string {
+    const map: Record<string, string> = {
+      descuento: 'prl__tipo--descuento',
+      regalo:    'prl__tipo--regalo',
+      '2x1':     'prl__tipo--2x1',
+      bundle:    'prl__tipo--bundle',
+    };
+    return map[tipo ?? ''] ?? 'prl__tipo--default';
+  }
+
+  tipoLabel(tipo?: string | null): string {
+    const map: Record<string, string> = {
+      descuento: 'Descuento', regalo: 'Regalo', '2x1': '2×1', bundle: 'Bundle'
+    };
+    return map[tipo ?? ''] ?? 'Promoción';
   }
 
   comercioNombre(id: string): string {

@@ -106,6 +106,7 @@
           <tr>
             <th>Promoción</th>
             <th>Comercio</th>
+            <th>Tipo</th>
             <th>Vigencia</th>
             <th>Precio</th>
             <th>Estatus</th>
@@ -127,12 +128,39 @@
             </td>
             <td class="prl__comercio">{{ comercioNombre(promo.comercio_id) }}</td>
             <td>
+              <span class="prl__tipo-badge" [ngClass]="tipoBadgeClass(promo.tipo_promocion)">
+                {{ tipoLabel(promo.tipo_promocion) }}
+              </span>
+            </td>
+            <td>
               <p class="prl__date">{{ promo.fecha_inicio | date:'MMM d, y' }}</p>
               <p class="prl__date prl__date--muted">{{ promo.fecha_fin | date:'MMM d, y' }}</p>
             </td>
             <td>
-              <p class="prl__price-promo">${{ promo.precio_promocion | number:'1.2-2' }}</p>
-              <p class="prl__price-orig">Antes ${{ promo.precio_original | number:'1.2-2' }}</p>
+              <!-- Descuento / Bundle: precio promo + original -->
+              <ng-container *ngIf="promo.tipo_promocion === 'descuento' || promo.tipo_promocion === 'bundle'">
+                <p class="prl__price-promo">${{ promo.precio_promocion | number:'1.2-2' }}</p>
+                <p class="prl__price-orig">Antes ${{ promo.precio_original | number:'1.2-2' }}</p>
+              </ng-container>
+              <!-- Regalo: precio original + artículo -->
+              <ng-container *ngIf="promo.tipo_promocion === 'regalo'">
+                <p class="prl__price-promo">${{ promo.precio_original | number:'1.2-2' }}</p>
+                <p class="prl__price-orig" *ngIf="promo.item_regalo">
+                  <i class="fa-solid fa-gift"></i> {{ promo.item_regalo }}
+                </p>
+              </ng-container>
+              <!-- 2x1: precio + badge -->
+              <ng-container *ngIf="promo.tipo_promocion === '2x1'">
+                <p class="prl__price-promo">${{ promo.precio_original | number:'1.2-2' }}</p>
+                <p class="prl__price-orig">Llevas 2 por 1</p>
+              </ng-container>
+              <!-- Sin tipo (legacy) -->
+              <ng-container *ngIf="!promo.tipo_promocion">
+                <p class="prl__price-promo">${{ promo.precio_promocion | number:'1.2-2' }}</p>
+                <p class="prl__price-orig" *ngIf="promo.precio_original !== promo.precio_promocion">
+                  Antes ${{ promo.precio_original | number:'1.2-2' }}
+                </p>
+              </ng-container>
             </td>
             <td>
               <span class="prl__badge"
@@ -144,6 +172,9 @@
             </td>
             <td>
               <div class="prl__actions">
+                <button class="prl__icon-btn" type="button" title="Vista previa" (click)="abrirPreview(promo)">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
                 <button class="prl__icon-btn" type="button" title="Editar" (click)="edit(promo)">
                   <i class="fa-solid fa-pen"></i>
                 </button>
@@ -162,5 +193,24 @@
       </table>
     </div>
 
+  </div>
+</div>
+
+<!-- Preview modal -->
+<div class="prl__preview-backdrop" *ngIf="previewPromo" (click)="cerrarPreview()">
+  <div class="prl__preview-modal" (click)="$event.stopPropagation()">
+    <div class="prl__preview-header">
+      <p class="prl__preview-title">Vista previa de la tarjeta</p>
+      <button class="prl__preview-close" type="button" (click)="cerrarPreview()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="prl__preview-body">
+      <app-promo-card
+        [promo]="previewPromo"
+        [comercioNombre]="comercioNombre(previewPromo.comercio_id)">
+      </app-promo-card>
+    </div>
+    <p class="prl__preview-hint">Así se verá en el carrusel de la app pública.</p>
   </div>
 </div>

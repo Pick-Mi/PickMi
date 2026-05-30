@@ -1,0 +1,69 @@
+<div class="pc__card" [style.background]="theme.gradient">
+
+  <!-- Decorative icon when no image -->
+  <div class="pc__deco" *ngIf="!promo.imagen_url">
+    <i class="fa-solid" [ngClass]="theme.icon"></i>
+  </div>
+
+  <!-- Content -->
+  <div class="pc__content">
+
+    <div class="pc__top-group">
+    <div class="pc__top">
+      <span class="pc__tipo-pill">{{ tipoLabel }}</span>
+      <p class="pc__store">{{ comercioNombre }}</p>
+    </div>
+
+    <h3 class="pc__title">{{ promo.titulo }}</h3>
+    <p class="pc__desc" *ngIf="promo.descripcion">{{ promo.descripcion }}</p>
+
+    <!-- Prices: descuento / bundle -->
+    <div class="pc__price-row" *ngIf="showPrecioPromo">
+      <span class="pc__price-new">${{ promo.precio_promocion | number:'1.2-2' }}</span>
+      <span class="pc__price-old">${{ promo.precio_original | number:'1.2-2' }}</span>
+    </div>
+
+    <!-- Prices: regalo -->
+    <div class="pc__price-row" *ngIf="promo.tipo_promocion === 'regalo'">
+      <span class="pc__price-new">${{ promo.precio_original | number:'1.2-2' }}</span>
+      <span class="pc__regalo-hint" *ngIf="promo.item_regalo">
+        <i class="fa-solid fa-gift"></i> + {{ promo.item_regalo }}
+      </span>
+    </div>
+
+    <!-- Prices: 2x1 -->
+    <div class="pc__price-row" *ngIf="promo.tipo_promocion === '2x1'">
+      <span class="pc__price-new">${{ promo.precio_original | number:'1.2-2' }}</span>
+      <span class="pc__badge-2x1">2×1</span>
+    </div>
+
+    <!-- Code -->
+    <div class="pc__code-row" *ngIf="promo.codigo_promocion">
+      <span class="pc__code-label">CÓDIGO</span>
+      <span class="pc__code-value">{{ promo.codigo_promocion }}</span>
+      <button type="button" class="pc__copy-btn"
+        [class.pc__copy-btn--copied]="codeCopied"
+        (click)="copyCode()"
+        [title]="codeCopied ? '¡Copiado!' : 'Copiar código'">
+        <i class="fa-solid" [class.fa-check]="codeCopied" [class.fa-copy]="!codeCopied"></i>
+      </button>
+    </div>
+
+    </div><!-- end top-group -->
+
+    <!-- Countdown -->
+    <div class="pc__expiry" [class.pc__expiry--done]="isExpired">
+      <span class="pc__expiry-label">EXPIRA EN</span>
+      <span class="pc__expiry-value" [class.pc__expiry-value--done]="isExpired">
+        {{ countdownText }}
+      </span>
+    </div>
+
+  </div>
+
+  <!-- Image -->
+  <div class="pc__image-col" *ngIf="promo.imagen_url">
+    <img [src]="promo.imagen_url" [alt]="promo.titulo">
+  </div>
+
+</div>

@@ -1,10 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { debounceTime, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import Swal from 'sweetalert2';
 import { PromotionsService } from '../../../core/services/promotions.service';
-import { PickPromocion } from '../../../data/interfaces/promotions';
+import { PickPromocion, TipoPromocion } from '../../../data/interfaces/promotions';
 import { PickComercio } from '../../../data/interfaces/comercios';
 import { StoresService } from '../../../core/services/stores.service';
 import * as sweetAlert from '../../../data/utils/alerts';
@@ -18,7 +19,7 @@ import { BackButtonComponent } from '../../../shared/components/back-button/back
   templateUrl: './promotions.component.html',
   styleUrls: ['./promotions.component.scss'],
 })
-export class PromotionsComponent implements OnInit {
+export class PromotionsComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private promotionsService = inject(PromotionsService);
   private storesService = inject(StoresService);
@@ -26,6 +27,8 @@ export class PromotionsComponent implements OnInit {
   promotions: PickPromocion[] = [];
   comercios: PickComercio[] = [];
   loading = false;
+  porcentajeDescuento: number | null = null;
+  private pctSub?: Subscription;
   saving = false;
   editingId: string | null = null;
   pendingStatePromo: PickPromocion | null = null;
@@ -36,7 +39,15 @@ export class PromotionsComponent implements OnInit {
   croppedFile?: Blob;
   currentImageUrl: string | null = null;
 
+  // Cropper config — all explicit to avoid ngx-image-cropper v9 input issues
+  readonly cropAspectRatio = 1;
+  readonly cropMaintainRatio = true;
+  readonly cropFormat: 'png' = 'png';
+  readonly cropOutput: 'base64' = 'base64';
+  readonly cropSize = 900;
+
   form = this.fb.group({
+    tipo_promocion: ['descuento' as TipoPromocion, Validators.required],
     comercio_id: ['', Validators.required],
     titulo: ['', [Validators.required, Validators.maxLength(200)]],
     descripcion: [''],
@@ -44,10 +55,22 @@ export class PromotionsComponent implements OnInit {
     fecha_fin: ['', Validators.required],
     precio_original: [null as number | null, [Validators.required, Validators.min(0)]],
     precio_promocion: [null as number | null, [Validators.required, Validators.min(0)]],
-    porcentaje_descuento: [null as number | null, [Validators.min(0), Validators.max(100)]],
+    item_regalo: [null as string | null],
     codigo_promocion: [''],
     estatus: ['activo', Validators.required],
   });
+
+  get tipoActual(): TipoPromocion {
+    return this.form.get('tipo_promocion')?.value as TipoPromocion;
+  }
+
+  get requierePrecioPromo(): boolean {
+    return this.tipoActual === 'descuento' || this.tipoActual === 'bundle';
+  }
+
+  get requiereItemRegalo(): boolean {
+    return this.tipoActual === 'regalo' || this.tipoActual === 'bundle';
+  }
 
   ngOnInit(): void {
     const passed = history.state?.promo as PickPromocion | undefined;
@@ -55,7 +78,8 @@ export class PromotionsComponent implements OnInit {
       this.pendingStatePromo = passed;
     }
     this.loadData();
-    this.setupPriceWatcher();
+    this.setupTipoWatcher();
+    this.setupPorcentajeWatcher();
   }
 
   async loadData(): Promise<void> {
@@ -95,21 +119,54 @@ export class PromotionsComponent implements OnInit {
     }
   }
 
-  private setupPriceWatcher(): void {
-    this.form.get('precio_original')?.valueChanges.subscribe(() => this.updateDiscount());
-    this.form.get('precio_promocion')?.valueChanges.subscribe(() => this.updateDiscount());
+  ngOnDestroy(): void {
+    this.pctSub?.unsubscribe();
   }
 
-  private updateDiscount(): void {
-    const original = this.form.value.precio_original ?? 0;
-    const promo = this.form.value.precio_promocion ?? 0;
-    if (original > 0 && promo >= 0 && promo <= original) {
-      const pct = ((original - promo) / original) * 100;
-      this.form.patchValue({ porcentaje_descuento: Number(pct.toFixed(2)) }, { emitEvent: false });
-    }
+  private setupPorcentajeWatcher(): void {
+    this.pctSub = this.form.valueChanges
+      .pipe(debounceTime(400))
+      .subscribe(val => {
+        if (!this.requierePrecioPromo) { this.porcentajeDescuento = null; return; }
+        const original = parseFloat(String(val.precio_original ?? 0));
+        const promo    = parseFloat(String(val.precio_promocion ?? 0));
+        if (!original || original <= 0 || isNaN(promo) || promo < 0 || promo > original) {
+          this.porcentajeDescuento = null;
+          return;
+        }
+        this.porcentajeDescuento = Math.round((original - promo) / original * 10000) / 100;
+      });
   }
 
-  async submit(): Promise<void> {
+  private setupTipoWatcher(): void {
+    this.form.get('tipo_promocion')?.valueChanges.subscribe(() => {
+      const precioPromoCtrl = this.form.get('precio_promocion');
+      const itemRegaloCtrl  = this.form.get('item_regalo');
+
+      if (this.requierePrecioPromo) {
+        precioPromoCtrl?.setValidators([Validators.required, Validators.min(0)]);
+      } else {
+        precioPromoCtrl?.clearValidators();
+        precioPromoCtrl?.setValue(null, { emitEvent: false });
+      }
+
+      if (this.requiereItemRegalo) {
+        itemRegaloCtrl?.setValidators([Validators.required]);
+      } else {
+        itemRegaloCtrl?.clearValidators();
+        itemRegaloCtrl?.setValue(null, { emitEvent: false });
+      }
+
+      precioPromoCtrl?.updateValueAndValidity({ emitEvent: false });
+      itemRegaloCtrl?.updateValueAndValidity({ emitEvent: false });
+
+      if (!this.requierePrecioPromo) {
+        this.porcentajeDescuento = null;
+      }
+    });
+  }
+
+async submit(): Promise<void> {
     if (this.form.invalid) {
       sweetAlert.alertWarning('Completa los campos obligatorios.');
       return;
@@ -119,7 +176,7 @@ export class PromotionsComponent implements OnInit {
     const precioOriginal = Number(this.form.value.precio_original ?? 0);
     const precioPromocion = Number(this.form.value.precio_promocion ?? 0);
 
-    if (precioPromocion > precioOriginal) {
+    if (this.requierePrecioPromo && precioPromocion > precioOriginal) {
       sweetAlert.alertWarning('El precio de promoción debe ser menor o igual al precio original.');
       return;
     }
@@ -164,8 +221,11 @@ export class PromotionsComponent implements OnInit {
     const value = this.form.value;
     let imagenUrl = this.currentImageUrl;
     const precioOriginal = Number(value.precio_original ?? 0);
-    const precioPromocion = Number(value.precio_promocion ?? 0);
-    const porcentaje = value.porcentaje_descuento ?? null;
+    // Para tipos sin precio_promocion se guarda igual al original (cumple constraint DB)
+    const precioPromocion = this.requierePrecioPromo
+      ? Number(value.precio_promocion ?? 0)
+      : precioOriginal;
+    const porcentaje = this.requierePrecioPromo ? this.porcentajeDescuento : null;
 
     if (this.croppedFile && value.comercio_id) {
       imagenUrl = await this.promotionsService.subirImagen(value.comercio_id, this.croppedFile);
@@ -182,6 +242,8 @@ export class PromotionsComponent implements OnInit {
       porcentaje_descuento: porcentaje !== null ? Number(porcentaje) : null,
       codigo_promocion: value.codigo_promocion || null,
       estatus: value.estatus || 'activo',
+      tipo_promocion: value.tipo_promocion as TipoPromocion,
+      item_regalo: value.item_regalo || null,
       imagen_url: imagenUrl,
     };
   }
@@ -195,6 +257,7 @@ export class PromotionsComponent implements OnInit {
     this.cropperVisible = false;
 
     this.form.patchValue({
+      tipo_promocion: (promo.tipo_promocion ?? 'descuento') as TipoPromocion,
       comercio_id: promo.comercio_id,
       titulo: promo.titulo,
       descripcion: promo.descripcion,
@@ -202,7 +265,7 @@ export class PromotionsComponent implements OnInit {
       fecha_fin: this.toInputDate(promo.fecha_fin),
       precio_original: promo.precio_original,
       precio_promocion: promo.precio_promocion,
-      porcentaje_descuento: promo.porcentaje_descuento,
+      item_regalo: promo.item_regalo ?? null,
       codigo_promocion: promo.codigo_promocion,
       estatus: promo.estatus || 'activo',
     });
@@ -251,8 +314,9 @@ export class PromotionsComponent implements OnInit {
 
   resetForm(): void {
     this.form.reset({
+      tipo_promocion: 'descuento',
       estatus: 'activo',
-      porcentaje_descuento: null,
+      item_regalo: null,
     });
     this.editingId = null;
     this.currentImageUrl = null;

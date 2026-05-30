@@ -14,7 +14,11 @@
       <!-- Image upload -->
       <div class="pr__upload-col">
         <p class="pr__section-label">Imagen</p>
-        <label class="pr__upload-area">
+        <div class="pr__square-hint">
+          <i class="fa-solid fa-circle-info"></i>
+          La imagen debe ser cuadrada (1:1)
+        </div>
+        <label class="pr__upload-area" *ngIf="!cropperVisible">
           <input type="file" accept="image/*" (change)="onFileChange($event)">
           <ng-container *ngIf="croppedPreview; else emptyPreview">
             <img [src]="croppedPreview" alt="Vista previa">
@@ -30,9 +34,12 @@
         <div class="pr__cropper" *ngIf="cropperVisible">
           <image-cropper
             [imageChangedEvent]="imageChangedEvent"
-            [maintainAspectRatio]="false"
-            format="png"
-            [resizeToWidth]="900"
+            [maintainAspectRatio]="cropMaintainRatio"
+            [aspectRatio]="cropAspectRatio"
+            [format]="cropFormat"
+            [output]="cropOutput"
+            [resizeToWidth]="cropSize"
+            [resizeToHeight]="cropSize"
             (imageCropped)="imageCropped($event)">
           </image-cropper>
           <div class="pr__cropper-actions">
@@ -46,6 +53,33 @@
 
       <!-- Fields -->
       <div class="pr__fields-col">
+
+        <!-- Tipo de promoción — siempre visible y primero -->
+        <div class="pr__field pr__field--full">
+          <label class="pr__field-label">Tipo de promoción <span class="pr__required">*</span></label>
+          <div class="pr__tipo-pills">
+            <button type="button" class="pr__tipo-pill"
+              [class.pr__tipo-pill--active]="tipoActual === 'descuento'"
+              (click)="form.get('tipo_promocion')?.setValue('descuento')">
+              <i class="fa-solid fa-tag"></i> Descuento
+            </button>
+            <button type="button" class="pr__tipo-pill"
+              [class.pr__tipo-pill--active]="tipoActual === 'regalo'"
+              (click)="form.get('tipo_promocion')?.setValue('regalo')">
+              <i class="fa-solid fa-gift"></i> Regalo
+            </button>
+            <button type="button" class="pr__tipo-pill"
+              [class.pr__tipo-pill--active]="tipoActual === '2x1'"
+              (click)="form.get('tipo_promocion')?.setValue('2x1')">
+              <i class="fa-solid fa-certificate"></i> 2x1
+            </button>
+            <button type="button" class="pr__tipo-pill"
+              [class.pr__tipo-pill--active]="tipoActual === 'bundle'"
+              (click)="form.get('tipo_promocion')?.setValue('bundle')">
+              <i class="fa-solid fa-boxes-stacked"></i> Bundle
+            </button>
+          </div>
+        </div>
 
         <div class="pr__form-grid">
           <div class="pr__field">
@@ -96,14 +130,19 @@
             <input type="number" step="0.01" min="0" class="pr__input" formControlName="precio_original">
           </div>
 
-          <div class="pr__field">
+          <div class="pr__field" *ngIf="requierePrecioPromo">
             <label class="pr__field-label">Precio promoción <span class="pr__required">*</span></label>
             <input type="number" step="0.01" min="0" class="pr__input" formControlName="precio_promocion">
           </div>
 
-          <div class="pr__field">
-            <label class="pr__field-label">% Descuento</label>
-            <input type="number" step="0.01" min="0" max="100" class="pr__input" formControlName="porcentaje_descuento">
+          <div class="pr__field" *ngIf="tipoActual === 'descuento'">
+            <label class="pr__field-label">% Descuento <span class="pr__field-hint-inline">(calculado automáticamente)</span></label>
+            <input type="number" class="pr__input" [value]="porcentajeDescuento ?? ''" readonly>
+          </div>
+
+          <div class="pr__field" *ngIf="requiereItemRegalo">
+            <label class="pr__field-label">Artículo de regalo <span class="pr__required">*</span></label>
+            <input type="text" class="pr__input" formControlName="item_regalo" placeholder="Ej. Zaranda de aluminio">
           </div>
         </div>
 

@@ -1,3 +1,5 @@
+export type TipoPromocion = 'descuento' | 'regalo' | '2x1' | 'bundle';
+
 export interface PickPromocion {
   id?: string;
   comercio_id: string;
@@ -11,6 +13,8 @@ export interface PickPromocion {
   porcentaje_descuento?: number | null;
   codigo_promocion?: string | null;
   estatus?: string | null;
+  tipo_promocion?: TipoPromocion | null;
+  item_regalo?: string | null;
   fecha_creacion?: string;
   creado_por?: number | null;
   fecha_actualizacion?: string;

@@ -1,0 +1,253 @@
+:host { display: block; }
+
+.pc__card {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 1.25rem 1.5rem;
+  gap: 1rem;
+  height: 220px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.2);
+}
+
+// ─── Decorative icon (no image) ───────────────────────────────────────────────
+.pc__deco {
+  position: absolute;
+  right: -1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 7rem;
+  opacity: 0.1;
+  color: #fff;
+  pointer-events: none;
+}
+
+// ─── Content ──────────────────────────────────────────────────────────────────
+.pc__content {
+  flex: 1;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 1;
+  min-width: 0;
+  padding: 0;
+}
+
+.pc__top-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pc__top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pc__tipo-pill {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,.22);
+  color: #fff;
+}
+
+.pc__store {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,.7);
+  margin: 0;
+}
+
+.pc__title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.pc__desc {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,.82);
+  margin: 0;
+  line-height: 1.45;
+}
+
+// ─── Prices ───────────────────────────────────────────────────────────────────
+.pc__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pc__price-new {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.pc__price-old {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,.55);
+  text-decoration: line-through;
+}
+
+.pc__regalo-hint {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,.85);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.pc__badge-2x1 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255,255,255,.25);
+  color: #fff;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+}
+
+// ─── Code ─────────────────────────────────────────────────────────────────────
+.pc__code-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0,0,0,.2);
+  border-radius: 8px;
+  padding: 0.3rem 0.4rem 0.3rem 0.7rem;
+  width: fit-content;
+}
+
+.pc__code-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,.6);
+}
+
+.pc__code-value {
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+.pc__copy-btn {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  cursor: pointer;
+  background: rgba(255,255,255,.2);
+  color: #fff;
+  transition: background 0.12s;
+  flex-shrink: 0;
+
+  &:hover { background: rgba(255,255,255,.3); }
+
+  &--copied {
+    background: rgba(21,128,61,.4);
+    color: #fff;
+  }
+}
+
+// ─── Countdown ────────────────────────────────────────────────────────────────
+.pc__expiry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0,0,0,.18);
+  border-radius: 8px;
+  padding: 0.3rem 0.65rem;
+  width: fit-content;
+
+  &--done { opacity: 0.65; }
+}
+
+.pc__expiry-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,.6);
+}
+
+.pc__expiry-value {
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: #fff;
+
+  &--done { color: rgba(255,255,255,.6); }
+}
+
+// ─── Image ────────────────────────────────────────────────────────────────────
+.pc__image-col {
+  flex-shrink: 0;
+  width: 220px;
+  align-self: stretch;
+  margin: -1.25rem -1.5rem -1.25rem 0;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0 16px 16px 0;
+    display: block;
+  }
+
+  @media (max-width: 480px) {
+    width: 140px;
+    margin: -1.25rem -1.4rem -1.25rem 0;
+  }
+
+  @media (max-width: 360px) {
+    display: none;
+  }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .pc__card {
+    padding: 1rem 1.1rem;
+  }
+
+  .pc__title {
+    font-size: 1rem;
+  }
+
+  .pc__price-new {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .pc__content {
+    padding-right: 0;
+  }
+
+  .pc__deco {
+    display: none;
+  }
+}
