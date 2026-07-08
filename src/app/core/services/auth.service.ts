@@ -51,6 +51,18 @@ export class AuthService {
     return this.sessionSubject.value?.user || null;
   }
 
+  async solicitarRecuperacion(email: string) {
+    const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`
+    });
+    return { error };
+  }
+
+  async actualizarPassword(nuevaPassword: string) {
+    const { error } = await this.supabase.auth.updateUser({ password: nuevaPassword });
+    return { error };
+  }
+
   async logout() {
     const { error } = await this.supabase.auth.signOut();
     if (!error) {
